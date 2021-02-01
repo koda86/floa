@@ -13,3 +13,7 @@ fd.basis <- create.fourier.basis(nbasis=50) # Function fit to empirical curves a
 # Returns delta curves, mean and sd for each joint condition
 # 6 joints, left / right == 18 list elements
 fd.fda.jointwise <- fdaData(data.long, fd.basis)
+
+# Randomized Cluster Bootstrap (FLoAboot_RCB)
+# ------------------------------------------------------------------------------
+floa_rcb <- floa_rcb(data.long, fd.basis, n.boot)
