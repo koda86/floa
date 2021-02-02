@@ -6,7 +6,7 @@ floa_rcb <- function(data, fd.basis, n.boot) {
   # Only first cluster level is with replacement ... second stage is without!
   # ----------------------------------------------------------------------------
 
-  clust.boot.agg <- list()
+  clust.boot.agg <- c()
 
   for (boot.idx in 1:n.boot) {
 
@@ -22,48 +22,34 @@ floa_rcb <- function(data, fd.basis, n.boot) {
 
     nr <- nrow(clust.fdata)
 
-    out.boot.mean <- clust.fdata[sample(1:nr, size=nr, replace=FALSE), ] # from fda.usc
-    # ???
-    # out.boot.mean <- fdata.bootstrap(fd.usc,
-    #                                  statistic = func.mean,
-    #                                  alpha = 0.05,
-    #                                  nb = n.boot,
-    #                                  draw = FALSE) # TRUE to plot data
-    #
-    # fda.usc.mean.boot <- func.mean(out.boot.mean$resample)
-    # fda.usc.sd.boot <- sqrt(func.var(out.boot.mean$resample))
+    # Version 1 (facilitate use of fda.usc package)
+    out.boot <- clust.fdata[sample(1:nr, size=nr, replace=FALSE), ]
+    # Version 2: numeric type data (instead fdata)
+    # clust.boot <- out.boot.mean$data
 
-    clust.boot <- out.boot.mean$data
+    out.boot.mean <- func.mean(out.boot)  # Version 1
 
-    # Aggregate all clusters to "final" bootstrap distribution
-    clust.boot.agg[[boot.idx]] <- clust.boot
+    clust.boot.agg <- rbind(clust.boot.agg, out.boot.mean$data)
   }
 
-  # clust.boot.agg.unlist <- unlist(clust.boot.agg, recursive = FALSE)
-  clust.boot.agg.unlist <- clust.boot.agg
+
+  # Calculate 2.5 and 97.5 percentiles across joints
+  # ----------------------------------------------------------------------------
+  floa.boot.percentiles <- c()
+
+  for (i in 1:ncol(clust.boot.agg)) {
+
+    # Percentiles are calculated pointwise
+    # TODO: Bias correction useful/necessary?
+    floa.boot.percentiles <- c(floa.boot.percentiles, quantile(clust.boot.agg[, i], probs = c(0.025, 0.975)))
+  }
+
+  perc2.5 <- floa.boot.percentiles[seq(1, length(floa.boot.percentiles) - 1, 2)]
+  perc97.5 <- floa.boot.percentiles[seq(2, length(floa.boot.percentiles), 2)]
 
 
-  # Hier fehlt noch ein Zwischenschritt: clust.agg, rbind
-
-
-
-    # Calculate 2.5 and 97.5 percentiles across joints
-    # ----------------------------------------------------------------------------
-    floa.boot.percentiles <- c()
-
-    for (i in 1:dim(clust.agg[[1]])[2]) {
-
-      # Percentiles are calculated pointwise
-      # TODO: Bias correction useful/necessary?
-      floa.boot.percentiles <- c(floa.boot.percentiles, quantile(clust.boot.agg.unlist[, i], probs = c(0.025, 0.975)))
-    }
-
-    perc2.5 <- floa.boot.percentiles[seq(1, length(floa.boot.percentiles) - 1, 2)]
-    perc97.5 <- floa.boot.percentiles[seq(2, length(floa.boot.percentiles), 2)]
-
-
-    # Interpolate to 101 data points -------------------------------------------
-    floa.boot.percentiles.intrp <- rbind(approx(perc2.5, n = 101)$y, approx(perc97.5, n = 101)$y)
+  # Interpolate to 101 data points -------------------------------------------
+  floa.boot.percentiles.intrp <- rbind(approx(perc2.5, n = 101)$y, approx(perc97.5, n = 101)$y)
 
   return(floa.boot.percentiles.intrp)
 }
