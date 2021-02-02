@@ -1,7 +1,7 @@
 floa_rcb <- function(data, fd.basis, n.boot) {
 
   # ----------------------------------------------------------------------------
-  # Nested bootstrap (Davison & Hinkley, 1997)
+  # Nested bootstrap (Davison & Hinkley, 1997, pp. 100-102)
   #
   # Only first cluster level is with replacement ... second stage is without!
   # ----------------------------------------------------------------------------
