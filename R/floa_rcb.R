@@ -33,8 +33,6 @@ floa_rcb <- function(data, fd.basis, n.boot) {
     # fda.usc.mean.boot <- func.mean(out.boot.mean$resample)
     # fda.usc.sd.boot <- sqrt(func.var(out.boot.mean$resample))
 
-    # Funktionaler Median?
-
     clust.boot <- out.boot.mean$data
 
     # Aggregate all clusters to "final" bootstrap distribution
@@ -56,6 +54,7 @@ floa_rcb <- function(data, fd.basis, n.boot) {
     for (i in 1:dim(clust.agg[[1]])[2]) {
 
       # Percentiles are calculated pointwise
+      # TODO: Bias correction useful/necessary?
       floa.boot.percentiles <- c(floa.boot.percentiles, quantile(clust.boot.agg.unlist[, i], probs = c(0.025, 0.975)))
     }
 
