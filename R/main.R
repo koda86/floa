@@ -4,7 +4,7 @@ library(fda)
 
 rm(list=ls())
 
-# Set wokring directories
+# Set working directories
 dir.data <- "C:/Users/Daniel/Desktop/tmp/floa/R"
 dir.script <- "C:/Users/Daniel/Desktop/tmp/floa/R/examples"
 
