@@ -6,7 +6,7 @@
 # 1. Bootstrapped functional B & A Limits (Roislien et al., 2012) (FLoA_2SD)
 # 2. Randomized Cluster Bootstrap (FLoAboot_RCB)
 # 3. Pointwise (Bland & Altman) (FLoA_Point)
-####################
+################################################################################
 
 library(fda)
 library(funData)
