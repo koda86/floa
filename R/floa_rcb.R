@@ -23,6 +23,7 @@ floa_rcb <- function(data, fd.basis, n.boot) {
 
   # Calculate 2.5 and 97.5 percentiles across joints
   # ----------------------------------------------------------------------------
+
   # Arrange mean curves in matrix (row-wise) to facilitate computing percentiles
   clust.agg <- matrix(unlist(clust.boot.agg), ncol = 51, byrow = TRUE)
 
