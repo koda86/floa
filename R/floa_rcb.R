@@ -1,39 +1,38 @@
-{
+floa_rcb <- function(data, fd.basis, n.boot) {
 
   # ----------------------------------------------------------------------------
-  # Nested bootstrap (Davison & Hinkley, 1997, pp. 100-102)
+  # (Nested) Randomized Cluster Bootstrap
   #
-  # Only first cluster level is with replacement ... second stage is without!
+  # In the first stage (draw_clusters()), all curves of a single (random) subject
+  # are drawn. From this set, the (functional) mean is calculated. The process is
+  # repeated n.boot times (n.boot = number of bootstrap iterations).
   # ----------------------------------------------------------------------------
 
-
-  # 1. STAGE: Draws all curves of a subject WITH REPLACEMENT
-  # --------------------------------------------------------------------------
-  clust.boot.agg <- c()
+  # Contains mean curve for n.boot iterations
+  clust.agg <- c()
 
   for (boot.idx in 1:n.boot) {
 
+    # In draw
     clust.fdata <- draw_clusters(data, fd.basis)
 
-    clust.boot.agg[[boot.idx]] <- func.mean(clust.fdata)
+    out.boot.mean <- func.mean(clust.fdata)
+
+    clust.boot.agg[[boot.idx]] <- out.boot.mean$data
   }
-
-  # 2. STAGE: The first stage sample is drawn again WITHOUT REPLACEMENT
-  # --------------------------------------------------------------------------
-  # Needs to be implemented correctly (look for FLoA_fun in local directory)
-  # nr <- nrow(clust.fdata)
-  # out.boot <- clust.fdata[sample(1:nr, size=nr, replace=FALSE), ]
-
 
   # Calculate 2.5 and 97.5 percentiles across joints
   # ----------------------------------------------------------------------------
+  # Arrange mean curves in matrix (row-wise) to facilitate computing percentiles
+  clust.agg <- matrix(unlist(clust.boot.agg), ncol = 51, byrow = TRUE)
+
   floa.boot.percentiles <- c()
 
-  for (i in 1:ncol(clust.boot.agg)) {
+  for (i in 1:ncol(clust.agg)) {
 
     # Percentiles are calculated pointwise
     # TODO: Bias correction useful/necessary?
-    floa.boot.percentiles <- c(floa.boot.percentiles, quantile(clust.boot.agg[, i], probs = c(0.025, 0.975)))
+    floa.boot.percentiles <- c(floa.boot.percentiles, quantile(clust.agg[, i], probs = c(0.025, 0.975)))
   }
 
   perc2.5 <- floa.boot.percentiles[seq(1, length(floa.boot.percentiles) - 1, 2)]
