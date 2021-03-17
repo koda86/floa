@@ -9,7 +9,7 @@ floa_rcb <- function(data, fd.basis, n.boot) {
   # ----------------------------------------------------------------------------
 
   # Contains mean curve for n.boot iterations
-  clust.agg <- c()
+  clust.boot.agg <- c()
 
   for (boot.idx in 1:n.boot) {
 
@@ -25,7 +25,9 @@ floa_rcb <- function(data, fd.basis, n.boot) {
   # ----------------------------------------------------------------------------
 
   # Arrange mean curves in matrix (row-wise) to facilitate computing percentiles
-  clust.agg <- matrix(unlist(clust.boot.agg), ncol = 51, byrow = TRUE)
+  clust.agg <- matrix(unlist(clust.boot.agg),
+                      ncol = length(fd.basis$names),
+                      byrow = TRUE)
 
   floa.boot.percentiles <- c()
 
