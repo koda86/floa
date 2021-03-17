@@ -26,7 +26,7 @@ floa_rcb <- function(data, fd.basis, n.boot) {
 
   # Arrange mean curves in matrix (row-wise) to facilitate computing percentiles
   clust.agg <- matrix(unlist(clust.boot.agg),
-                      ncol = length(fd.basis$names),
+                      ncol  = length(fd.basis$names),
                       byrow = TRUE)
 
   floa.boot.percentiles <- c()
@@ -38,7 +38,7 @@ floa_rcb <- function(data, fd.basis, n.boot) {
     floa.boot.percentiles <- c(floa.boot.percentiles, quantile(clust.agg[, i], probs = c(0.025, 0.975)))
   }
 
-  perc2.5 <- floa.boot.percentiles[seq(1, length(floa.boot.percentiles) - 1, 2)]
+  perc2.5  <- floa.boot.percentiles[seq(1, length(floa.boot.percentiles) - 1, 2)]
   perc97.5 <- floa.boot.percentiles[seq(2, length(floa.boot.percentiles), 2)]
 
 
