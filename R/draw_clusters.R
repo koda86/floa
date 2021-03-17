@@ -9,7 +9,12 @@ draw_clusters <- function(data, fd.basis) {
   # Here, subjectwise clusters (all curves within a subject) are drawn WITH REPLACEMENT!
   # ----------------------------------------------------------------------------
 
-  cluster.idx <- sample(unique(data$subjectID), replace = TRUE)
+  # Old ("wrong") version
+  # cluster.idx <- sample(unique(data.long$subjectID), replace = TRUE)
+
+  # Updated version: Only pick one subject
+  subjects <- as.numeric(unique(data.long$subjectID))
+  cluster.idx <- sample(subjects, 1)
 
   # Iterates over all subjects
   diff_curve <- c()
