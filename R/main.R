@@ -14,3 +14,5 @@ fd.basis <- create.fourier.basis(nbasis=50) # Function fit to empirical curves a
 # Randomized Cluster Bootstrap (FLoAboot_RCB)
 # ------------------------------------------------------------------------------
 floa_rcb <- floa_rcb(data, fd.basis, n.boot, n.subj)
+
+# test
