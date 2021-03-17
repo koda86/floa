@@ -21,15 +21,15 @@ draw_clusters <- function(data, fd.basis) {
 
     curve0 <- subset(data,
                      subjectID == cluster.idx[idx]
-                     & device == "IMU")$value
+                     & device  == "IMU")$value
 
-    curve0 <- matrix(curve0, ncol=length(curve0) / 100)
+    curve0 <- matrix(curve0, ncol = length(curve0) / 100)
 
     curve1 <- subset(data,
                      subjectID == cluster.idx[idx]
-                     & device == "MC")$value
+                     & device  == "MC")$value
 
-    curve1 <- matrix(curve1, ncol=length(curve1) / 100)
+    curve1 <- matrix(curve1, ncol = length(curve1) / 100)
 
     diff_curve.tmp <- curve0 - curve1
 
