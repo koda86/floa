@@ -9,14 +9,12 @@ draw_clusters <- function(data, fd.basis) {
   # Here, subjectwise clusters (all curves within a subject) are drawn WITH REPLACEMENT!
   # ----------------------------------------------------------------------------
 
-  # Old ("wrong") version
-  # cluster.idx <- sample(unique(data.long$subjectID), replace = TRUE)
+  # Pick all curves of a single random subject
+  subjects <- as.numeric(unique(data$subjectID))
 
-  # Updated version: Only pick one subject
-  subjects <- as.numeric(unique(data.long$subjectID))
+  # Despite replace=FALSE, this is a de facto drawing with replacement as the function is nested within FLOAboot_rcb()
   cluster.idx <- sample(subjects, 1)
 
-  # Iterates over all subjects
   diff_curve <- c()
 
   for (idx in 1:length(cluster.idx)) {
