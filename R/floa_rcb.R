@@ -1,4 +1,4 @@
-floa_rcb <- function(data, fd.basis, n.boot) {
+{
 
   # ----------------------------------------------------------------------------
   # Nested bootstrap (Davison & Hinkley, 1997, pp. 100-102)
@@ -6,31 +6,23 @@ floa_rcb <- function(data, fd.basis, n.boot) {
   # Only first cluster level is with replacement ... second stage is without!
   # ----------------------------------------------------------------------------
 
+
+  # 1. STAGE: Draws all curves of a subject WITH REPLACEMENT
+  # --------------------------------------------------------------------------
   clust.boot.agg <- c()
 
   for (boot.idx in 1:n.boot) {
 
-    # --------------------------------------------------------------------------
-    # 1. STAGE: Draws all curves of a subject WITH REPLACEMENT
-    # --------------------------------------------------------------------------
-
     clust.fdata <- draw_clusters(data, fd.basis)
 
-    # --------------------------------------------------------------------------
-    # 2. STAGE: The first stage sample is drawn again WITHOUT REPLACEMENT
-    # --------------------------------------------------------------------------
-
-    nr <- nrow(clust.fdata)
-
-    # Version 1 (facilitate use of fda.usc package)
-    out.boot <- clust.fdata[sample(1:nr, size=nr, replace=FALSE), ]
-    # Version 2: numeric type data (instead fdata)
-    # clust.boot <- out.boot.mean$data
-
-    out.boot.mean <- func.mean(out.boot)  # Version 1
-
-    clust.boot.agg <- rbind(clust.boot.agg, out.boot.mean$data)
+    clust.boot.agg[[boot.idx]] <- func.mean(clust.fdata)
   }
+
+  # 2. STAGE: The first stage sample is drawn again WITHOUT REPLACEMENT
+  # --------------------------------------------------------------------------
+  # Needs to be implemented correctly (look for FLoA_fun in local directory)
+  # nr <- nrow(clust.fdata)
+  # out.boot <- clust.fdata[sample(1:nr, size=nr, replace=FALSE), ]
 
 
   # Calculate 2.5 and 97.5 percentiles across joints
