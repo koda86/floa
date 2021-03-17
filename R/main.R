@@ -9,6 +9,7 @@
 ####################
 
 library(fda)
+library(funData)
 
 rm(list=ls())
 
@@ -34,9 +35,11 @@ fd.basis <- create.fourier.basis(nbasis=50)
 fda.delta <- fdaDelta(data, fd.basis) # Returns delta curves, mean and sd
 
 
-######################################
-########### Calculate FLoA ###########
-######################################
+
+
+################################################################################
+################################ Calculate FLoA ################################
+################################################################################
 
 n.boot <- 5
 
@@ -45,7 +48,9 @@ n.boot <- 5
 floa.boot.2SD.fdata <- FLOAboot_2SD(fda.delta, n.boot)
 
 # Convert class 'fdata' to class 'funData' to prepare data for ggploting
-floa.boot.2SD.funData <- Conv2funData(floa.boot.2SD.fdata)
+floa.boot.2SD.fd <- lapply(floa.boot.2SD.fdata, fdata2fd)
+floa.boot.2SD.funData <- new("multiFunData", list(fd2funData(floa.boot.2SD.fd[[1]], argvals=seq(0, 1, 0.01)),
+                                                  fd2funData(floa.boot.2SD.fd[[2]], argvals=seq(0, 1, 0.01))))
 
 
 # 2. Randomized Cluster Bootstrap (FLoAboot_RCB)
