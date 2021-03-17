@@ -1,16 +1,16 @@
-FLOAboot_2SD <- function(fd.fda.jointwise, n.boot, fd.fda.subject.idx) {
+FLOAboot_2SD <- function(fda.delta, n.boot) {
 
-  # Get first index of new subject in fd.fda.jointwise -------------------------
-  data.long.subject.idx <- match(unique(data.long$subjectID), data.long$subjectID)
-  fd.fda.subject.idx <- data.long$strideID[data.long.subject.idx]
+  # Get first index of new subject
+  data.subject.idx <- match(unique(data$subjectID), data$subjectID)
+  fd.fda.subject.idx <- data$strideID[data.subject.idx]
 
   floa.boot.2SD <- list()
 
-  for (i in seq(1, length(fd.fda.jointwise), 3)) {
+  for (i in seq(1, length(fda.delta), 3)) {
 
-    stride.sample <- fd.fda.jointwise[[i]][sample(fd.fda.subject.idx)]
+    stride.sample <- fda.delta[[i]][sample(fd.fda.subject.idx)]
 
-    fd.usc <- fdata(stride.sample) # Convert class fd to class fdata (required by fdata.bootstrap())
+    fd.usc <- fdata(stride.sample)
 
     out.boot.mean <- fdata.bootstrap(fd.usc,
                                      statistic = func.mean,
