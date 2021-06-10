@@ -60,6 +60,53 @@ From the resulting empirical distribution of mean curves 𝑋𝐵∗𝑛∗, poi
 
 ## Flowchart FLoA~RCB~
 
+#### Eingereichte Version (problematisch)
+
+```{r echo = FALSE, warning = FALSE, message = FALSE}
+library(DiagrammeR)
+
+# (Nested) Randomized Cluster Bootstrap
+#
+# In the first stage (draw_clusters()), all curves of a single (random) subject
+# are drawn. From this set, the (functional) mean is calculated. The process is
+# repeated n.boot times (n.boot = number of bootstrap iterations)
+
+grViz("digraph flowchart {
+
+      # node definitions with substituted label text
+      node [fontname = Helvetica, shape = rectangle]        
+      tab1 [label = '@@1']
+      tab2 [label = '@@2']
+      tab3 [label = '@@3']
+      tab4 [label = '@@4']
+      tab5 [label = '@@5']
+      tab6 [label = '@@6']
+      tab7 [label = '@@7']
+      tab8 [label = '@@8']
+
+      # edge definitions with the node IDs
+      tab1 -> tab2
+      tab2 -> tab3
+      tab3 -> tab4
+      tab3 -> tab5
+      tab3 -> tab6
+      tab4 -> tab7
+      tab4 -> tab8
+      }
+
+      [1]: 'Time normalize curves of IMU - MC'
+      [2]: 'Create difference curves IMU - MC'
+      [3]: 'Convert difference curves to function data objects using Fourier series'
+      [4]: 'floa_rcb '
+      [5]: 'FLOAboot_2SD '
+      [6]: 'floa_point'
+      [7]: 'First stage'
+      [8]: 'Second stage'
+      ")
+
+```
+
+#### Vorschlag für verbesserte Variante
 
 
 

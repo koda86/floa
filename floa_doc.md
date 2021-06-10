@@ -68,6 +68,12 @@ interval limits: 𝐹𝐿𝑜𝐴𝑅𝐶𝐵= ± 𝑄𝛼/2(𝑋𝑖 𝐵∗�
 
 ## Flowchart FLoA<sub>RCB</sub>
 
+#### Eingereichte Version (problematisch)
+
+![](floa_doc_files/figure-gfm/unnamed-chunk-1-1.png)<!-- -->
+
+#### Vorschlag für verbesserte Variante
+
 ## Reviewerkommentare (sortiert nach Wichtigkeit)
 
 #### Vorab etwas Positivität
