@@ -3,10 +3,14 @@ Documentation/overview Functional Limits of Agreement
 true
 10 Juni, 2021
 
-## Kurze Zusammenfassung
+## Zusammenfassung
 
-Aufgabenstellung: Vergleich zweier Messsysteme mit kontinuierlichem
-Output
+#### Übergeordnete Fragestellung
+
+“What is the coverage performance of functional prediction bands when
+analyzing the agreement between two sets of biomechanical curves?”
+
+… Vergleich zweier Messsysteme mit kontinuierlichem Output
 
 Standardvorgehen: Bland & Altman Plots (diskrete Parameter)
 
@@ -33,11 +37,6 @@ Limits of Agreement
 
 Illustriert wurden die Verfahren am Beispiel eines Datensatzes zur
 Validierung einer IMU (MoCap vs. IMU)
-
-#### Übergeordnete Fragestellung
-
-“What is the coverage performance of functional prediction bands when
-analyzing the agreement between two sets of biomechanical curves?”
 
 #### Methodikbeschreibung FLoA<sub>RCB</sub> (kopiert aus dem Paper)
 
@@ -134,7 +133,7 @@ interval limits: 𝐹𝐿𝑜𝐴𝑅𝐶𝐵= ± 𝑄𝛼/2(𝑋𝑖 𝐵∗�
     that the fitted curves wll reflect to a large extent the measurement
     errors associated with each individual point.”
 
-#### Mögliche Lösungsansätze
+### Mögliche Lösungsansätze
 
   - Herausnehmen der punktweisen LoA: Die Idee funktionaler Methode
     könnte man als etabliert betrachten. Beim Lesen der
@@ -153,3 +152,11 @@ Einreichen eines neuen Papers zwangsläufig irgendwann kommt.
 
 … evtl. kommen die (vermuteten) Vorteile der FLoA<sub>RCB</sub> bei
 Signalen mit höherem Rauschanteil besser zum Tragen.
+
+## Sonstiges
+
+  - FLoA<sub>RCB</sub> als R package
+
+  - Bei welchem Journal einreichen?
+
+  - Github repository (floa)

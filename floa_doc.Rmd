@@ -15,9 +15,13 @@ output: github_document
 #     toc_float: yes
 ---
 
-## Kurze Zusammenfassung
+## Zusammenfassung
 
-Aufgabenstellung: Vergleich zweier Messsysteme mit kontinuierlichem Output
+#### Übergeordnete Fragestellung
+
+"What is the coverage performance of functional prediction bands when analyzing the agreement between two sets of biomechanical curves?"
+
+... Vergleich zweier Messsysteme mit kontinuierlichem Output
 
 Standardvorgehen: Bland & Altman Plots (diskrete Parameter)
 
@@ -39,9 +43,6 @@ Erweiterung für funktionale Daten: Roislien et al. (2012) Functional Limits of 
 
 Illustriert wurden die Verfahren am Beispiel eines Datensatzes zur Validierung einer IMU (MoCap vs. IMU)
 
-#### Übergeordnete Fragestellung
-
-"What is the coverage performance of functional prediction bands when analyzing the agreement between two sets of biomechanical curves?"
 
 #### Methodikbeschreibung FLoA~RCB~ (kopiert aus dem Paper)
 
@@ -97,7 +98,7 @@ If no repeated measurements are included in the sample, an essential error compo
 + Fourier Series sind overfitted: "The effect of overfitting will be that the fitted curves wll reflect to a large extent the measurement errors associated with each individual point."
 
 
-#### Mögliche Lösungsansätze
+### Mögliche Lösungsansätze
 
 + Herausnehmen der punktweisen LoA: Die Idee funktionaler Methode könnte man als etabliert betrachten. Beim Lesen der Reviewerkommentare drängt sich auch der Verdacht auf, dass die relativ hohe Komplexität des Papers sich negativ auf das Verständnis (der Reviewer) auswirkt.
 
@@ -106,6 +107,14 @@ Die FLoA~2SD~ (Roislien et al.) würde ich hingegen erstmal drin lassen, da a. u
 + Datensätze mit ähnlichen Eigenschaften wie typische biomechanische Signale simulieren (z. B. Beschleunigungssignale, EMG, EEG)
 
 ... evtl. kommen die (vermuteten) Vorteile der FLoA~RCB~ bei Signalen mit höherem Rauschanteil besser zum Tragen.
+
+## Sonstiges
+
++ FLoA~RCB~ als R package
+
++ Bei welchem Journal einreichen?
+
++ Github repository (floa)
 
 
 
