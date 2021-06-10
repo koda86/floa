@@ -74,7 +74,8 @@ library(DiagrammeR)
 grViz("digraph flowchart {
 
       # node definitions with substituted label text
-      node [fontname = Helvetica, shape = rectangle]        
+      node [fontname = Helvetica, shape = rectangle]
+      
       tab1 [label = '@@1']
       tab2 [label = '@@2']
       tab3 [label = '@@3']
@@ -83,6 +84,8 @@ grViz("digraph flowchart {
       tab6 [label = '@@6']
       tab7 [label = '@@7']
       tab8 [label = '@@8']
+      tab9 [label = '@@9']
+      tab10 [label = '@@10']
 
       # edge definitions with the node IDs
       tab1 -> tab2
@@ -91,7 +94,9 @@ grViz("digraph flowchart {
       tab3 -> tab5
       tab3 -> tab6
       tab4 -> tab7
-      tab4 -> tab8
+      tab7 -> tab8
+      tab8 -> tab9
+      tab9 -> tab10
       }
 
       [1]: 'Time normalize curves of IMU - MC'
@@ -100,11 +105,15 @@ grViz("digraph flowchart {
       [4]: 'floa_rcb '
       [5]: 'FLOAboot_2SD '
       [6]: 'floa_point'
-      [7]: 'First stage'
-      [8]: 'Second stage'
+      [7]: paste0('First stage', ':\\n ', 'draw_clusters', '\\n ', 'All strides from 11 subjects (randomly permuted)', '\\n ', 'are drawn with replacement')
+      [8]: 'Functional mean for each cluster'
+      [9]: paste0('Second stage', ':\\n ', 'Repeat the first stage 1000 times')
+      [10]: 'Quantile'
       ")
 
 ```
+
+Asymmetrische Limits of Agreement aus einem hierarchischen (zweistufigen) Bootstrap in Anlehnung an Davison & Hinkley (1997)
 
 #### Vorschlag für verbesserte Variante
 

@@ -72,6 +72,9 @@ interval limits: 𝐹𝐿𝑜𝐴𝑅𝐶𝐵= ± 𝑄𝛼/2(𝑋𝑖 𝐵∗�
 
 ![](floa_doc_files/figure-gfm/unnamed-chunk-1-1.png)<!-- -->
 
+Asymmetrische Limits of Agreement aus einem hierarchischen
+(zweistufigen) Bootstrap in Anlehnung an Davison & Hinkley (1997)
+
 #### Vorschlag für verbesserte Variante
 
 ## Reviewerkommentare (sortiert nach Wichtigkeit)
