@@ -21,7 +21,9 @@ output: github_document
 
 "What is the coverage performance of functional prediction bands when analyzing the agreement between two sets of biomechanical curves?"
 
-... Vergleich zweier Messsysteme mit kontinuierlichem Output
+Frage ergab sich ursprünglich im Rahmen der Validierung einer hauseigenen IMU gegenüber einem kamerabasierten Messsystem (Vicon).
+
+
 
 Standardvorgehen: Bland & Altman Plots (diskrete Parameter)
 
@@ -76,10 +78,13 @@ From the resulting empirical distribution of mean curves 𝑋𝐵∗𝑛∗, poi
 
 + Evaluierung anhand weiterer (simulierter) Datensätze
 
-+ In looking at limits of agreement, the authors are considering the extent of within pair variation. However, in looking at the point wise limits of agreement, these are defined to incorporate a between pair standard deviation. Even if it was appropriate to utilise between pair variability, the authors should note that it is variances that are additive and not SDs. Perhaps the authors lack of understanding comes from their erroneous assumption (iii).
++ In looking at limits of agreement, the authors are considering the extent of within pair variation. However, in looking at the point wise limits of agreement, these are defined to incorporate a between pair standard deviation. Even if it was appropriate to utilise between pair variability, the authors should note that it is variances that are additive and not SDs. Perhaps the authors lack of understanding comes from their *erroneous assumption* (iii).
 
-(iii) Measurement uncertainty can be estimated adequately by bootstrapping the error variance from a sample that consists of a single curve per subject.
-If no repeated measurements are included in the sample, an essential error component (intra-individual variance) is ignored. The bootstrap – like any other statistical procedure – cannot solve this problem, as it can only estimate proportions of variance that are contained in the sample.
+*iii Measurement uncertainty can be estimated adequately by bootstrapping the error variance from a sample that consists of a single curve per subject.*
+
+*If no repeated measurements are included in the sample, an essential error component (intra-individual variance) is ignored. The bootstrap – like any other statistical procedure – cannot solve this problem, as it can only estimate proportions of variance that are contained in the sample.*
+
+Die erwähnte assumption bezieht sich auf eine Grundannahme die im Roislien Paper getroffen wurde und in unserem Paper kritisch aufgegriffen wurde.
 
 + [...] The authors are producing the arithmetic mean curves, the variability of which will reflect variation between means. It is the variability of individual values that is relevant, and the limits will be too narrow by a factor of approximately the square root of 11.
 
@@ -89,11 +94,8 @@ If no repeated measurements are included in the sample, an essential error compo
 
 + Mathematische Notation
 
-#### Was meint der Reviewer?
 
-- Although the pointwise approach ignores the temporal dependence, it is not an issue when it comes to estimation. For inference, on the other hand, it should be taken into account
-
-#### Irrtümer der Reviewer!?
+#### Fragwürdige Einschätzungen seitens der Reviewer
 
 + Fourier Series sind overfitted: "The effect of overfitting will be that the fitted curves wll reflect to a large extent the measurement errors associated with each individual point."
 
@@ -102,7 +104,9 @@ If no repeated measurements are included in the sample, an essential error compo
 
 + Herausnehmen der punktweisen LoA: Die Idee funktionaler Methode könnte man als etabliert betrachten. Beim Lesen der Reviewerkommentare drängt sich auch der Verdacht auf, dass die relativ hohe Komplexität des Papers sich negativ auf das Verständnis (der Reviewer) auswirkt.
 
-Die FLoA~2SD~ (Roislien et al.) würde ich hingegen erstmal drin lassen, da a. unsere Methode darauf aufbaut und b. die Vorteile unserer Methode so besser veranschaulicht werden können. Zudem kann ich mir vorstellen, dass die Forderung nach einer Vergleichsmethode beim Einreichen eines neuen Papers zwangsläufig irgendwann kommt.
+... siehe dieser Kommentar der Reviewer: Although the pointwise approach ignores the temporal dependence, it is not an issue when it comes to estimation. For inference, on the other hand, it should be taken into account
+
++ Die FLoA~2SD~ (Roislien et al.) würde ich hingegen erstmal drin lassen, da a. unsere Methode darauf aufbaut und b. die Vorteile unserer Methode so besser veranschaulicht werden können. Zudem kann ich mir vorstellen, dass die Forderung nach einer Vergleichsmethode beim Einreichen eines neuen Papers zwangsläufig irgendwann kommt.
 
 + Datensätze mit ähnlichen Eigenschaften wie typische biomechanische Signale simulieren (z. B. Beschleunigungssignale, EMG, EEG)
 
@@ -112,9 +116,7 @@ Die FLoA~2SD~ (Roislien et al.) würde ich hingegen erstmal drin lassen, da a. u
 
 + FLoA~RCB~ als R package
 
-+ Bei welchem Journal einreichen?
-
-+ Github repository (floa)
++ Github repository: https://github.com/koda86/floa
 
 
 

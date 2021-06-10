@@ -10,7 +10,8 @@ true
 “What is the coverage performance of functional prediction bands when
 analyzing the agreement between two sets of biomechanical curves?”
 
-… Vergleich zweier Messsysteme mit kontinuierlichem Output
+Frage ergab sich ursprünglich im Rahmen der Validierung einer
+hauseigenen IMU gegenüber einem kamerabasierten Messsystem (Vicon).
 
 Standardvorgehen: Bland & Altman Plots (diskrete Parameter)
 
@@ -93,19 +94,21 @@ interval limits: 𝐹𝐿𝑜𝐴𝑅𝐶𝐵= ± 𝑄𝛼/2(𝑋𝑖 𝐵∗�
     pair standard deviation. Even if it was appropriate to utilise
     between pair variability, the authors should note that it is
     variances that are additive and not SDs. Perhaps the authors lack of
-    understanding comes from their erroneous assumption (iii).
+    understanding comes from their *erroneous assumption* (iii).
 
-<!-- end list -->
+*iii Measurement uncertainty can be estimated adequately by
+bootstrapping the error variance from a sample that consists of a single
+curve per subject.*
 
-3)  Measurement uncertainty can be estimated adequately by bootstrapping
-    the error variance from a sample that consists of a single curve per
-    subject. If no repeated measurements are included in the sample, an
-    essential error component (intra-individual variance) is ignored.
-    The bootstrap – like any other statistical procedure – cannot solve
-    this problem, as it can only estimate proportions of variance that
-    are contained in the sample.
+*If no repeated measurements are included in the sample, an essential
+error component (intra-individual variance) is ignored. The bootstrap –
+like any other statistical procedure – cannot solve this problem, as it
+can only estimate proportions of variance that are contained in the
+sample.*
 
-<!-- end list -->
+Die erwähnte assumption bezieht sich auf eine Grundannahme die im
+Roislien Paper getroffen wurde und in unserem Paper kritisch
+aufgegriffen wurde.
 
   - \[…\] The authors are producing the arithmetic mean curves, the
     variability of which will reflect variation between means. It is the
@@ -121,13 +124,7 @@ interval limits: 𝐹𝐿𝑜𝐴𝑅𝐶𝐵= ± 𝑄𝛼/2(𝑋𝑖 𝐵∗�
 
   - Mathematische Notation
 
-#### Was meint der Reviewer?
-
-  - Although the pointwise approach ignores the temporal dependence, it
-    is not an issue when it comes to estimation. For inference, on the
-    other hand, it should be taken into account
-
-#### Irrtümer der Reviewer\!?
+#### Fragwürdige Einschätzungen seitens der Reviewer
 
   - Fourier Series sind overfitted: “The effect of overfitting will be
     that the fitted curves wll reflect to a large extent the measurement
@@ -141,11 +138,16 @@ interval limits: 𝐹𝐿𝑜𝐴𝑅𝐶𝐵= ± 𝑄𝛼/2(𝑋𝑖 𝐵∗�
     relativ hohe Komplexität des Papers sich negativ auf das Verständnis
     (der Reviewer) auswirkt.
 
-Die FLoA<sub>2SD</sub> (Roislien et al.) würde ich hingegen erstmal drin
-lassen, da a. unsere Methode darauf aufbaut und b. die Vorteile unserer
-Methode so besser veranschaulicht werden können. Zudem kann ich mir
-vorstellen, dass die Forderung nach einer Vergleichsmethode beim
-Einreichen eines neuen Papers zwangsläufig irgendwann kommt.
+… siehe dieser Kommentar der Reviewer: Although the pointwise approach
+ignores the temporal dependence, it is not an issue when it comes to
+estimation. For inference, on the other hand, it should be taken into
+account
+
+  - Die FLoA<sub>2SD</sub> (Roislien et al.) würde ich hingegen erstmal
+    drin lassen, da a. unsere Methode darauf aufbaut und b. die Vorteile
+    unserer Methode so besser veranschaulicht werden können. Zudem kann
+    ich mir vorstellen, dass die Forderung nach einer Vergleichsmethode
+    beim Einreichen eines neuen Papers zwangsläufig irgendwann kommt.
 
   - Datensätze mit ähnlichen Eigenschaften wie typische biomechanische
     Signale simulieren (z. B. Beschleunigungssignale, EMG, EEG)
@@ -157,6 +159,4 @@ Signalen mit höherem Rauschanteil besser zum Tragen.
 
   - FLoA<sub>RCB</sub> als R package
 
-  - Bei welchem Journal einreichen?
-
-  - Github repository (floa)
+  - Github repository: <https://github.com/koda86/floa>
