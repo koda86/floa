@@ -3,28 +3,21 @@ floa_rcb <- function(data, fd.basis, n.boot) {
   # ----------------------------------------------------------------------------
   # (Nested) Randomized Cluster Bootstrap
   #
-  # In the first stage (draw_clusters()), all curves of a single (random) subject
-  # are drawn. From this set, the (functional) mean is calculated. The process is
-  # repeated n.boot times (n.boot = number of bootstrap iterations).
+  # Add description here
+  # draw_clusters(): Draw a single random curve form a single random subject
   # ----------------------------------------------------------------------------
 
-  # Contains mean curve for n.boot iterations
   clust.boot.agg <- c()
 
   for (boot.idx in 1:n.boot) {
 
-    # In draw
-    clust.fdata <- draw_clusters(data, fd.basis)
-
-    out.boot.mean <- func.mean(clust.fdata)
-
-    clust.boot.agg[[boot.idx]] <- out.boot.mean$data
+    clust.boot.agg[[boot.idx]] <- draw_clusters(data, fd.basis)
   }
 
-  # Calculate 2.5 and 97.5 percentiles across joints
+  # Calculate 2.5 and 97.5 percentiles
   # ----------------------------------------------------------------------------
 
-  # Arrange mean curves in matrix (row-wise) to facilitate computing percentiles
+  # Arrange curves in matrix (row-wise) to facilitate computing percentiles
   clust.agg <- matrix(unlist(clust.boot.agg),
                       ncol  = length(fd.basis$names),
                       byrow = TRUE)

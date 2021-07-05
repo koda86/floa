@@ -1,46 +1,50 @@
 draw_clusters <- function(data, fd.basis) {
 
-  library(fda.usc)
+  # library(fda.usc)
 
   # ----------------------------------------------------------------------------
   # This function represents the first of two stages in the randomized cluster
   # bootstrap.
   #
-  # Here, subjectwise clusters (all curves within a subject) are drawn WITH REPLACEMENT!
+  # Add description here.
   # ----------------------------------------------------------------------------
 
-  # Pick all curves of a single random subject
   subjects <- as.numeric(unique(data$subjectID))
 
-  # Despite replace=FALSE, this is a de facto drawing with replacement as the function is nested within FLOAboot_rcb()
-  cluster.idx <- sample(subjects, 1)
+  # Pick a single curve per subject
+  subj.idx <- sample(subjects, replace = TRUE)
 
-  diff_curve <- c()
+  test <- by(data, data$subjectID, subset)
 
-  for (idx in 1:length(cluster.idx)) {
+  subj.idx <- sample(length(test), replace = TRUE)
 
-    curve0 <- subset(data,
-                     subjectID == cluster.idx[idx]
-                     & device  == "IMU")$value
+  tmp <- mapply("[", test, "strideID")
+  stride.idx <- lapply(tmp, function(x) {length(unique(x))})
 
-    curve0 <- matrix(curve0, ncol = length(curve0) / 100)
+  curve0 <- subset(data,
+                   subjectID == subj.idx
+                   & strideID == stride.idx
+                   & device  == "IMU")$value
 
-    curve1 <- subset(data,
-                     subjectID == cluster.idx[idx]
-                     & device  == "MC")$value
+  curve0 <- matrix(curve0, ncol = length(curve0) / 100)
 
-    curve1 <- matrix(curve1, ncol = length(curve1) / 100)
+  curve1 <- subset(data,
+                   subjectID == curve.idx
+                   & device  == "MC")$value
 
-    diff_curve.tmp <- curve0 - curve1
+  curve1 <- matrix(curve1, ncol = length(curve1) / 100)
 
-    diff_curve <- cbind(diff_curve, diff_curve.tmp)
-}
+  diff.curves <- curve0 - curve1
 
-  # Functional data objects
-  diff_curve.fd <- Data2fd(argvals = diff_curve, basisobj = fd.basis)
+  # diff.curves.fd <- Data2fd(argvals = diff.curve, basisobj = fd.basis)
 
-  # Convert class fd to class fdata (required by fdata.bootstrap())
-  cluster.fdata <- fdata(diff_curve.fd)
+  # Pick a single curve per subject
+  curve.samp <- sample(1:ncol(diff.curves), size = 1)
 
-  return(cluster.fdata)
+  diff.curve.samp <- diff.curves[, curve.samp]
+
+  # # Convert class fd to class fdata (required by fdata.bootstrap())
+  # cluster.fdata <- fdata(diff_curve.fd)
+
+  return(diff.curve.samp) # cluster.fdata
 }

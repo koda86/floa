@@ -27,8 +27,8 @@ data <- readRDS(paste0(dir.data, "/", "data.rds"))
 
 # Intermediate step: Fit functions to discrete time series data ----------------
 fd.basis <- create.fourier.basis(nbasis=50) # Plateau around 50 basis vectors
-# Fit Fourier
-fda.delta <- fdaDelta(data, fd.basis) # Returns delta curves, mean and sd
+# Fit Fourier. Returns delta curves, mean and sd.
+fda.delta <- fdaDelta(data, fd.basis)
 
 
 ################################################################################
