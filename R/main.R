@@ -35,7 +35,7 @@ fda.delta <- fdaDelta(data, fd.basis)
 ################################ Calculate FLoA ################################
 ################################################################################
 
-n.boot <- 5
+n.boot <- 10
 
 # # 1. FLoA_2SD ------------------------------------------------------------------
 # floa.boot.2SD.fdata <- FLOAboot_2SD(fda.delta, n.boot)
@@ -47,7 +47,17 @@ n.boot <- 5
 
 
 # 2. Randomized Cluster Bootstrap (FLoAboot_RCB) -------------------------------
-floa.rcb.percentiles.intrp <- floa_rcb(data, fd.basis, n.boot)
+#
+# Function returns difference curves and percentiles (2.5%, 50%, 97.5%)
+FLOArcb <- floa_rcb(data, fd.basis, n.boot)
+
+plot(FLOArcb[[1]][1, ],
+     type = "l",
+     ylim = c(-20, 20),
+     ylab = "Diff [deg]")
+apply(FLOArcb[[1]], 1, lines)
+apply(FLOArcb[[2]], 1, lines, col = "red", lwd = 5)
+
 
 
 # 3. Pointwise (Bland & Altman) (FLoA_Point) -----------------------------------
