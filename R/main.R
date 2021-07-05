@@ -13,29 +13,24 @@ library(funData)
 
 rm(list=ls())
 
-source("FLoAboot_2SD.R")
+dir.script <- "C:/Users/Daniel/Desktop/tmp/floa/R"
+dir.data <- "C:/Users/Daniel/Desktop/tmp/floa/R/examples"
+
+setwd(dir.script)
+# source("FLoAboot_2SD.R")
 source("draw_clusters.R")
 source("floa_rcb.R")
 source("fdaDelta.R")
 source("FLoAboot_2SD.R")
 
-# Set working directories
-dir.data <- "C:/Users/Daniel/Desktop/tmp/floa/R"
-dir.script <- "C:/Users/Daniel/Desktop/tmp/floa/R/examples"
-
 # Long format data consisting of device, subjectID, and strideID
-data <- readRDS(paste0(dir.script, "/", "data.rds"))
-
-
+data <- readRDS(paste0(dir.data, "/", "data.rds"))
 
 # # Fit functional data (class fd, package fda) ----------------------------------
-#
 # fd.basis <- create.fourier.basis(nbasis=50) # Plateau around 50 basis vectors
 #
 # # Fit Fourier
 # fda.delta <- fdaDelta(data, fd.basis) # Returns delta curves, mean and sd
-
-
 
 
 ################################################################################
