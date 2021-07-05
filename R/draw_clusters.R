@@ -19,7 +19,9 @@ draw_clusters <- function(data, fd.basis) {
   subj.idx <- sample(length(test), replace = TRUE)
 
   tmp <- mapply("[", test, "strideID")
-  stride.idx <- lapply(tmp, function(x) {length(unique(x))})
+  stride.idx <- sapply(tmp, function(x) {length(unique(x))})
+
+  # Zwischenschritt Auswahl eines zur Subjektreihenfolge passenden Schrittindex
 
   curve0 <- subset(data,
                    subjectID == subj.idx
