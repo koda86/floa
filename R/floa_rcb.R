@@ -19,7 +19,9 @@ floa_rcb <- function(data, fd.basis, n.boot) {
                       ncol  = length(fd.basis$names),
                       byrow = TRUE)
 
-  # Calculate percentiles -----------------------------------------
+  clust.agg.intrp <- sapply(apply(clust.agg, 2, approx, n = 101), "[[", "y")
+
+  # Calculate percentiles ------------------------------------------------------
   floa.boot.percentiles <- c()
 
   for (i in 1:ncol(clust.agg)) {
@@ -32,15 +34,10 @@ floa_rcb <- function(data, fd.basis, n.boot) {
   perc50 <- floa.boot.percentiles[which(names(floa.boot.percentiles) == "50%")]
   perc97.5 <- floa.boot.percentiles[which(names(floa.boot.percentiles) == "97.5%")]
 
-  # perc2.5  <- floa.boot.percentiles[seq(1, length(floa.boot.percentiles) - 1, 2)]
-  # perc50 <- floa.boot.percentiles[seq(2, length(floa.boot.percentiles) - 1, 2)]
-  # perc97.5 <- floa.boot.percentiles[seq(3, length(floa.boot.percentiles), 2)]
-
-
   # Interpolate to 101 data points -------------------------------------------
   floa.boot.percentiles.intrp <- rbind(approx(perc2.5, n = 101)$y, approx(perc50, n = 101)$y, approx(perc97.5, n = 101)$y)
 
-  results <- list("curves" = clust.agg, "FLoA" = floa.boot.percentiles.intrp)
+  results <- list("curves" = clust.agg.intrp, "FLoA" = floa.boot.percentiles.intrp)
 
   return(results)
 }
