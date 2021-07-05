@@ -21,16 +21,14 @@ setwd(dir.script)
 source("draw_clusters.R")
 source("floa_rcb.R")
 source("fdaDelta.R")
-source("FLoAboot_2SD.R")
 
 # Long format data consisting of device, subjectID, and strideID
 data <- readRDS(paste0(dir.data, "/", "data.rds"))
 
-# # Fit functional data (class fd, package fda) ----------------------------------
-# fd.basis <- create.fourier.basis(nbasis=50) # Plateau around 50 basis vectors
-#
-# # Fit Fourier
-# fda.delta <- fdaDelta(data, fd.basis) # Returns delta curves, mean and sd
+# Intermediate step: Fit functions to discrete time series data ----------------
+fd.basis <- create.fourier.basis(nbasis=50) # Plateau around 50 basis vectors
+# Fit Fourier
+fda.delta <- fdaDelta(data, fd.basis) # Returns delta curves, mean and sd
 
 
 ################################################################################
