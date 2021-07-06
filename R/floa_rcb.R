@@ -1,4 +1,4 @@
-floa_rcb <- function(data, fd.basis, n.boot) {
+floa_rcb <- function(data, fd.basis, n.boot, plt) {
 
   # ----------------------------------------------------------------------------
   # Randomized Cluster Bootstrap
@@ -37,7 +37,16 @@ floa_rcb <- function(data, fd.basis, n.boot) {
   # Interpolate to 101 data points -------------------------------------------
   floa.boot.percentiles.intrp <- rbind(approx(perc2.5, n = 101)$y, approx(perc50, n = 101)$y, approx(perc97.5, n = 101)$y)
 
-  results <- list("curves" = clust.agg.intrp, "FLoA" = floa.boot.percentiles.intrp)
+  if (plt) {
+    plot(clust.agg.intrp[1, ],
+         type = "l",
+         ylim = c(-20, 20),
+         ylab = "Diff [deg]")
+    apply(clust.agg.intrp, 1, lines)
+    apply(floa.boot.percentiles.intrp, 1, lines, col = "red", lwd = 5)
+  } else {
+    print("")
+  }
 
   return(results)
 }
