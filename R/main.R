@@ -1,11 +1,12 @@
 ################################################################################
 # Main script Functional Limits of Agreement (FLoA)
 #
-# Calculate different FLoA methods
+# FLoA are calculated using a randomized cluster bootstrap
 #
-# 1. Bootstrapped functional B & A Limits (Roislien et al., 2012) (FLoA_2SD)
-# 2. Randomized Cluster Bootstrap (FLoAboot_RCB)
-# 3. Pointwise (Bland & Altman) (FLoA_Point)
+# Thus far, a transformation of time series data to functional data (Fourier,
+# Splines etc.) is not implemented.
+#
+# Example data sets can be called from the function example data().
 ################################################################################
 
 library(fda)
@@ -17,27 +18,22 @@ dir.script <- "C:/Users/Daniel/Desktop/tmp/floa/R"
 dir.data <- "C:/Users/Daniel/Desktop/tmp/floa/R/examples"
 
 setwd(dir.script)
-# source("FLoAboot_2SD.R")
+source("example_data.R")
 source("draw_clusters.R")
 source("floa_rcb.R")
 source("fdaDelta.R")
 
-################################################################################
 ################################### Data sets ##################################
 ################################################################################
 
-# Real world IMU vs. MC validation data ----------------------------------------
-# Long format data consisting of device, subjectID, and strideID
-data <- readRDS(paste0(dir.data, "/", "data.rds"))
+# Wrapper function to call available data sets. Function arguments:
+# 1. Empirical validation data: "imu_mc"
+# 2. ARIMA: ...
+# 3. Fourier based surrogate data: ...
 
-# Intermediate step: Fit functions to discrete time series data ----------------
-fd.basis <- create.fourier.basis(nbasis=50) # Plateau around 50 basis vectors
-fda.delta <- fdaDelta(data, fd.basis) # Fit Fourier, returns delta curves (mean, sd)
-
-# Surrogate data sets
+data <- example_data(dat = "imu_mc", dir.data)
 
 
-################################################################################
 ################################ Calculate FLoA ################################
 ################################################################################
 
@@ -46,7 +42,8 @@ n.boot <- 100
 # Randomized Cluster Bootstrap (FLoAboot_RCB) -------------------------------
 #
 # Function returns difference curves and percentiles (2.5%, 50%, 97.5%)
-FLOArcb <- floa_rcb(data, fd.basis, n.boot, plt = FALSE)
+FLOArcb <- floa_rcb(data, plt = FALSE)
+# FLOArcb <- floa_rcb(data, fd.basis, n.boot, plt = FALSE) # Version with functional data
 
 
 
