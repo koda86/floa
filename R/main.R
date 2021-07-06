@@ -24,7 +24,6 @@ source("floa_rcb.R")
 source("fdaDelta.R")
 
 ################################### Data sets ##################################
-################################################################################
 
 # Wrapper function to call available data sets. Function arguments:
 # 1. Empirical validation data: "imu_mc"
@@ -35,7 +34,6 @@ data <- example_data(dat = "imu_mc", dir.data)
 
 
 ################################ Calculate FLoA ################################
-################################################################################
 
 n.boot <- 100
 
