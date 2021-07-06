@@ -1,4 +1,4 @@
-floa_rcb <- function(data, fd.basis, n.boot, plt) {
+floa_rcb <- function(data, n.boot, plt) { # fd.basis
 
   # ----------------------------------------------------------------------------
   # Randomized Cluster Bootstrap
@@ -15,11 +15,11 @@ floa_rcb <- function(data, fd.basis, n.boot, plt) {
   }
 
   # Arrange curves in matrix (row-wise) to facilitate computing percentiles
-  clust.agg <- matrix(unlist(clust.boot.agg),
-                      ncol  = length(fd.basis$names),
+  clust.agg.intrp <- matrix(unlist(clust.boot.agg),
+                      ncol  = 101, # length(fd.basis$names)
                       byrow = TRUE)
 
-  clust.agg.intrp <- t(sapply(apply(t(clust.agg), 2, approx, n = 101), "[[", "y"))
+  # clust.agg.intrp <- t(sapply(apply(t(clust.agg), 2, approx, n = 101), "[[", "y"))
 
   # Calculate percentiles ------------------------------------------------------
   floa.boot.percentiles <- c()
@@ -48,5 +48,5 @@ floa_rcb <- function(data, fd.basis, n.boot, plt) {
     print("")
   }
 
-  return(results)
+  return(floa.boot.percentiles.intrp)
 }

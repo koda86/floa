@@ -21,7 +21,7 @@ setwd(dir.script)
 source("example_data.R")
 source("draw_clusters.R")
 source("floa_rcb.R")
-source("fdaDelta.R")
+# source("fdaDelta.R")
 
 ################################### Data sets ##################################
 
@@ -39,8 +39,8 @@ n.boot <- 100
 
 # Randomized Cluster Bootstrap -------------------------------------------------
 #
-# Function returns difference curves and percentiles (2.5%, 50%, 97.5%)
-FLOArcb <- floa_rcb(data, plt = FALSE)
+# Function returns percentiles (2.5%, 50%, 97.5%)
+FLOArcb <- floa_rcb(data, n.boot, plt = TRUE)
 
 # Version with functional data
 # FLOArcb <- floa_rcb(data, fd.basis, n.boot, plt = FALSE)
