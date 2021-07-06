@@ -32,7 +32,6 @@ example_data <- function(dat, dir.data) {
     n.strides <- 768
     n.devices <- 2
     n.frames <- 100
-
     subjectID <- rep(1:n.subj, n.strides * n.devices * n.frames)
     strideID <- 1
     frames <- rep(0:n.frames, times = n.strides * n.devices)
@@ -48,6 +47,89 @@ example_data <- function(dat, dir.data) {
     # Fourier transform based
 
     print("fft")
+  } else if (dat == "non_stationary") {
+
+    # https://stats.stackexchange.com/questions/330199/simulating-drift-in-the-data
+
+    # Constant terms
+    alpha1 <- 5
+    alpha2 <- 10
+
+    # AR coefficients
+    phi1 <- c(0.80,0.15)
+    phi2 <- c(0.85)
+
+    # Number of periods
+    n <- 100
+
+    # Scaling factor (coefficient) on trend
+    scale1 <- 0.05
+    scale2 <- 0.2
+
+    # Initial data values
+    x <- c(rep(0,n))
+    z <- c(rep(0,n))
+
+    # Error terms
+    w <- rnorm(n,mean=0,sd=1)
+    v <- rnorm(n,mean=0,sd=5)
+
+    for (t in 3:n) {
+
+      z[t] <- alpha2 + phi2[1] * z[t-1] + v[t] + scale2*t # AR(1) with constant and trend (no shocks)
+    }
+
+    plot(z, type = "l")
+
+  } else if (dat == "shock") {
+
+    # https://stats.stackexchange.com/questions/330199/simulating-drift-in-the-data
+
+    # Constant terms
+    alpha1 <- 5
+    alpha2 <- 10
+
+    # AR coefficients
+    phi1 <- c(0.80,0.15)
+    phi2 <- c(0.85)
+
+    # Number of periods
+    n <- 100
+
+    # Scaling factor (coefficient) on trend
+    scale1 <- 0.05 # 0.01
+    scale2 <- 0.2 # 0.07
+
+    # Initial data values
+    x <- c(rep(0,n))
+    z <- c(rep(0,n))
+
+    # Error terms
+    w <- rnorm(n,mean=0,sd=1)
+    v <- rnorm(n,mean=0,sd=5)
+
+    shock1 <- 150
+    shock2 <- 0.02
+    shocks <- TRUE # Switch this on/off to see the effect of shocks
+
+    for(t in 3:n) {
+        if(t < 50){
+          x[t] <- alpha1 + phi1[1] * x[t-1] + phi1[2] * x[t-2] + w[t] + scale1*t  # AR(2) with constant and trend
+          z[t] <- alpha2 + phi2[1] * z[t-1] + v[t] + scale2*t                     # AR(1) with constant and trend
+        } else if(t == 50){
+          x[t] <- alpha1 + shock1 + phi1[1] * x[t-1] + phi1[2]* x[t-2] + w[t] + scale1*t  # Intercept shock on
+          z[t] <- alpha2 + phi2[1] * z[t-1] + v[t] + scale2*t
+        }
+        else if(t == 51){
+          x[t] <- alpha1 - shock1 + phi1[1] * x[t-1] + phi1[2]* x[t-2] + w[t] + scale1*t  # Intercept shock off
+          z[t] <- alpha2 + phi2[1] * z[t-1] + v[t] + scale2*t
+        } else if(t > 51){
+          x[t] <- alpha1 + phi1[1] * x[t-1] + phi1[2] * x[t-2] + w[t] + scale1*t  + 0.02 * z[t-12] # Shock to DGP (Exog variable)
+          z[t] <- alpha2 + phi2[1] * z[t-1] + 5*v[t] + (scale2+shock2*t/100)*t                     # Shock to DGP (Error and trend)
+        }
+    }
+
+    plot(x[1:100], type = "l")
   }
 
 }
