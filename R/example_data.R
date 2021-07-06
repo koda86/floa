@@ -13,16 +13,33 @@ example_data <- function(dat, dir.data) {
 
   } else if (dat == "arima") {
 
-    # data <- 1
+    # Simulated data ARIMA ---------------------------------------------------------
 
-    # ARIMA
+    set.seed(123)
+    t <- 1:100
+    alpha <- 6 # mean
+    beta <- 0 # deterministic time-dependent trend
+    theta <- 0.8
+    mc <- alpha + beta * t + arima.sim(list(ma = theta), n = length(t))
 
-    # set.seed(100000)
-    # t <- 1:500
-    # alpha <- 1
-    # beta <- 0
-    # theta <- 0.8
-    # ts <- alpha + beta * t + arima.sim(list(ma = theta), n = length(t)
+    set.seed(123)
+    alpha <- 6 # mean
+    beta <- 0 # deterministic time-dependent trend
+    theta <- 0.8
+    imu <- alpha + beta * t + arima.sim(list(ma = theta), n = length(t))
+
+    n.subj <- 11
+    n.strides <- 768
+    n.devices <- 2
+    n.frames <- 100
+
+    subjectID <- rep(1:n.subj, n.strides * n.devices * n.frames)
+    strideID <- 1
+    frames <- rep(0:n.frames, times = n.strides * n.devices)
+
+    data <- cbind(1, 1, 1, 1, frames)
+
+    plot(mc)
 
     print("ARIMA")
 
