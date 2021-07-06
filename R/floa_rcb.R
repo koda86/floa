@@ -19,15 +19,15 @@ floa_rcb <- function(data, fd.basis, n.boot) {
                       ncol  = length(fd.basis$names),
                       byrow = TRUE)
 
-  clust.agg.intrp <- sapply(apply(clust.agg, 2, approx, n = 101), "[[", "y")
+  clust.agg.intrp <- t(sapply(apply(t(clust.agg), 2, approx, n = 101), "[[", "y"))
 
   # Calculate percentiles ------------------------------------------------------
   floa.boot.percentiles <- c()
 
-  for (i in 1:ncol(clust.agg)) {
+  for (i in 1:ncol(clust.agg.intrp)) {
 
     # TODO: Bias correction useful/necessary?
-    floa.boot.percentiles <- c(floa.boot.percentiles, quantile(clust.agg[, i], probs = c(0.025, 0.5, 0.975)))
+    floa.boot.percentiles <- c(floa.boot.percentiles, quantile(clust.agg.intrp[, i], probs = c(0.025, 0.5, 0.975)))
   }
 
   perc2.5 <- floa.boot.percentiles[which(names(floa.boot.percentiles) == "2.5%")]
