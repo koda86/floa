@@ -28,8 +28,8 @@ source("floa_rcb.R")
 # Wrapper function for example data sets.
 # Function arguments:
 # 1. Empirical validation data: "imu_mc"
-# 2. ARIMA: ...
-# 3. Fourier based surrogate data: ...
+# 2. ARIMA: "arima"
+# 3. Fourier based surrogate data: "fft"
 
 data <- example_data(dat = "imu_mc", dir.data)
 
