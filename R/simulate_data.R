@@ -43,8 +43,8 @@ for (i in 1:(n.strides * n.subj)) {
     mc[t] <- alpha + phi2[1] * mc[t-1] + v[t] + scale2*t   # mc
   }
 
-  plot(imu, type = "l")
-  plot(mc, type = "l")
+  # plot(imu, type = "l")
+  # plot(mc, type = "l")
 
   imu <- round(imu, 2)
   mc <- round(mc, 2)
