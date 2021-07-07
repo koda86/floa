@@ -6,7 +6,9 @@
 # Thus far, a transformation of time series data to functional data (Fourier,
 # Splines etc.) is not implemented.
 #
-# Example data sets can be called from the function example data().
+# TODO:
+# - Add intraindividual clusters to simulated data
+# - Ad shock/spike simulated data set
 ################################################################################
 
 # library(fda)
