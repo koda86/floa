@@ -40,7 +40,7 @@ floa_rcb <- function(data, n.boot, plt) { # , fd.basis
   if (plt) {
     plot(clust.agg.intrp[1, ],
          type = "l",
-         ylim = c(-20, 20),
+         ylim = c(min(clust.agg.intrp), max(clust.agg.intrp)),
          ylab = "Diff [deg]")
     apply(clust.agg.intrp, 1, lines)
     apply(floa.boot.percentiles.intrp, 1, lines, col = "red", lwd = 5)
