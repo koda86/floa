@@ -9,8 +9,8 @@
 # Example data sets can be called from the function example data().
 ################################################################################
 
-library(fda)
-library(funData)
+# library(fda)
+# library(funData)
 
 rm(list=ls())
 

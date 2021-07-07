@@ -14,7 +14,6 @@ example_data <- function(dat, dir.data) {
   } else if (dat == "arima") {
 
     # Simulated data ARIMA ---------------------------------------------------------
-
     set.seed(123)
     t <- 1:100
     alpha <- 6 # mean
@@ -28,10 +27,6 @@ example_data <- function(dat, dir.data) {
     theta <- 0.8
     imu <- alpha + beta * t + arima.sim(list(ma = theta), n = length(t))
 
-    n.subj <- 11
-    n.strides <- 768
-    n.devices <- 2
-    n.frames <- 100
     subjectID <- rep(1:n.subj, n.strides * n.devices * n.frames)
     strideID <- 1
     frames <- rep(0:n.frames, times = n.strides * n.devices)
@@ -44,42 +39,96 @@ example_data <- function(dat, dir.data) {
 
   } else if (dat == "fft") {
 
-    # Fourier transform based
+    # Intrainvidual differences
 
     print("fft")
   } else if (dat == "non_stationary") {
 
+    n.subj <- 11
+    n.strides <- 1100
+    n.devices <- 2
+    n.frames <- 101
+
     # https://stats.stackexchange.com/questions/330199/simulating-drift-in-the-data
 
     # Constant terms
-    alpha1 <- 5
-    alpha2 <- 10
+    alpha1 <- 10
+    alpha2 <- 2
 
-    # AR coefficients
-    phi1 <- c(0.80,0.15)
-    phi2 <- c(0.85)
+    # Simulate first device ----------------------------------------------------
+    imu <- c()
 
-    # Number of periods
-    n <- 100
+    for (i in 1:(n.strides*n.devices)) {
 
-    # Scaling factor (coefficient) on trend
-    scale1 <- 0.05
-    scale2 <- 0.2
+      # AR coefficients
+      phi1 <- c(0.80, 0.15)
+      phi2 <- runif(1, 0.2, 0.3) # c(0.85)
 
-    # Initial data values
-    x <- c(rep(0,n))
-    z <- c(rep(0,n))
+      n <- 101 # Number of periods
 
-    # Error terms
-    w <- rnorm(n,mean=0,sd=1)
-    v <- rnorm(n,mean=0,sd=5)
+      # Scaling factor (coefficient) on trend
+      scale1 <- 0.05  # 0.05
+      scale2 <- 0.1 # 0.2
 
-    for (t in 3:n) {
+      # Initial data values
+      x <- c(rep(0,n))
+      z <- c(rep(0,n))
 
-      z[t] <- alpha2 + phi2[1] * z[t-1] + v[t] + scale2*t # AR(1) with constant and trend (no shocks)
+      # Error terms
+      w <- rnorm(n,mean=0,sd=1)
+      v <- rnorm(n,mean=0,sd=5)
+
+      for (t in 3:n) {
+        z[t] <- alpha2 + phi2[1] * z[t-1] + v[t] + scale2*t # AR(1) with constant and trend (no shocks)
+      }
+    imu <- rbind(imu, z)
     }
 
-    plot(z, type = "l")
+
+    # Simulate second device ---------------------------------------------------
+    mc <- c()
+
+    for (i in 1:(n.strides*n.devices)) {
+
+      # AR coefficients
+      phi1 <- c(0.80, 0.15)
+      phi2 <- 0.1
+
+      n <- 101 # Number of periods
+
+      # Scaling factor (coefficient) on trend
+      scale1 <- 0.1  # 0.05
+      scale2 <- 0.05 # 0.2
+
+      # Initial data values
+      x <- c(rep(0,n))
+      z <- c(rep(0,n))
+
+      # Error terms
+      w <- rnorm(n,mean=0, sd=1)
+      v <- rnorm(n,mean=0, sd=5)
+
+      for (t in 3:n) {
+        z[t] <- alpha2 + phi2[1] * z[t-1] + v[t] + scale2*t # AR(1) with constant and trend (no shocks)
+      }
+      mc <- rbind(mc, z)
+    }
+
+    plot(z, type = "l", ylim = c(-25, 100))
+    apply(mc, 1, lines, col = "red")
+    apply(imu, 1, lines)
+
+    subjectID <- rep(1:n.subj, each = n.devices * n.strides * n.frames)
+    strideID <- rep(0:100, n.subj * n.strides * n.devices)
+    frames <- rep(0:100, times = n.strides * n.devices * n.subj)
+
+    test <- rbind(subjectID, strideID, frames)
+
+    library(reshape2)
+    data.test <- melt(n.subj,
+                 n.strides,
+                 n.devices,
+                 n.frames)
 
   } else if (dat == "shock") {
 
