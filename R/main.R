@@ -29,7 +29,9 @@ source("floa_rcb.R")
 # Function arguments:
 # 1. Empirical validation data: "imu_mc"
 # 2. ARIMA: "arima"
-# 3. Fourier based surrogate data: "fft"
+# 3. Intrainvidual differences:
+# 4. Non-stationar:"non_stationary"
+# 5. shock: "shock"
 
 data <- example_data(dat = "imu_mc", dir.data)
 
