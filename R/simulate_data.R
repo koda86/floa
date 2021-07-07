@@ -16,7 +16,6 @@ n.frames <- 101
 alpha1 <- 10
 alpha2 <- 2
 
-# Simulate first device --------------------------------------------------------
 value <- c()
 device <- c()
 
@@ -35,7 +34,6 @@ for (i in 1:(n.strides * n.subj)) {
 
   # Initial data values
   x <- c(rep(0,n))
-  z <- c(rep(0,n))
   imu <- c(rep(0,n))
   mc <- c(rep(0,n))
 
@@ -45,7 +43,6 @@ for (i in 1:(n.strides * n.subj)) {
 
   for (t in 3:n) {
     # AR(1) with constant and trend (no shocks)
-    z[t] <- alpha2 + phi2[1] * z[t-1] + v[t] + scale1*t
     imu[t] <- alpha2 + phi2[1] * imu[t-1] + v[t] + scale1*t # imu
     mc[t] <- alpha2 + phi2[1] * mc[t-1] + v[t] + scale2*t # mc
   }
@@ -61,45 +58,9 @@ for (i in 1:(n.strides * n.subj)) {
 }
 
 
-# # Simulate second device ---------------------------------------------------
-# mc <- c()
-#
-# for (i in 1:(n.strides * n.subj)) {
-#
-#   # AR coefficients
-#   phi1 <- c(0.80, 0.15)
-#   phi2 <- 0.1
-#
-#   n <- 101 # Number of periods
-#
-#   # Trend coefficient
-#   scale1 <- 0.05
-#
-#   # Initial data values
-#   x <- rep(0, n) # c(rep(0,n))
-#   z <- rep(0, n) # c(rep(0,n))
-#
-#   # Error terms
-#   w <- rnorm(n, mean = 0, sd = 1)
-#   v <- rnorm(n, mean = 0, sd = 5)
-#
-#   for (t in 3:n) {
-#     # AR(1) with constant and trend (no shocks)
-#     z[t] <- alpha2 + phi2[1] * z[t-1] + v[t] + scale1*t
-#   }
-#
-#   mc <- rbind(mc, z)
-# }
-
-# plot(z, type = "l", ylim = c(-25, 100))
-# apply(mc, 1, lines, col = "red")
-# apply(imu, 1, lines)
-
-# device <- c(rep("imu", length(imu)), rep("mc", length(mc)))
 subjectID <- rep(1:n.subj, each = n.devices * n.strides * n.frames)
 strideID <- rep(1:n.strides, each = n.devices * n.subj * n.frames)
 frame <- rep(0:100, times = n.strides * n.devices * n.subj)
-# value <- 1
 
 data <- data.frame(device, subjectID, strideID, value, frame)
 
