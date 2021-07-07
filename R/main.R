@@ -33,7 +33,7 @@ source("floa_rcb.R")
 # 4. Non-stationar:"non_stationary"
 # 5. shock: "shock"
 
-data <- example_data(dat = "imu_mc", dir.data)
+data <- example_data(dat = "non_stationary", dir.data)
 
 ################################ Calculate FLoA ################################
 

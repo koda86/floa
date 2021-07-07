@@ -1,4 +1,4 @@
-floa_rcb <- function(data, n.boot, plt) { # fd.basis
+floa_rcb <- function(data, n.boot, plt) { # , fd.basis
 
   # ----------------------------------------------------------------------------
   # Randomized Cluster Bootstrap
@@ -11,7 +11,7 @@ floa_rcb <- function(data, n.boot, plt) { # fd.basis
 
   for (boot.idx in 1:n.boot) {
 
-    clust.boot.agg[[boot.idx]] <- draw_clusters(data, fd.basis)
+    clust.boot.agg[[boot.idx]] <- draw_clusters(data) # , fd.basis
   }
 
   # Arrange curves in matrix (row-wise) to facilitate computing percentiles

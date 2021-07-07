@@ -1,4 +1,4 @@
-draw_clusters <- function(data, fd.basis) {
+draw_clusters <- function(data) { # fd.basis
 
   # library(fda.usc)
 

@@ -100,4 +100,6 @@ example_data <- function(dat, dir.data) {
     plot(x[1:100], type = "l")
   }
 
+  return(data)
+
 }
