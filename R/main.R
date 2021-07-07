@@ -12,7 +12,7 @@
 # library(fda)
 # library(funData)
 
-rm(list=ls())
+rm(list = ls())
 
 dir.script <- "C:/Users/Daniel/Desktop/tmp/floa/R"
 dir.data <- "C:/Users/Daniel/Desktop/tmp/floa/R/examples"

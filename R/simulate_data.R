@@ -101,6 +101,6 @@ strideID <- rep(1:n.strides, each = n.devices * n.subj * n.frames)
 frame <- rep(0:100, times = n.strides * n.devices * n.subj)
 # value <- 1
 
-data <- cbind(device, subjectID, strideID, value, frame)
+data <- data.frame(device, subjectID, strideID, value, frame)
 
 saveRDS(data, file = paste0("C:/Users/Daniel/Desktop/tmp/floa/R/examples/", "data_nonstat.rds"))
