@@ -26,7 +26,7 @@ for (subj.idx in 1:n.subj) {
   strideID.subj <- c()
   subjectID.subj <- c()
 
-  for (stride.idx in 1:(n.strides)) { # * n.subj
+  for (stride.idx in 1:(n.strides)) {
 
     # AR coefficients
     phi1 <- c(0.80, 0.15)
@@ -49,9 +49,6 @@ for (subj.idx in 1:n.subj) {
       mc[t] <- alpha + phi2[1] * mc[t-1] + v[t] + scale2*t   # mc
     }
 
-    # plot(imu, type = "l")
-    # plot(mc, type = "l")
-
     imu <- round(imu, 2)
     mc <- round(mc, 2)
 
@@ -71,8 +68,6 @@ for (subj.idx in 1:n.subj) {
   subjectID <- c(subjectID, subjectID.subj)
 }
 
-# subjectID <- rep(1:n.subj, each = n.devices * n.strides * n.frames)
-# strideID <- rep(1:n.strides, each = n.devices * n.subj * n.frames)
 frame <- rep(0:100, times = n.strides * n.devices * n.subj)
 
 data <- data.frame(device, subjectID, strideID, value, frame)
