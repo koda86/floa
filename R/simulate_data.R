@@ -14,50 +14,65 @@ n.frames <- 101
 
 alpha <- 2 # Constant term
 
-value <- c()
 device <- c()
+value <- c()
+strideID <- c()
+subjectID <- c()
 
-for (i in 1:(n.strides * n.subj)) {
+for (subj.idx in 1:n.subj) {
 
-  # AR coefficients
-  phi1 <- c(0.80, 0.15)
-  phi2 <- runif(1, 0.2, 0.3)
+  value.subj <- c()
+  device.subj <- c()
+  strideID.subj <- c()
+  subjectID.subj <- c()
 
-  n <- 101 # Number of periods
+  for (stride.idx in 1:(n.strides)) { # * n.subj
 
-  # Trend coefficient
-  scale1 <- 0.1
-  scale2 <- 0.05
+    # AR coefficients
+    phi1 <- c(0.80, 0.15)
+    phi2 <- runif(1, 0.2, 0.3)
 
-  # Initial data values
-  imu <- c(rep(0,n))
-  mc <- c(rep(0,n))
+    # Trend coefficient
+    scale1 <- 0.1
+    scale2 <- 0.05
 
-  # Error terms
-  w <- rnorm(n, mean=0, sd=1)
-  v <- rnorm(n, mean=0, sd=5)
+    imu <- c(rep(0, n.frames))
+    mc <- c(rep(0, n.frames))
 
-  for (t in 3:n) {
-    # AR(1) with constant and trend (no shocks)
-    imu[t] <- alpha + phi1[1] * imu[t-1] + v[t] + scale1*t # imu
-    mc[t] <- alpha + phi2[1] * mc[t-1] + v[t] + scale2*t   # mc
+    # Error terms
+    w <- rnorm(n, mean=0, sd=1)
+    v <- rnorm(n, mean=0, sd=5)
+
+    for (t in 3:n) {
+      # AR(1) with constant and trend (no shocks)
+      imu[t] <- alpha + phi1[1] * imu[t-1] + v[t] + scale1*t # imu
+      mc[t] <- alpha + phi2[1] * mc[t-1] + v[t] + scale2*t   # mc
+    }
+
+    # plot(imu, type = "l")
+    # plot(mc, type = "l")
+
+    imu <- round(imu, 2)
+    mc <- round(mc, 2)
+
+    value.subj <- c(value.subj, c(imu, mc))
+
+    device.imu <- rep("IMU", n.frames)
+    device.mc <- rep("MC", n.frames)
+    device.subj <- c(device.subj, c(device.imu, device.mc))
+
+    strideID.subj <- c(strideID.subj, rep(stride.idx, 2 * n.frames))
+    subjectID.subj <- c(subjectID.subj, rep(subj.idx, 2 * n.frames))
   }
 
-  # plot(imu, type = "l")
-  # plot(mc, type = "l")
-
-  imu <- round(imu, 2)
-  mc <- round(mc, 2)
-
-  value <- c(value, c(imu, mc))
-
-  device.imu <- rep("IMU", n)
-  device.mc <- rep("MC", n)
-  device <- c(device, c(device.imu, device.mc))
+  device <- c(device, device.subj)
+  value <- c(value, value.subj)
+  strideID <- c(strideID, strideID.subj)
+  subjectID <- c(subjectID, subjectID.subj)
 }
 
-subjectID <- rep(1:n.subj, each = n.devices * n.strides * n.frames)
-strideID <- rep(1:n.strides, each = n.devices * n.subj * n.frames)
+# subjectID <- rep(1:n.subj, each = n.devices * n.strides * n.frames)
+# strideID <- rep(1:n.strides, each = n.devices * n.subj * n.frames)
 frame <- rep(0:100, times = n.strides * n.devices * n.subj)
 
 data <- data.frame(device, subjectID, strideID, value, frame)
