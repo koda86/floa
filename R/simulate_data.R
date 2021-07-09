@@ -16,14 +16,14 @@ alpha <- 2 # Constant term
 
 device <- c()
 value <- c()
-strideID <- c()
+# strideID <- c()
 subjectID <- c()
 
 for (subj.idx in 1:n.subj) {
 
   value.subj <- c()
   device.subj <- c()
-  strideID.subj <- c()
+  # strideID.subj <- c()
   subjectID.subj <- c()
 
   for (stride.idx in 1:(n.strides)) {
@@ -58,16 +58,17 @@ for (subj.idx in 1:n.subj) {
     device.mc <- rep("MC", n.frames)
     device.subj <- c(device.subj, c(device.imu, device.mc))
 
-    strideID.subj <- c(strideID.subj, rep(stride.idx, 2 * n.frames))
+    # strideID.subj <- c(strideID.subj, rep(stride.idx, 2 * n.frames))
     subjectID.subj <- c(subjectID.subj, rep(subj.idx, 2 * n.frames))
   }
 
   device <- c(device, device.subj)
   value <- c(value, value.subj)
-  strideID <- c(strideID, strideID.subj)
+  # strideID <- c(strideID, strideID.subj)
   subjectID <- c(subjectID, subjectID.subj)
 }
 
+strideID <- rep(1:(n.strides * n.subj), each = n.devices * n.frames) # seq(1, n.subj * n.strides)
 frame <- rep(0:100, times = n.strides * n.devices * n.subj)
 
 data <- data.frame(device, subjectID, strideID, value, frame)
