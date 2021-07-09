@@ -8,7 +8,7 @@
 # ------------------------------------------------------------------------------
 
 n.subj <- 11
-n.strides <- 1100
+n.strides <- 100
 n.devices <- 2
 n.frames <- 101
 
@@ -40,10 +40,10 @@ for (subj.idx in 1:n.subj) {
     mc <- c(rep(0, n.frames))
 
     # Error terms
-    w <- rnorm(n, mean=0, sd=1)
-    v <- rnorm(n, mean=0, sd=5)
+    w <- rnorm(n.frames, mean=0, sd=1)
+    v <- rnorm(n.frames, mean=0, sd=5)
 
-    for (t in 3:n) {
+    for (t in 3:n.frames) {
       # AR(1) with constant and trend (no shocks)
       imu[t] <- alpha + phi1[1] * imu[t-1] + v[t] + scale1*t # imu
       mc[t] <- alpha + phi2[1] * mc[t-1] + v[t] + scale2*t   # mc
