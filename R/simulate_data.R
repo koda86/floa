@@ -16,7 +16,6 @@ alpha <- 2 # Constant term
 
 device <- c()
 value <- c()
-# strideID <- c()
 subjectID <- c()
 
 for (subj.idx in 1:n.subj) {
@@ -58,13 +57,11 @@ for (subj.idx in 1:n.subj) {
     device.mc <- rep("MC", n.frames)
     device.subj <- c(device.subj, c(device.imu, device.mc))
 
-    # strideID.subj <- c(strideID.subj, rep(stride.idx, 2 * n.frames))
     subjectID.subj <- c(subjectID.subj, rep(subj.idx, 2 * n.frames))
   }
 
   device <- c(device, device.subj)
   value <- c(value, value.subj)
-  # strideID <- c(strideID, strideID.subj)
   subjectID <- c(subjectID, subjectID.subj)
 }
 
