@@ -9,6 +9,7 @@
 # TODO:
 # - Add intraindividual clusters to simulated data
 # - Ad shock/spike simulated data set
+# - Add approach 1 curve overall
 ################################################################################
 
 # library(fda)

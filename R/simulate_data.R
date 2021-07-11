@@ -22,8 +22,9 @@ for (subj.idx in 1:n.subj) {
 
   value.subj <- c()
   device.subj <- c()
-  # strideID.subj <- c()
   subjectID.subj <- c()
+
+  # set.seed(subj.idx)
 
   for (stride.idx in 1:(n.strides)) {
 
@@ -39,17 +40,14 @@ for (subj.idx in 1:n.subj) {
     mc <- c(rep(0, n.frames))
 
     # Error terms
-    w <- rnorm(n.frames, mean=0, sd=1)
-    v <- rnorm(n.frames, mean=0, sd=5)
+    w <- rnorm(n.frames, mean = 0, sd = 1)
+    v <- rnorm(n.frames, mean = 0, sd = 5)
 
     for (t in 3:n.frames) {
       # AR(1) with constant and trend (no shocks)
       imu[t] <- alpha + phi1[1] * imu[t-1] + v[t] + scale1*t # imu
       mc[t] <- alpha + phi2[1] * mc[t-1] + v[t] + scale2*t   # mc
     }
-
-    imu <- round(imu, 2)
-    mc <- round(mc, 2)
 
     value.subj <- c(value.subj, c(imu, mc))
 
