@@ -12,7 +12,7 @@ n.strides <- 100
 n.devices <- 2
 n.frames <- 101
 
-alpha <- 2 # Constant term
+alpha <- 2
 
 device <- c()
 value <- c()
@@ -24,7 +24,12 @@ for (subj.idx in 1:n.subj) {
   device.subj <- c()
   subjectID.subj <- c()
 
-  # set.seed(subj.idx)
+  # Sample subjectwise parameters
+  subj.mean <- 5 * rnorm(1)
+  subj.sd.1 <- 2 * runif(1)
+  subj.sd.2 <- 5 * runif(1)
+  subj.trend.1 <- abs(rnorm(1, 0.1, sd = 0.1))
+  subj.trend.2 <- abs(rnorm(1, 0.05, sd = 0.05))
 
   for (stride.idx in 1:(n.strides)) {
 
@@ -33,20 +38,20 @@ for (subj.idx in 1:n.subj) {
     phi2 <- runif(1, 0.2, 0.3)
 
     # Trend coefficient
-    scale1 <- 0.1
-    scale2 <- 0.05
+    subj.trend.1 <- 0.1
+    subj.trend.2 <- 0.05
 
     imu <- c(rep(0, n.frames))
     mc <- c(rep(0, n.frames))
 
     # Error terms
-    w <- rnorm(n.frames, mean = 0, sd = 1)
-    v <- rnorm(n.frames, mean = 0, sd = 5)
+    w <- rnorm(n.frames, mean = subj.mean, sd = subj.sd.1)
+    v <- rnorm(n.frames, mean = subj.mean, sd = subj.sd.2)
 
     for (t in 3:n.frames) {
       # AR(1) with constant and trend (no shocks)
-      imu[t] <- alpha + phi1[1] * imu[t-1] + v[t] + scale1*t # imu
-      mc[t] <- alpha + phi2[1] * mc[t-1] + v[t] + scale2*t   # mc
+      imu[t] <- alpha + phi1[1] * imu[t-1] + w[t] + scale.1*t # imu
+      mc[t] <- alpha + phi2[1] * mc[t-1] + v[t] + scale.2*t   # mc
     }
 
     value.subj <- c(value.subj, c(imu, mc))
@@ -63,7 +68,7 @@ for (subj.idx in 1:n.subj) {
   subjectID <- c(subjectID, subjectID.subj)
 }
 
-strideID <- rep(1:(n.strides * n.subj), each = n.devices * n.frames) # seq(1, n.subj * n.strides)
+strideID <- rep(1:(n.strides * n.subj), each = n.devices * n.frames)
 frame <- rep(0:100, times = n.strides * n.devices * n.subj)
 
 data <- data.frame(device, subjectID, strideID, value, frame)
