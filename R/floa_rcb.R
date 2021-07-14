@@ -41,7 +41,7 @@ floa_rcb <- function(data, n.boot, plt) { # , fd.basis
   floa.boot.percentiles.intrp <- rbind(approx(perc2.5, n = 101)$y, approx(perc50, n = 101)$y, approx(perc97.5, n = 101)$y)
 
   # Prepare data for ggploting
-  device1 <- data.frames(subset(data, device == "IMU")$value)
+  device1 <- data.frame(subset(data, device == "IMU")$value)
   device2 <- data.frame(subset(data, device == "MC")$value)
 
   device.diff <- device1 - device2
@@ -55,6 +55,7 @@ floa_rcb <- function(data, n.boot, plt) { # , fd.basis
   strides.per.subject <- length(unique(data$strideID)) / n.subjects
   device.diff$strideID <- as.factor(rep(1:n.strides, each = 101)) # as.factor(seq(0, n.strides, by = n.frames)) # as.factor(rep(seq(1, strides.per.subject), each = 101))
   device.diff$subjectID <- as.factor(rep(1:n.subjects, each = strides.per.subject * n.frames))
+
 
   if (plt) {
 
