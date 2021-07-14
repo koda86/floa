@@ -10,10 +10,11 @@
 #     * Data:
 #         - Drift nur in einem der Messsysteme (IMU)
 #         - Eines der beiden Messsysteme ist verrauscht, eins smooth
-#         - Daten mit smoothen und nicht smoothen Signalanteil
+#         - Daten mit smoothen und nicht smoothem Signalanteil
 #     * Cross validation
-#     * Compare against FDA (Lenhoff/Roislien) and/or pointwise
+#     * Compare against FDA (Lenhoff/Roislien) and/or pointwise!?
 #     * Use only synthetic data? (Leave out real world example?)
+#     * ggplot for bootstrap/percentile graphs
 ################################################################################
 
 # library(fda)
