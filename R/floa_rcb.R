@@ -41,6 +41,9 @@ floa_rcb <- function(data, n.boot, plt) { # , fd.basis
   floa.boot.percentiles.intrp <- rbind(approx(perc2.5, n = 101)$y, approx(perc50, n = 101)$y, approx(perc97.5, n = 101)$y)
 
   # Prepare data for ggploting
+
+  # NEEDS BALANCED DATA!!
+
   device1 <- data.frame(subset(data, device == "IMU")$value)
   device2 <- data.frame(subset(data, device == "MC")$value)
 
@@ -66,9 +69,9 @@ floa_rcb <- function(data, n.boot, plt) { # , fd.basis
     # When more variables are used and multiple lines are drawn, the grouping for lines is usually done by variable.
     PLOT.DIFF <- ggplot(data = device.diff, aes(x = frame, y = value, color = subjectID, group = strideID)) +
       geom_line() +
-      geom_line(data = floa, aes(x = seq (0,100), y = X1, col = "red", group = 1), linetype = "dotted", size = 3) +
-      geom_line(data = floa, aes(x = seq (0,100), y = X2, col = "red", group = 1), linetype = "longdash", size = 3) +
-      geom_line(data = floa, aes(x = seq (0,100), y = X3, col = "red", group = 1), linetype = "dotted", size = 3) +
+      geom_line(data = floa, aes(x = seq (0,100), y = X1, col = "red", group = 1), linetype = "solid", size = 3) +
+      geom_line(data = floa, aes(x = seq (0,100), y = X2, col = "red", group = 1), linetype = "dotted", size = 3) +
+      geom_line(data = floa, aes(x = seq (0,100), y = X3, col = "red", group = 1), linetype = "solid", size = 3) +
       scale_color_grey(start = 0.8, end = 0.2) +
       scale_y_continuous(limits = c(min(clust.agg.intrp), max(clust.agg.intrp))) +
       labs(x = "Time-normalized signal duration [%]", y = "Difference") +
@@ -76,12 +79,12 @@ floa_rcb <- function(data, n.boot, plt) { # , fd.basis
             axis.text.y = element_text(size = 20), axis.title.y = element_text(size = 22),
             legend.position = "none")
 
-    PLOT.DIFF
-
   } else {
 
     print("")
   }
+
+  PLOT.DIFF
 
   return(floa.boot.percentiles.intrp)
 }

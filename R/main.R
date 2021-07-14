@@ -7,6 +7,7 @@
 # Splines etc.) is not implemented.
 #
 # TODO:
+#     * Implement balanced data in floa_rcb.R
 #     * Data:
 #         - Drift nur in einem der Messsysteme (IMU)
 #         - Eines der beiden Messsysteme ist verrauscht, eins smooth
@@ -43,7 +44,7 @@ source("floa_rcb.R")
 # 2. Non-stationar:"non_stationary"
 # 3. shock: "shock"
 
-data <- example_data(dat = "imu_mc", dir.data)
+data <- example_data(dat = "shock", dir.data)
 
 
 ################################ Calculate FLoA ################################
