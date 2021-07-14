@@ -12,8 +12,11 @@
 #         - Eines der beiden Messsysteme ist verrauscht, eins smooth
 #         - Daten mit smoothen und nicht smoothem Signalanteil
 #     * Cross validation
-#     * Compare against FDA (Lenhoff/Roislien) and/or pointwise!?
+#     * mean oder median as estimator?
+#     * Method comparisons: Against FDA (Lenhoff/Roislien) and/or pointwise!?
+#     * See appendix Lenhoff et al.
 #     * Use only synthetic data? (Leave out real world example?)
+#     * Umbennung in CLoA (Continuous LoA)?
 #     * ggplot for bootstrap/percentile graphs
 ################################################################################
 
@@ -40,7 +43,7 @@ source("floa_rcb.R")
 # 2. Non-stationar:"non_stationary"
 # 3. shock: "shock"
 
-data <- example_data(dat = "shock", dir.data)
+data <- example_data(dat = "imu_mc", dir.data)
 
 
 ################################ Calculate FLoA ################################
