@@ -18,7 +18,7 @@ n.strides <- 100
 n.devices <- 2
 n.frames <- 101
 
-alpha <- 2
+offset <- 2
 
 device <- c()
 value <- c()
@@ -40,8 +40,8 @@ for (subj.idx in 1:n.subj) {
   for (stride.idx in 1:(n.strides)) {
 
     # AR coefficients
-    phi1 <- c(0.80, 0.15)
-    phi2 <- runif(1, 0.2, 0.3)
+    phi.1 <- c(0.80, 0.15)
+    phi.2 <- runif(1, 0.2, 0.3)
 
     # Trend coefficient
     subj.trend.1 <- 0.1
@@ -54,10 +54,11 @@ for (subj.idx in 1:n.subj) {
     w <- rnorm(n.frames, mean = subj.mean, sd = subj.sd.1)
     v <- rnorm(n.frames, mean = subj.mean, sd = subj.sd.2)
 
-    for (t in 3:n.frames) {
-      # AR(1) with constant and trend (no shocks)
-      imu[t] <- alpha + phi1[1] * imu[t-1] + w[t] + subj.trend.1*t # imu
-      mc[t] <- alpha + phi2[1] * mc[t-1] + v[t] + subj.trend.2*t   # mc
+    # Autoregressive signal with trend
+    for (t in 2:n.frames) {
+
+      mc[t] <- phi.2[1] * mc[t-1] + v[t] + subj.trend.2*t   # mc
+      imu[t] <- offset + phi.1[1] * imu[t-1] + w[t] + subj.trend.1*t # imu
     }
 
     value.subj <- c(value.subj, c(imu, mc))

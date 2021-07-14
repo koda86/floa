@@ -18,9 +18,9 @@ example_data <- function(dat, dir.data) {
     # Download from:
     # http://www.epic.gatech.edu/opensource-biomechanics-camargo-et-al/
 
+    # data <- readRDS(paste0(dir.data, "/", "data_imu_gon.rds"))
 
-
-    data <- readRDS(paste0(dir.data, "/", "data_imu_gon.rds"))
+    print("imu_gon")
 
   } else if (dat == "non_stationary") {
 

@@ -36,9 +36,8 @@ source("floa_rcb.R")
 # Wrapper function for example data sets.
 # Function arguments:
 # 1. Empirical validation data: "imu_mc"
-# 2. ARIMA: "arima"
-# 3. Non-stationar:"non_stationary"
-# 4. shock: "shock"
+# 2. Non-stationar:"non_stationary"
+# 3. shock: "shock"
 
 data <- example_data(dat = "shock", dir.data)
 
