@@ -11,16 +11,9 @@ example_data <- function(dat, dir.data) {
     # fd.basis <- create.fourier.basis(nbasis=50) # Plateau around 50 basis vectors
     # fda.delta <- fdaDelta(data, fd.basis) # Fit Fourier, returns delta curves (mean, sd)
 
-  } else if (dat == "imu_gon") {
+  } else if (dat == "bias") {
 
-    # Public data set Camargo et al. 2021
-    # https://doi.org/10.1016/j.jbiomech.2021.110320
-    # Download from:
-    # http://www.epic.gatech.edu/opensource-biomechanics-camargo-et-al/
-
-    # data <- readRDS(paste0(dir.data, "/", "data_imu_gon.rds"))
-
-    print("imu_gon")
+    data <- readRDS(paste0(dir.data, "/", "bias.rds"))
 
   } else if (dat == "non_stationary") {
 

@@ -39,19 +39,8 @@ for (subj.idx in 1:n.subj) {
 
   for (stride.idx in 1:(n.strides)) {
 
-    imu <- c(rep(0, n.frames))
-    mc <- c(rep(0, n.frames))
-
-    # Error terms
-    w <- rnorm(n.frames, mean = subj.mean, sd = subj.sd.1)
-    v <- rnorm(n.frames, mean = subj.mean, sd = subj.sd.2)
-
-    # Autoregressive signal
-    for (t in 1:n.frames) {
-
-        mc[t] <- v[t]
-        imu[t] <- offset + w[t]
-    }
+    mc <- rnorm(n.frames, mean = subj.mean, sd = subj.sd.2)
+    imu <- offset + rnorm(n.frames, mean = subj.mean, sd = subj.sd.1)
 
     value.subj <- c(value.subj, c(imu, mc))
 
