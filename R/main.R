@@ -57,9 +57,6 @@ n.boot <- 100
 # Function returns percentiles (2.5%, 50%, 97.5%)
 FLOArcb <- floa_rcb(data, n.boot, plt = TRUE)
 
-# Version with functional data
-# FLOArcb <- floa_rcb(data, fd.basis, n.boot, plt = FALSE)
-
 # Method Roislien et al. -------------------------------------------------------
 
 # Method Lenhoff ---------------------------------------------------------------
