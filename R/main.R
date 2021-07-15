@@ -12,13 +12,13 @@
 #         - Drift nur in einem der Messsysteme (IMU)
 #         - Eines der beiden Messsysteme ist verrauscht, eins smooth
 #         - Daten mit smoothen und nicht smoothem Signalanteil
+#     * Simulierte Daten als Funktion
 #     * Cross validation
 #     * mean oder median as estimator?
 #     * Method comparisons: Against FDA (Lenhoff/Roislien) and/or pointwise!?
 #     * See appendix Lenhoff et al.
 #     * Use only synthetic data? (Leave out real world example?)
 #     * Umbennung in CLoA (Continuous LoA)?
-#     * ggplot for bootstrap/percentile graphs
 ################################################################################
 
 # library(fda)

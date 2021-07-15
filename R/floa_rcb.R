@@ -69,22 +69,36 @@ floa_rcb <- function(data, n.boot, plt) { # , fd.basis
     # When more variables are used and multiple lines are drawn, the grouping for lines is usually done by variable.
     PLOT.DIFF <- ggplot(data = device.diff, aes(x = frame, y = value, color = subjectID, group = strideID)) +
       geom_line() +
-      geom_line(data = floa, aes(x = seq (0,100), y = X1, col = "red", group = 1), linetype = "solid", size = 3) +
-      geom_line(data = floa, aes(x = seq (0,100), y = X2, col = "red", group = 1), linetype = "dotted", size = 3) +
-      geom_line(data = floa, aes(x = seq (0,100), y = X3, col = "red", group = 1), linetype = "solid", size = 3) +
       scale_color_grey(start = 0.8, end = 0.2) +
+      geom_line(data = floa,
+                aes(x = seq (0,100), y = X1, col = "red", group = 1),
+                linetype = "solid",
+                size = 3,
+                colour = "red") +
+      geom_line(data = floa,
+                aes(x = seq (0,100), y = X2, col = "red", group = 1),
+                linetype = "dotted",
+                size = 3,
+                colour = "red") +
+      geom_line(data = floa,
+                aes(x = seq (0,100), y = X3, col = "red", group = 1),
+                linetype = "solid",
+                size = 3,
+                colour = "red") +
       scale_y_continuous(limits = c(min(clust.agg.intrp), max(clust.agg.intrp))) +
       labs(x = "Time-normalized signal duration [%]", y = "Difference") +
-      theme(axis.text.x = element_text(size = 20), axis.title.x = element_text(size = 22),
-            axis.text.y = element_text(size = 20), axis.title.y = element_text(size = 22),
+      theme(axis.text.x = element_text(size = 20),
+            axis.title.x = element_text(size = 22),
+            axis.text.y = element_text(size = 20),
+            axis.title.y = element_text(size = 22),
             legend.position = "none")
+
+    PLOT.DIFF
 
   } else {
 
     print("")
   }
-
-  PLOT.DIFF
 
   return(floa.boot.percentiles.intrp)
 }

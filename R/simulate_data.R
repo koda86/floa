@@ -34,8 +34,8 @@ for (subj.idx in 1:n.subj) {
   subj.mean <- 5 * rnorm(1)
   subj.sd.1 <- 2 * runif(1)
   subj.sd.2 <- 5 * runif(1)
-  subj.trend.1 <- abs(rnorm(1, 0.1, sd = 0.1))
-  subj.trend.2 <- abs(rnorm(1, 0.05, sd = 0.05))
+  trend.1 <- abs(rnorm(1, 0.1, sd = 0.1))
+  trend.2 <- 0 # abs(rnorm(1, 0.05, sd = 0.05))
 
   for (stride.idx in 1:(n.strides)) {
 
@@ -44,8 +44,8 @@ for (subj.idx in 1:n.subj) {
     phi.2 <- runif(1, 0.2, 0.3)
 
     # Trend coefficient
-    subj.trend.1 <- 0.1
-    subj.trend.2 <- 0.05
+    trend.1 <- 0.1
+    trend.2 <- 0.05
 
     imu <- c(rep(0, n.frames))
     mc <- c(rep(0, n.frames))
@@ -57,8 +57,8 @@ for (subj.idx in 1:n.subj) {
     # Autoregressive signal with trend
     for (t in 2:n.frames) {
 
-      mc[t] <- phi.2[1] * mc[t-1] + v[t] + subj.trend.2*t   # mc
-      imu[t] <- offset + phi.1[1] * imu[t-1] + w[t] + subj.trend.1*t # imu
+      mc[t] <- phi.2[1] * mc[t-1] + v[t] + trend.2*t   # mc
+      imu[t] <- offset + phi.1[1] * imu[t-1] + w[t] + trend.1*t # imu
     }
 
     value.subj <- c(value.subj, c(imu, mc))
@@ -86,11 +86,6 @@ saveRDS(data, file = paste0("C:/Users/Daniel/Desktop/tmp/floa/R/examples/", "dat
 # ------------------------------------------------------------------------------
 # 2. Shock (spike) data --------------------------------------------------------
 # ------------------------------------------------------------------------------
-
-n.subj <- 11
-n.strides <- 100
-n.devices <- 2
-n.frames <- 101
 
 device <- c()
 value <- c()
