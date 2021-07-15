@@ -45,7 +45,7 @@ source("floa_rcb.R")
 # 2. Non-stationary data (trend, no bias) data:"non_stationary"
 # 3. Data with shock peaks (no bias, no trend): "shock"
 
-data <- example_data(dat = "bias", dir.data)
+data <- example_data(dat = "non_stationary", dir.data)
 
 
 ###################################### FLoA #####################################

@@ -83,7 +83,7 @@ for (subj.idx in 1:n.subj) {
   subj.sd.1 <- 2 * runif(1)
   subj.sd.2 <- 5 * runif(1)
   trend.1 <- abs(rnorm(1, 0.1, sd = 0.1))
-  trend.2 <- 0 # abs(rnorm(1, 0.05, sd = 0.05))
+  trend.2 <- 0
 
   for (stride.idx in 1:(n.strides)) {
 
@@ -104,6 +104,12 @@ for (subj.idx in 1:n.subj) {
 
     # Autoregressive signal with trend
     for (t in 2:n.frames) {
+
+      if (t == 1) {
+
+        mc[t] <- rnorm(1, mean = subj.mean, sd = subj.sd.2)
+        imu[t] <- rnorm(1, mean = subj.mean, sd = subj.sd.1)
+      }
 
       # mc[t] <- phi.2[1] * mc[t-1] + v[t] + trend.2*t
       mc[t] <- v[t]
