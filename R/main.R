@@ -41,13 +41,14 @@ source("floa_rcb.R")
 # Wrapper function for example data sets.
 # Function arguments:
 # 1. Empirical validation data: "imu_mc"
-# 2. Non-stationar:"non_stationary"
-# 3. shock: "shock"
+# 2. Biased data (constant variance, no trend): "bias"
+# 2. Non-stationary data (trend, no bias) data:"non_stationary"
+# 3. Data with shock peaks (no bias, no trend): "shock"
 
-data <- example_data(dat = "shock", dir.data)
+data <- example_data(dat = "non_stationary", dir.data)
 
 
-################################ Calculate FLoA ################################
+###################################### FLoA #####################################
 
 n.boot <- 100
 
@@ -58,6 +59,12 @@ FLOArcb <- floa_rcb(data, n.boot, plt = TRUE)
 
 # Version with functional data
 # FLOArcb <- floa_rcb(data, fd.basis, n.boot, plt = FALSE)
+
+# Method Roislien et al. -------------------------------------------------------
+
+# Method Lenhoff ---------------------------------------------------------------
+
+# Pointwise LoA ----------------------------------------------------------------
 
 
 ############################### Cross validation ###############################

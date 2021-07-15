@@ -10,7 +10,7 @@
 
 
 # ------------------------------------------------------------------------------
-# 1. Non-stationary data -------------------------------------------------------
+# 1. Biased data (constant variance, no trend) ---------------------------------
 # ------------------------------------------------------------------------------
 
 n.subj <- 11
@@ -18,7 +18,66 @@ n.strides <- 100
 n.devices <- 2
 n.frames <- 101
 
-offset <- 2
+offset <- 5
+
+device <- c()
+value <- c()
+subjectID <- c()
+
+for (subj.idx in 1:n.subj) {
+
+  value.subj <- c()
+  device.subj <- c()
+  subjectID.subj <- c()
+
+  # Sample subjectwise parameters
+  subj.mean <- 5 * rnorm(1)
+  subj.sd.1 <- 2 * runif(1)
+  subj.sd.2 <- 5 * runif(1)
+  trend.1 <- abs(rnorm(1, 0.1, sd = 0.1))
+  trend.2 <- 0
+
+  for (stride.idx in 1:(n.strides)) {
+
+    imu <- c(rep(0, n.frames))
+    mc <- c(rep(0, n.frames))
+
+    # Error terms
+    w <- rnorm(n.frames, mean = subj.mean, sd = subj.sd.1)
+    v <- rnorm(n.frames, mean = subj.mean, sd = subj.sd.2)
+
+    # Autoregressive signal
+    for (t in 1:n.frames) {
+
+        mc[t] <- v[t]
+        imu[t] <- offset + w[t]
+    }
+
+    value.subj <- c(value.subj, c(imu, mc))
+
+    device.imu <- rep("IMU", n.frames)
+    device.mc <- rep("MC", n.frames)
+    device.subj <- c(device.subj, c(device.imu, device.mc))
+
+    subjectID.subj <- c(subjectID.subj, rep(subj.idx, 2 * n.frames))
+  }
+
+  device <- c(device, device.subj)
+  value <- c(value, value.subj)
+  subjectID <- c(subjectID, subjectID.subj)
+}
+
+strideID <- rep(1:(n.strides * n.subj), each = n.devices * n.frames)
+frame <- rep(0:100, times = n.strides * n.devices * n.subj)
+
+data <- data.frame(device, subjectID, strideID, value, frame)
+
+saveRDS(data, file = paste0("C:/Users/Daniel/Desktop/tmp/floa/R/examples/", "bias.rds"))
+
+
+# ------------------------------------------------------------------------------
+# 2. Non-stationary data -------------------------------------------------------
+# ------------------------------------------------------------------------------
 
 device <- c()
 value <- c()
@@ -57,8 +116,10 @@ for (subj.idx in 1:n.subj) {
     # Autoregressive signal with trend
     for (t in 2:n.frames) {
 
-      mc[t] <- phi.2[1] * mc[t-1] + v[t] + trend.2*t   # mc
-      imu[t] <- offset + phi.1[1] * imu[t-1] + w[t] + trend.1*t # imu
+      # mc[t] <- phi.2[1] * mc[t-1] + v[t] + trend.2*t
+      mc[t] <- v[t]
+      imu[t] <- phi.1[1] * imu[t-1] + w[t] + trend.1*t # offset
+
     }
 
     value.subj <- c(value.subj, c(imu, mc))
@@ -84,7 +145,7 @@ saveRDS(data, file = paste0("C:/Users/Daniel/Desktop/tmp/floa/R/examples/", "dat
 
 
 # ------------------------------------------------------------------------------
-# 2. Shock (spike) data --------------------------------------------------------
+# 3. Shock (spike) data --------------------------------------------------------
 # ------------------------------------------------------------------------------
 
 device <- c()
