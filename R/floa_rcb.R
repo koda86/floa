@@ -37,10 +37,10 @@ floa_rcb <- function(data, n.boot, plt) { # , fd.basis
   perc50 <- floa.boot.percentiles[which(names(floa.boot.percentiles) == "50%")]
   perc97.5 <- floa.boot.percentiles[which(names(floa.boot.percentiles) == "97.5%")]
 
-  # Interpolate to 101 data points -------------------------------------------
+  # Interpolate to 101 data points ---------------------------------------------
   floa.boot.percentiles.intrp <- rbind(approx(perc2.5, n = 101)$y, approx(perc50, n = 101)$y, approx(perc97.5, n = 101)$y)
 
-  # Prepare data for ggploting
+  # Prepare data for ggploting -------------------------------------------------
 
   # NEEDS BALANCED DATA!!
 
