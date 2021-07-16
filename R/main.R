@@ -9,10 +9,10 @@
 # TODO:
 #     * Implement balanced data in floa_rcb.R
 #     * Data:
-#         - Drift nur in einem der Messsysteme (IMU)
+#         - Nichtnormalverteilte Daten
 #         - Eines der beiden Messsysteme ist verrauscht, eins smooth
 #         - Daten mit smoothen und nicht smoothem Signalanteil
-#     * Simulierte Daten als Funktion
+#     * Simulierte Daten in einer Funktion zusammenfassen
 #     * Cross validation
 #     * mean oder median as estimator?
 #     * Method comparisons: Against FDA (Lenhoff/Roislien) and/or pointwise!?
