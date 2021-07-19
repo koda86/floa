@@ -89,7 +89,7 @@ floa_rcb <- function(data, n.boot, plt) { # , fd.basis
                 size = 3,
                 colour = "red") +
       scale_y_continuous(limits = c(min(clust.agg.intrp), max(clust.agg.intrp))) +
-      labs(x = "Time-normalized signal duration [%]", y = "Difference") +
+      labs(x = "Time-normalized signal [%]", y = "Difference") +
       theme(axis.text.x = element_text(size = 20),
             axis.title.x = element_text(size = 22),
             axis.text.y = element_text(size = 20),
