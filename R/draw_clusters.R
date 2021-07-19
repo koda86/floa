@@ -6,26 +6,12 @@ draw_clusters <- function(data) { # fd.basis
   # This function represents the first of two stages in the randomized cluster
   # bootstrap.
   #
-  # Add description here.
+  # In the current implementation, n=length(subjects) random strides are selected
+  # from all strides. Strides are selected from the entire set of curves (NOT!
+  # one curve per subject).
   # ----------------------------------------------------------------------------
 
-  # One stride from each dubject -----------------------------------------------
-  # subjects <- as.numeric(unique(data$subjectID))
-  #
-  # # Pick a single curve per subject
-  # subj.idx <- sample(subjects, replace = FALSE)
-  #
-  # test <- by(data, data$subjectID, subset)
-  #
-  # subj.idx <- sample(length(test), replace = TRUE)
-  #
-  # tmp <- mapply("[", test, "strideID")
-  # stride.idx <- sapply(tmp, function(x) {length(unique(x))})
-#
-#   # Zwischenschritt Auswahl eines zur Subjektreihenfolge passenden Schrittindex
-#   # ...
-
-  # n=length(subjects) random strides
+  # Pick n=length(subjects) random strides
   curve.idx <- as.numeric(sample(data$strideID, length(unique(data$subjectID)), replace = TRUE))
 
   curve <- data[data$strideID %in% curve.idx, ]
@@ -37,6 +23,26 @@ draw_clusters <- function(data) { # fd.basis
   curve1 <- matrix(curve1, ncol = length(curve1) / 100)
 
   diff.curves <- curve0 - curve1
+
+
+# # One stride from each dubject -----------------------------------------------
+# # subjects <- as.numeric(unique(data$subjectID))
+# #
+# # # Pick a single curve per subject
+# # subj.idx <- sample(subjects, replace = FALSE)
+# #
+# # test <- by(data, data$subjectID, subset)
+# #
+# # subj.idx <- sample(length(test), replace = TRUE)
+# #
+# # tmp <- mapply("[", test, "strideID")
+# # stride.idx <- sapply(tmp, function(x) {length(unique(x))})
+# #
+# #   # Zwischenschritt Auswahl eines zur Subjektreihenfolge passenden Schrittindex
+# #   # ...
+
+
+
 
   # diff.curves.fd <- Data2fd(argvals = diff.curve, basisobj = fd.basis)
 

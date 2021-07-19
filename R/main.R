@@ -56,14 +56,21 @@ n.boot <- 100
 
 # Randomized Cluster Bootstrap -------------------------------------------------
 #
+# * In the first stage, n=length(subjects) random strides are sampled
+# from all strides (with replacement). Strides are selected from the entire set
+# of curves (NOT! one curve per subject).
+# * The process is repeated n.boot times.
+# From the resulting distribution, percentiles (2.5%, 50%, 97.5%) are calculated.
+
 # Function returns percentiles (2.5%, 50%, 97.5%)
 floa.boot.percentiles.intrp <- floa_rcb(data, n.boot, plt = TRUE)
+
+# Pointwise LoA ----------------------------------------------------------------
+
 
 # Method Roislien et al. -------------------------------------------------------
 
 # Method Lenhoff ---------------------------------------------------------------
-
-# Pointwise LoA ----------------------------------------------------------------
 
 
 ################################### Plot data ##################################

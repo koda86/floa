@@ -4,9 +4,6 @@ floa_rcb <- function(data, n.boot, plt) { # , fd.basis
 
   # ############################################################################
   # Randomized Cluster Bootstrap
-  #
-  # Add description here
-  # draw_clusters(): Draw a single random curve form a single random subject
   # ############################################################################
 
   clust.boot.agg <- c()
