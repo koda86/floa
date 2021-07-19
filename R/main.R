@@ -43,13 +43,14 @@ source("floa_rcb.R")
 # Function arguments:
 #
 # * Empirical validation data: "imu_mc"
+# * Smooth, wave data (normal error, constant variance, no trend): "smooth"
 # * Biased data (constant variance, no trend): "bias"
 # * Non-constant variance data (normal error, no trend): "non_const_var"
 # * Non-stationary data (trend, no bias) data:"non_stationary"
 # * Log-normal error data (no bias,  constant variance, no trend): "log_normal"
 # * Data with shock peaks (no bias, no trend): "shock"
 
-data <- example_data(dat = "non_const_var", dir.data)
+data <- example_data(dat = "smooth", dir.data)
 
 
 ###################################### FLoA #####################################
@@ -68,9 +69,99 @@ FLOArcb <- floa_rcb(data, n.boot, plt = TRUE)
 # Pointwise LoA ----------------------------------------------------------------
 
 
+################################### Plot data ##################################
+
+# Prepare data for ggploting -------------------------------------------------
+#
+# The following lines of the script are exclusively for plotting the data.
+# All calculations are done above.
+# ----------------------------------------------------------------------------
+
+# "imu_mc" NEEDS BALANCED DATA!!
+
+device1 <- data.frame(subset(data, device == "IMU")$value)
+device2 <- data.frame(subset(data, device == "MC")$value)
+
+device.diff <- device1 - device2
+
+colnames(device.diff)[1] <- "value"
+
+device.diff$frame <- seq(0, 100)
+n.frames <- length(unique(data$frame))
+n.strides <- length(unique(data$strideID))
+n.subjects <- length(unique(data$subjectID))
+strides.per.subject <- length(unique(data$strideID)) / n.subjects
+device.diff$strideID <- as.factor(rep(1:n.strides, each = 101)) # as.factor(seq(0, n.strides, by = n.frames)) # as.factor(rep(seq(1, strides.per.subject), each = 101))
+device.diff$subjectID <- as.factor(rep(1:n.subjects, each = strides.per.subject * n.frames))
+
+
+floa <- data.frame(t(floa.boot.percentiles.intrp))
+
+# For line graphs, the data points must be grouped so that it knows which points to connect.
+# In this case, it is simple -- all points should be connected, so group=1.
+# When more variables are used and multiple lines are drawn, the grouping for lines is usually done by variable.
+PLOT.DIFF <- ggplot(data = device.diff, aes(x = frame, y = value, color = subjectID, group = strideID)) +
+  geom_line() +
+  scale_color_grey(start = 0.8, end = 0.2) +
+  geom_line(data = floa,
+            aes(x = seq (0,100), y = X1, col = "red", group = 1),
+            linetype = "solid",
+            size = 3,
+            colour = "red") +
+  geom_line(data = floa,
+            aes(x = seq (0,100), y = X2, col = "red", group = 1),
+            linetype = "dotted",
+            size = 3,
+            colour = "red") +
+  geom_line(data = floa,
+            aes(x = seq (0,100), y = X3, col = "red", group = 1),
+            linetype = "solid",
+            size = 3,
+            colour = "red") +
+  scale_y_continuous(limits = c(min(clust.agg.intrp), max(clust.agg.intrp))) +
+  labs(x = "Time-normalized signal [%]", y = "Difference") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(size = 20),
+        axis.title.x = element_text(size = 22),
+        axis.text.y = element_text(size = 20),
+        axis.title.y = element_text(size = 22),
+        legend.position = "none")
+
+PLOT.DIFF
+
 ############################### Cross validation ###############################
 
-# Leave-one out method to estimate the achieved coverage
+# Calculate coverage (entire curves within the percentile boundaries) ----------
+
+# Require percentiles (floa.boot.percentiles.intrp) and difference curves from floa_rcb.R
+
+# Get lower and upper interval boundaries
+lwr.bnd <- floa.boot.percentiles.intrp[1, ]
+upr.bnd <- floa.boot.percentiles.intrp[2, ]
+
+n.strides <- length(unique(device.diff$strideID))
+outside <- 0
+
+for (stride.idx in 1:n.strides){
+
+  tmp <- subset(device.diff, strideID == stride.idx)
+
+  # Compare difference curves with upper and lower boundaries
+  below.thresh <- tmp$value < lwr.bnd
+  above.thresh <- tmp$value > upr.bnd
+
+  points.outside <- sum(above.thresh) + sum(below.thresh)
+
+  if (points.outside > 0) {
+    outside <- outside + 1
+  }
+}
+
+coverage <- c()
+coverage <- c(coverage, 1 - (outside / n.strides))
+
+
+# Leave-one (subject) out method to estimate the achieved coverage
 # See Lenhoff
 #
 # Output:
@@ -78,5 +169,6 @@ FLOArcb <- floa_rcb(data, n.boot, plt = TRUE)
 #     * Standard error of estimate
 #     * "[...] the  achieved  level  of  bootstrap bands  is  roughly  equal  to  the
 # nominal  level  with as  few  as  25  or  so  curves. --> Konvergenzanalyse
+
 
 

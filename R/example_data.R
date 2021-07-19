@@ -11,6 +11,10 @@ example_data <- function(dat, dir.data) {
     # fd.basis <- create.fourier.basis(nbasis=50) # Plateau around 50 basis vectors
     # fda.delta <- fdaDelta(data, fd.basis) # Fit Fourier, returns delta curves (mean, sd)
 
+  } else if (dat == "smooth") {
+
+    data <- readRDS(paste0(dir.data, "/", "smooth.rds"))
+
   } else if (dat == "non_const_var") {
 
     data <- readRDS(paste0(dir.data, "/", "non_const_var.rds"))

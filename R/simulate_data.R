@@ -11,13 +11,75 @@
 
 
 # ------------------------------------------------------------------------------
-# Biased data (normal error, constant variance, no trend) ----------------------
+# Smooth, wave data (normal error, constant variance, no trend) ----------------
 # ------------------------------------------------------------------------------
 
 n.subj <- 11
 n.strides <- 100
 n.devices <- 2
 n.frames <- 101
+
+device <- c()
+value <- c()
+subjectID <- c()
+
+for (subj.idx in 1:n.subj) {
+
+  value.subj <- c()
+  device.subj <- c()
+  subjectID.subj <- c()
+
+  t <- seq(0, 100)
+
+  # Subjectwise wave parameters
+  # a1.mean <- 3
+  offset.mean <- runif(1, min = -0.5, max = 0.5)
+
+  for (stride.idx in 1:(n.strides)) {
+
+    a1.1 <- rnorm(1, 3, .1) # mc
+    a1.2 <- rnorm(1, 3, .1) # imu
+    a2.1 <- 0.08 # rnorm(1, 0.1, .01)
+    a2.2 <- 0.08 # rnorm(1, 0.2, .01)
+    b1.1 <- rnorm(1, 0.06, .001)
+    b1.2 <- rnorm(1, 0.06, .001)
+    b2.1 <- rnorm(1, 0.58, .001)
+    b2.2 <- rnorm(1, 0.58, .001)
+    c <- 2
+
+    offset <- rnorm(1, offset.mean, 0.05) # 0.1
+
+    mc <- a1.1 * sin(b1.1 * t) ^ (c + 3) + a2.1 * sin(b2.1 * t)
+    imu <- offset + a1.2 * sin(b1.2 * t) ^ (c + 3) + a2.2 * sin(b2.1 * t)
+
+    # plot(mc, type = "l")
+    # lines(imu, col = "red")
+
+    value.subj <- c(value.subj, c(imu, mc))
+
+    device.imu <- rep("IMU", n.frames)
+    device.mc <- rep("MC", n.frames)
+    device.subj <- c(device.subj, c(device.imu, device.mc))
+
+    subjectID.subj <- c(subjectID.subj, rep(subj.idx, 2 * n.frames))
+  }
+
+  device <- c(device, device.subj)
+  value <- c(value, value.subj)
+  subjectID <- c(subjectID, subjectID.subj)
+}
+
+strideID <- rep(1:(n.strides * n.subj), each = n.devices * n.frames)
+frame <- rep(0:100, times = n.strides * n.devices * n.subj)
+
+data <- data.frame(device, subjectID, strideID, value, frame)
+
+saveRDS(data, file = paste0("C:/Users/Daniel/Desktop/tmp/floa/R/examples/", "smooth.rds"))
+
+
+# ------------------------------------------------------------------------------
+# Biased data (normal error, constant variance, no trend) ----------------------
+# ------------------------------------------------------------------------------
 
 offset <- 5
 
@@ -82,15 +144,9 @@ for (subj.idx in 1:n.subj) {
   # Sample subjectwise parameters
   subj.mean <- rnorm(1)
   subj.sd.1 <- runif(1)
-  subj.sd.2 <- 2 * runif(1)
-
   # Dummy vector to allocate regions (within) one stride with similar smoothness
   # Serves as input (mean) to rnorm in the next step
-  subj.mean.smooth <- c(rep(round(rnorm(1)) - 1, 25),
-                        rep(round(rnorm(1)) + 1 , 25),
-                        rep(round(rnorm(1)), 25),
-                        rep(round(rnorm(1)) + 2, 25)
-                        )
+  subj.sd.2 <- runif(n.frames, min = 0, max = 5)
 
   for (stride.idx in 1:(n.strides)) {
 
@@ -99,20 +155,9 @@ for (subj.idx in 1:n.subj) {
 
     for (frame.idx in 1:n.frames) {
 
-      # if (frame.idx < 50) {
-
-        mc[frame.idx] <- rnorm(1, mean = subj.mean, sd = subj.sd.1)
-        imu[frame.idx] <- rnorm(1, mean = subj.mean.smooth[frame.idx], sd = subj.sd.1)
-
-      # } else if (frame.idx >= 50) {
-
-        # mc[frame.idx] <- rnorm(1, mean = subj.mean, sd = subj.sd.2)
-        # imu[frame.idx] <- rnorm(n.frames, mean = subj.mean, sd = subj.sd.2)
-      # }
+      mc[frame.idx] <- rnorm(1, mean = subj.mean, sd = subj.sd.1)
+      imu[frame.idx] <- rnorm(1, mean = subj.mean, sd = subj.sd.2[frame.idx])
     }
-
-    # mc <- rnorm(n.frames, mean = subj.mean, sd = subj.sd.2)
-    # imu <- rnorm(n.frames, mean = subj.mean, sd = subj.sd.1)
 
     value.subj <- c(value.subj, c(imu, mc))
 

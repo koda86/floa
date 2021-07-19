@@ -2,12 +2,12 @@ floa_rcb <- function(data, n.boot, plt) { # , fd.basis
 
   library(ggplot2)
 
-  # ----------------------------------------------------------------------------
+  # ############################################################################
   # Randomized Cluster Bootstrap
   #
   # Add description here
   # draw_clusters(): Draw a single random curve form a single random subject
-  # ----------------------------------------------------------------------------
+  # ############################################################################
 
   clust.boot.agg <- c()
 
@@ -17,7 +17,7 @@ floa_rcb <- function(data, n.boot, plt) { # , fd.basis
     clust.boot.agg[[boot.idx]] <- draw_clusters(data) # , fd.basis
   }
 
-  # Arrange curves in matrix (row-wise) to facilitate computing percentiles
+  # (Row-wise) Arrange difference curves to facilitate computing percentiles
   clust.agg.intrp <- matrix(unlist(clust.boot.agg),
                       ncol  = 101, # length(fd.basis$names)
                       byrow = TRUE)
@@ -43,7 +43,13 @@ floa_rcb <- function(data, n.boot, plt) { # , fd.basis
                                        approx(perc97.5, n = 101)$y
                                        )
 
+
+
   # Prepare data for ggploting -------------------------------------------------
+  #
+  # The following lines of the script are exclusively for plotting the data.
+  # All calculations are done above.
+  # ----------------------------------------------------------------------------
 
   # NEEDS BALANCED DATA!!
 
@@ -90,6 +96,7 @@ floa_rcb <- function(data, n.boot, plt) { # , fd.basis
                 colour = "red") +
       scale_y_continuous(limits = c(min(clust.agg.intrp), max(clust.agg.intrp))) +
       labs(x = "Time-normalized signal [%]", y = "Difference") +
+      theme_minimal() +
       theme(axis.text.x = element_text(size = 20),
             axis.title.x = element_text(size = 22),
             axis.text.y = element_text(size = 20),
