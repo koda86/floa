@@ -11,7 +11,7 @@
 
 
 # ------------------------------------------------------------------------------
-# Biased data (normal error, constant variance, no trend) ------------------
+# Biased data (normal error, constant variance, no trend) ----------------------
 # ------------------------------------------------------------------------------
 
 n.subj <- 11
@@ -82,59 +82,11 @@ for (subj.idx in 1:n.subj) {
   # Sample subjectwise parameters
   subj.mean <- 5 * rnorm(1)
   subj.sd.1 <- 2 * runif(1)
-  subj.sd.2 <- 5 * runif(1)
-  trend.1 <- abs(rnorm(1, 0.1, sd = 0.1))
-  trend.2 <- 0
+  subj.sd.2 <- 2 * runif(1) + rlnorm(1, meanlog = 2)
 
   for (stride.idx in 1:(n.strides)) {
 
     mc <- rnorm(n.frames, mean = subj.mean, sd = subj.sd.2)
-    imu <- offset + rnorm(n.frames, mean = subj.mean, sd = subj.sd.1)
-
-    value.subj <- c(value.subj, c(imu, mc))
-
-    device.imu <- rep("IMU", n.frames)
-    device.mc <- rep("MC", n.frames)
-    device.subj <- c(device.subj, c(device.imu, device.mc))
-
-    subjectID.subj <- c(subjectID.subj, rep(subj.idx, 2 * n.frames))
-  }
-
-  device <- c(device, device.subj)
-  value <- c(value, value.subj)
-  subjectID <- c(subjectID, subjectID.subj)
-}
-
-strideID <- rep(1:(n.strides * n.subj), each = n.devices * n.frames)
-frame <- rep(0:100, times = n.strides * n.devices * n.subj)
-
-data <- data.frame(device, subjectID, strideID, value, frame)
-
-saveRDS(data, file = paste0("C:/Users/Daniel/Desktop/tmp/floa/R/examples/", "non_const_var.rds"))
-
-
-# ------------------------------------------------------------------------------
-# Log-normal error data (no bias, constant variance, no trend) -----------------
-# ------------------------------------------------------------------------------
-
-device <- c()
-value <- c()
-subjectID <- c()
-
-for (subj.idx in 1:n.subj) {
-
-  value.subj <- c()
-  device.subj <- c()
-  subjectID.subj <- c()
-
-  # Sample subjectwise parameters
-  subj.mean <- rnorm(1)
-  subj.sd.1 <- runif(1)
-  subj.sd.2 <- runif(1)
-
-  for (stride.idx in 1:(n.strides)) {
-
-    mc <- mc <- rnorm(n.frames, mean = subj.mean, sd = subj.sd.2) # rlnorm(n.frames, meanlog = subj.mean, sdlog = subj.sd.2)
     imu <- rnorm(n.frames, mean = subj.mean, sd = subj.sd.1)
 
     value.subj <- c(value.subj, c(imu, mc))
@@ -156,7 +108,7 @@ frame <- rep(0:100, times = n.strides * n.devices * n.subj)
 
 data <- data.frame(device, subjectID, strideID, value, frame)
 
-saveRDS(data, file = paste0("C:/Users/Daniel/Desktop/tmp/floa/R/examples/", "log_normal.rds"))
+saveRDS(data, file = paste0("C:/Users/Daniel/Desktop/tmp/floa/R/examples/", "non_const_var.rds"))
 
 
 # ------------------------------------------------------------------------------
@@ -232,6 +184,52 @@ frame <- rep(0:100, times = n.strides * n.devices * n.subj)
 data <- data.frame(device, subjectID, strideID, value, frame)
 
 saveRDS(data, file = paste0("C:/Users/Daniel/Desktop/tmp/floa/R/examples/", "data_nonstat.rds"))
+
+
+# ------------------------------------------------------------------------------
+# Log-normal error data (no bias, constant variance, no trend) -----------------
+# ------------------------------------------------------------------------------
+
+device <- c()
+value <- c()
+subjectID <- c()
+
+for (subj.idx in 1:n.subj) {
+
+  value.subj <- c()
+  device.subj <- c()
+  subjectID.subj <- c()
+
+  # Sample subjectwise parameters
+  subj.mean <- rnorm(1)
+  subj.sd.1 <- runif(1)
+  subj.sd.2 <- runif(1)
+
+  for (stride.idx in 1:(n.strides)) {
+
+    mc <- mc <- rnorm(n.frames, mean = subj.mean, sd = subj.sd.2) # rlnorm(n.frames, meanlog = subj.mean, sdlog = subj.sd.2)
+    imu <- rnorm(n.frames, mean = subj.mean, sd = subj.sd.1)
+
+    value.subj <- c(value.subj, c(imu, mc))
+
+    device.imu <- rep("IMU", n.frames)
+    device.mc <- rep("MC", n.frames)
+    device.subj <- c(device.subj, c(device.imu, device.mc))
+
+    subjectID.subj <- c(subjectID.subj, rep(subj.idx, 2 * n.frames))
+  }
+
+  device <- c(device, device.subj)
+  value <- c(value, value.subj)
+  subjectID <- c(subjectID, subjectID.subj)
+}
+
+strideID <- rep(1:(n.strides * n.subj), each = n.devices * n.frames)
+frame <- rep(0:100, times = n.strides * n.devices * n.subj)
+
+data <- data.frame(device, subjectID, strideID, value, frame)
+
+saveRDS(data, file = paste0("C:/Users/Daniel/Desktop/tmp/floa/R/examples/", "log_normal.rds"))
 
 
 # ------------------------------------------------------------------------------

@@ -11,9 +11,9 @@ example_data <- function(dat, dir.data) {
     # fd.basis <- create.fourier.basis(nbasis=50) # Plateau around 50 basis vectors
     # fda.delta <- fdaDelta(data, fd.basis) # Fit Fourier, returns delta curves (mean, sd)
 
-  } else if (dat == "log_normal") {
+  } else if (dat == "non_const_var") {
 
-    data <- readRDS(paste0(dir.data, "/", "log_normal.rds"))
+    data <- readRDS(paste0(dir.data, "/", "non_const_var.rds"))
 
   } else if (dat == "bias") {
 
@@ -21,8 +21,11 @@ example_data <- function(dat, dir.data) {
 
   } else if (dat == "non_stationary") {
 
-    # Simulation outsourced to script 'simulate_data'
     data <- readRDS(paste0(dir.data, "/", "data_nonstat.rds"))
+
+  } else if (dat == "log_normal") {
+
+    data <- readRDS(paste0(dir.data, "/", "log_normal.rds"))
 
   } else if (dat == "shock") {
 

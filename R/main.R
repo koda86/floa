@@ -39,15 +39,17 @@ source("floa_rcb.R")
 ################################### Data sets ##################################
 
 # Wrapper function for example data sets.
+#
 # Function arguments:
-# 1. Empirical validation data: "imu_mc"
-# 3. Biased data (constant variance, no trend): "bias"
-# 3. Non-constant variance data (normal error, no trend): "non_const_var"
-# 4. Non-stationary data (trend, no bias) data:"non_stationary"
-# 2. Log-normal error data (no bias,  constant variance, no trend): "log_normal"
-# 5. Data with shock peaks (no bias, no trend): "shock"
+#
+# * Empirical validation data: "imu_mc"
+# * Biased data (constant variance, no trend): "bias"
+# * Non-constant variance data (normal error, no trend): "non_const_var"
+# * Non-stationary data (trend, no bias) data:"non_stationary"
+# * Log-normal error data (no bias,  constant variance, no trend): "log_normal"
+# * Data with shock peaks (no bias, no trend): "shock"
 
-data <- example_data(dat = "log_normal", dir.data)
+data <- example_data(dat = "non_const_var", dir.data)
 
 
 ###################################### FLoA #####################################
