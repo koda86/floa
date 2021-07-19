@@ -8,10 +8,6 @@
 #
 # TODO:
 #     * Implement balanced data in floa_rcb.R
-#     * Data:
-#         - Nichtnormalverteilte Daten
-#         - Eines der beiden Messsysteme ist verrauscht, eins smooth
-#         - Daten mit smoothen und nicht smoothem Signalanteil
 #     * Simulierte Daten in einer Funktion zusammenfassen
 #     * Cross validation
 #     * mean oder median as estimator?
@@ -60,7 +56,7 @@ n.boot <- 100
 # Randomized Cluster Bootstrap -------------------------------------------------
 #
 # Function returns percentiles (2.5%, 50%, 97.5%)
-FLOArcb <- floa_rcb(data, n.boot, plt = TRUE)
+floa.boot.percentiles.intrp <- floa_rcb(data, n.boot, plt = TRUE)
 
 # Method Roislien et al. -------------------------------------------------------
 
@@ -118,7 +114,7 @@ PLOT.DIFF <- ggplot(data = device.diff, aes(x = frame, y = value, color = subjec
             linetype = "solid",
             size = 3,
             colour = "red") +
-  scale_y_continuous(limits = c(min(clust.agg.intrp), max(clust.agg.intrp))) +
+  scale_y_continuous(limits = c(min(device.diff$value), max(device.diff$value))) +
   labs(x = "Time-normalized signal [%]", y = "Difference") +
   theme_minimal() +
   theme(axis.text.x = element_text(size = 20),
@@ -129,15 +125,20 @@ PLOT.DIFF <- ggplot(data = device.diff, aes(x = frame, y = value, color = subjec
 
 PLOT.DIFF
 
-############################### Cross validation ###############################
+
+#################################### Coverage ##################################
 
 # Calculate coverage (entire curves within the percentile boundaries) ----------
 
 # Require percentiles (floa.boot.percentiles.intrp) and difference curves from floa_rcb.R
 
-# Get lower and upper interval boundaries
+# Get interval boundaries
+# plot(floa.boot.percentiles.intrp[1, ], type = "l")
+# lines(floa.boot.percentiles.intrp[2, ])
+# lines(floa.boot.percentiles.intrp[3, ])
+
 lwr.bnd <- floa.boot.percentiles.intrp[1, ]
-upr.bnd <- floa.boot.percentiles.intrp[2, ]
+upr.bnd <- floa.boot.percentiles.intrp[3, ]
 
 n.strides <- length(unique(device.diff$strideID))
 outside <- 0
@@ -157,9 +158,11 @@ for (stride.idx in 1:n.strides){
   }
 }
 
-coverage <- c()
-coverage <- c(coverage, 1 - (outside / n.strides))
+coverage <- 1 - (outside / n.strides)
+print(coverage)
 
+
+############################### Cross validation ###############################
 
 # Leave-one (subject) out method to estimate the achieved coverage
 # See Lenhoff
