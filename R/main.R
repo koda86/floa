@@ -41,9 +41,10 @@ source("floa_rcb.R")
 # Wrapper function for example data sets.
 # Function arguments:
 # 1. Empirical validation data: "imu_mc"
-# 2. Biased data (constant variance, no trend): "bias"
-# 2. Non-stationary data (trend, no bias) data:"non_stationary"
-# 3. Data with shock peaks (no bias, no trend): "shock"
+# 2. log-normal error data (no bias,  constant variance, no trend): "log_normal"
+# 3. Biased data (constant variance, no trend): "bias"
+# 4. Non-stationary data (trend, no bias) data:"non_stationary"
+# 5. Data with shock peaks (no bias, no trend): "shock"
 
 data <- example_data(dat = "non_stationary", dir.data)
 
