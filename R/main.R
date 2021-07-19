@@ -29,6 +29,7 @@ setwd(dir.script)
 source("example_data.R")
 source("draw_clusters.R")
 source("floa_rcb.R")
+source("get_coverage.R")
 # source("fdaDelta.R")
 
 
