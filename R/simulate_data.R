@@ -80,14 +80,39 @@ for (subj.idx in 1:n.subj) {
   subjectID.subj <- c()
 
   # Sample subjectwise parameters
-  subj.mean <- 5 * rnorm(1)
-  subj.sd.1 <- 2 * runif(1)
-  subj.sd.2 <- 2 * runif(1) + rlnorm(1, meanlog = 2)
+  subj.mean <- rnorm(1)
+  subj.sd.1 <- runif(1)
+  subj.sd.2 <- 2 * runif(1)
+
+  # Dummy vector to allocate regions (within) one stride with similar smoothness
+  # Serves as input (mean) to rnorm in the next step
+  subj.mean.smooth <- c(rep(round(rnorm(1)) - 1, 25),
+                        rep(round(rnorm(1)) + 1 , 25),
+                        rep(round(rnorm(1)), 25),
+                        rep(round(rnorm(1)) + 2, 25)
+                        )
 
   for (stride.idx in 1:(n.strides)) {
 
-    mc <- rnorm(n.frames, mean = subj.mean, sd = subj.sd.2)
-    imu <- rnorm(n.frames, mean = subj.mean, sd = subj.sd.1)
+    mc <- rep(NA, n.frames)
+    imu <- rep(NA, n.frames)
+
+    for (frame.idx in 1:n.frames) {
+
+      # if (frame.idx < 50) {
+
+        mc[frame.idx] <- rnorm(1, mean = subj.mean, sd = subj.sd.1)
+        imu[frame.idx] <- rnorm(1, mean = subj.mean.smooth[frame.idx], sd = subj.sd.1)
+
+      # } else if (frame.idx >= 50) {
+
+        # mc[frame.idx] <- rnorm(1, mean = subj.mean, sd = subj.sd.2)
+        # imu[frame.idx] <- rnorm(n.frames, mean = subj.mean, sd = subj.sd.2)
+      # }
+    }
+
+    # mc <- rnorm(n.frames, mean = subj.mean, sd = subj.sd.2)
+    # imu <- rnorm(n.frames, mean = subj.mean, sd = subj.sd.1)
 
     value.subj <- c(value.subj, c(imu, mc))
 
@@ -207,7 +232,7 @@ for (subj.idx in 1:n.subj) {
 
   for (stride.idx in 1:(n.strides)) {
 
-    mc <- mc <- rnorm(n.frames, mean = subj.mean, sd = subj.sd.2) # rlnorm(n.frames, meanlog = subj.mean, sdlog = subj.sd.2)
+    mc <- rlnorm(n.frames, meanlog = subj.mean, sdlog = subj.sd.2) # rnorm(n.frames, mean = subj.mean, sd = subj.sd.2)
     imu <- rnorm(n.frames, mean = subj.mean, sd = subj.sd.1)
 
     value.subj <- c(value.subj, c(imu, mc))
@@ -287,3 +312,4 @@ frame <- rep(0:100, times = n.strides * n.devices * n.subj)
 data <- data.frame(device, subjectID, strideID, value, frame)
 
 saveRDS(data, file = paste0("C:/Users/Daniel/Desktop/tmp/floa/R/examples/", "data_shock.rds"))
+
