@@ -15,6 +15,7 @@
 #     * See appendix Lenhoff et al.
 #     * Use only synthetic data? (Leave out real world example?)
 #     * Umbennung in CLoA (Continuous LoA)?
+#     * quantile() function: Bias correction useful/necessary?
 ################################################################################
 
 # library(fda)
