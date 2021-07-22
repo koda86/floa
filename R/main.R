@@ -11,7 +11,7 @@
 #     * Simulierte Daten in einer Funktion zusammenfassen
 #     * Cross validation
 #     * mean oder median as estimator?
-#     * Method comparisons: Against FDA (Lenhoff/Roislien) and/or pointwise!?
+#     * Method comparisons: Against FDA (Lenhoff/Roislien) and pointwise!?
 #     * See appendix Lenhoff et al.
 #     * Use only synthetic data? (Leave out real world example?)
 #     * Umbennung in CLoA (Continuous LoA)?

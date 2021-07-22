@@ -33,13 +33,10 @@ floa_point <- function(data) {
 
   # Calculate mean, upper and lower limits of agreement (boundaries) to get the
   # same structure as returned by the other methods (i. e. floa_rcb)
-  lwr.bnd <- floa.boot.percentiles.intrp[1, ]
-  upr.bnd <- floa.boot.percentiles.intrp[3, ]
-
   floa.point.bnd <- rbind(floa.point$mean.diff + 1.96 * (floa.point$sd.between + floa.point$sd.within),
                           floa.point$mean.diff,
                           floa.point$mean.diff - 1.96 * (floa.point$sd.between + floa.point$sd.within)
                           )
 
-  return(floa.pointbnd)
+  return(floa.point.bnd)
 }
