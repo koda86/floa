@@ -26,17 +26,17 @@ plot_loa <- function (data, floa) {
     geom_line() +
     scale_color_grey(start = 0.8, end = 0.2) +
     geom_line(data = floa,
-              aes(x = seq (0,100), y = X1, col = "red", group = 1),
+              aes(x = seq(0, 100), y = X1, col = "red", group = 1),
               linetype = "solid",
               size = 3,
               colour = "red") +
     geom_line(data = floa,
-              aes(x = seq (0,100), y = X2, col = "red", group = 1),
+              aes(x = seq(0, 100), y = X2, col = "red", group = 1),
               linetype = "dotted",
               size = 3,
               colour = "red") +
     geom_line(data = floa,
-              aes(x = seq (0,100), y = X3, col = "red", group = 1),
+              aes(x = seq(0, 100), y = X3, col = "red", group = 1),
               linetype = "solid",
               size = 3,
               colour = "red") +
