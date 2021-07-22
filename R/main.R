@@ -84,7 +84,9 @@ plot_loa(data, floa)
 #################################### Coverage ##################################
 
 # Calculate coverage (entire curves within the percentile boundaries) ----------
-coverage <- get_coverage(floa.boot.percentiles.intrp)
+bound <- floa.boot.percentiles.intrp
+
+coverage <- get_coverage(data, bound)
 
 print(coverage)
 

@@ -1,7 +1,14 @@
-get_coverage <- function (floa.boot.percentiles.intrp) {
+get_coverage <- function (data, floa.boot.percentiles.intrp) {
 
-  # Calculate coverage (entire curves within the percentile boundaries)
+  # Get difference curves ------------------------------------------------------
+  device1 <- data.frame(subset(data, device == "IMU"))
+  device2 <- data.frame(subset(data, device == "MC"))
 
+  device.diff <- subset(device1, select = c(subjectID, strideID, frame))
+  device.diff$value <- device1$value - device2$value
+
+
+  # Calculate coverage (entire curves within the percentile boundaries) --------
   lwr.bnd <- floa.boot.percentiles.intrp[1, ]
   upr.bnd <- floa.boot.percentiles.intrp[3, ]
 
