@@ -30,6 +30,7 @@ setwd(dir.script)
 source("example_data.R")
 source("draw_clusters.R")
 source("floa_rcb.R")
+source("floa_point.R")
 source("plot_loa.R")
 source("get_coverage.R")
 # source("fdaDelta.R")
@@ -68,7 +69,7 @@ n.boot <- 100
 floa.boot.percentiles.intrp <- floa_rcb(data, n.boot, plt = TRUE)
 
 # Pointwise LoA ----------------------------------------------------------------
-
+floa.point <- floa_point(data)
 
 # Method Roislien et al. -------------------------------------------------------
 
@@ -77,7 +78,10 @@ floa.boot.percentiles.intrp <- floa_rcb(data, n.boot, plt = TRUE)
 
 ################################### Plot data ##################################
 
-floa <- data.frame(t(floa.boot.percentiles.intrp))
+# Select floa method
+# * FLOA-RCB: data.frame(t(floa.boot.percentiles.intrp))
+# * FLOA-point: floa.point
+floa <- floa.point # data.frame(t(floa.boot.percentiles.intrp))
 
 plot_loa(data, floa)
 
