@@ -79,18 +79,16 @@ floa.point <- floa_point(data)
 ################################### Plot data ##################################
 
 # Select floa method
-# * FLOA-RCB: data.frame(t(floa.boot.percentiles.intrp))
-# * FLOA-point: floa.point
-floa <- floa.point # data.frame(t(floa.boot.percentiles.intrp))
+# * FLOA RCB: data.frame(t(floa.boot.percentiles.intrp))
+# * FLOA POINT: data.frame(t(floa.point))
+floa <- data.frame(t(floa.point))
 
 plot_loa(data, floa)
 
 #################################### Coverage ##################################
 
 # Calculate coverage (entire curves within the percentile boundaries) ----------
-bound <- floa.boot.percentiles.intrp
-
-coverage <- get_coverage(data, bound)
+coverage <- get_coverage(data, floa)
 
 print(coverage)
 
