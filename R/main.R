@@ -122,7 +122,6 @@ print(coverage)
 #   * Standard error of estimate
 # ------------------------------------------------------------------------------
 
-cover.cross <- crossval_coverage(data, method)
+cover.cross <- crossval_coverage(data, n.boot, method = "floa.rcb")
 
-# Boxplot of coverage distribution
-boxplot(cover.distro)
+boxplot(cover.cross)
