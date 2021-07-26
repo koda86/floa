@@ -24,7 +24,7 @@ crossval_coverage <- function (data, method) {
       floa.point <- data.frame(t(floa.point))
 
       cover.distro <- c(cover.distro,
-                        get_coverage(data, t(floa.rcb)) # Select floa method
+                        get_coverage(data, t(floa.point)) # Select floa method
       )
     }
   }
