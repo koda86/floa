@@ -53,15 +53,17 @@ source("get_coverage.R")
 data <- example_data(dat = "smooth", dir.data)
 
 
-###################################### FLoA #####################################
+################################ Calculate FLoA ################################
 
-n.boot <- 30
+n.boot <- 100
 
-# Randomized Cluster Bootstrap -------------------------------------------------
-#
+# Randomized Cluster Bootstrap
+# ------------------------------------------------------------------------------
+
 # * In the first stage, n=length(subjects) random strides are sampled
 # from all strides (with replacement). Strides are selected from the entire set
 # of curves (NOT! one curve per subject).
+#
 # * The process is repeated n.boot times.
 # From the resulting distribution, percentiles (2.5%, 50%, 97.5%) are calculated.
 
@@ -78,16 +80,19 @@ floa.point <- floa_point(data)
 
 ################################### Plot data ##################################
 
-# Select floa method
-# * FLOA RCB: data.frame(t(floa.boot.percentiles.intrp))
-# * FLOA POINT: data.frame(t(floa.point))
-floa <- data.frame(t(floa.boot.percentiles.intrp)) # data.frame(t(floa.point))
+floa.rcb <- data.frame(t(floa.boot.percentiles.intrp)) # FLOA RCB
+floa.point <- data.frame(t(floa.point))                # FLOA POINT
 
-plot_loa(data, floa)
+# Select floa method
+plot_loa(data, floa.point)
+
 
 #################################### Coverage ##################################
 
 # Calculate coverage (entire curves within the percentile boundaries) ----------
+floa <- floa.boot.percentiles.intrp
+floa <-  data.frame(t(floa.point))
+
 coverage <- get_coverage(data, floa)
 
 print(coverage)
