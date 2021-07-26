@@ -63,7 +63,6 @@ n.boot <- 100
 # * In the first stage, n=length(subjects) random strides are sampled
 # from all strides (with replacement). Strides are selected from the entire set
 # of curves (NOT! one curve per subject).
-#
 # * The process is repeated n.boot times.
 # From the resulting distribution, percentiles (2.5%, 50%, 97.5%) are calculated.
 
@@ -83,17 +82,13 @@ floa.point <- floa_point(data)
 floa.rcb <- data.frame(t(floa.boot.percentiles.intrp)) # FLOA RCB
 floa.point <- data.frame(t(floa.point))                # FLOA POINT
 
-# Select floa method
-plot_loa(data, floa.point)
+plot_loa(data, floa.rcb) # Select floa method
 
 
 #################################### Coverage ##################################
 
 # Calculate coverage (entire curves within the percentile boundaries) ----------
-floa <- floa.boot.percentiles.intrp
-floa <-  data.frame(t(floa.point))
-
-coverage <- get_coverage(data, floa)
+coverage <- get_coverage(data, t(floa.rcb)) # Select floa method
 
 print(coverage)
 
