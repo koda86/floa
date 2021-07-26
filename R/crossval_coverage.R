@@ -8,7 +8,7 @@ crossval_coverage <- function (data, n.boot, method) {
 
     data.subset <- subset(data, subjectID != i)
 
-    if (method == "floa.rcb" | method == "all") {
+    if (method == "floa.rcb") {
 
       floa.boot.percentiles.intrp <- floa_rcb(data.subset, n.boot)
       floa.rcb <- data.frame(t(floa.boot.percentiles.intrp))
@@ -16,9 +16,7 @@ crossval_coverage <- function (data, n.boot, method) {
       cover.distro <- c(cover.distro,
                         get_coverage(data, t(floa.rcb)) # Select floa method
       )
-    }
-
-    if (method == "floa.point"  | method == "all") {
+    } else if (method == "floa.point") {
 
       floa.point <- floa_point(data)
       floa.point <- data.frame(t(floa.point))
