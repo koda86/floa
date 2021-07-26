@@ -14,6 +14,7 @@
 # (see subsection data sets)
 #
 # TODO:
+#   * Compare v1 (Chris) and v3 (Doris) floa methods
 #   * Implement balanced data in floa_rcb.R
 #   * Simulierte Daten in einer Funktion zusammenfassen
 #   * mean oder median as estimator?
@@ -126,16 +127,13 @@ print(coverage)
 
 cover.cross <- crossval_coverage(data, n.boot, method = "all")
 
-test <- data.frame(cover.cross)
-temp = reshape(test, direction = "long", varying = list(names(test)))
-temp$time <- as.factor(temp$time)
+# Prepare data for (gg)plotting
+cover.cross.df <- data.frame(cover.cross)
+cover.cross.long <- reshape(cover.cross.df, direction = "long", varying = list(names(cover.cross.df)))[, 1:2]
+cover.cross.long$time <- as.factor(cover.cross.long$time)
+names(cover.cross.long)[names(cover.cross.long) != 'time'] <- 'value'
+names(cover.cross.long)[names(cover.cross.long) == 'time'] <- 'method'
 
-cover.PLOT <- ggplot(temp, aes(x = time, y = cover.distro.rcb)) + geom_boxplot()
-
+cover.PLOT <- ggplot(cover.cross.long, aes(x = method, y = value)) + geom_boxplot()
 cover.PLOT
 
-# boxplot(split(temp[,3], temp[,1]))
-#
-# apply(cover.cross, 2, boxplot)
-
-# boxplot(cover.cross)
