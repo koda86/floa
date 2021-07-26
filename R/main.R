@@ -55,7 +55,7 @@ data <- example_data(dat = "smooth", dir.data)
 
 ###################################### FLoA #####################################
 
-n.boot <- 100
+n.boot <- 30
 
 # Randomized Cluster Bootstrap -------------------------------------------------
 #
@@ -81,7 +81,7 @@ floa.point <- floa_point(data)
 # Select floa method
 # * FLOA RCB: data.frame(t(floa.boot.percentiles.intrp))
 # * FLOA POINT: data.frame(t(floa.point))
-floa <- data.frame(t(floa.point))
+floa <- data.frame(t(floa.boot.percentiles.intrp)) # data.frame(t(floa.point))
 
 plot_loa(data, floa)
 
