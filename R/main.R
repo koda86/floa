@@ -33,6 +33,8 @@
 
 rm(list = ls())
 
+library(ggplot2)
+
 dir.script <- "C:/Users/Daniel/Desktop/tmp/floa/R"
 dir.data <- "C:/Users/Daniel/Desktop/tmp/floa/R/examples"
 
@@ -122,6 +124,18 @@ print(coverage)
 #   * Standard error of estimate
 # ------------------------------------------------------------------------------
 
-cover.cross <- crossval_coverage(data, n.boot, method = "floa.rcb")
+cover.cross <- crossval_coverage(data, n.boot, method = "all")
 
-boxplot(cover.cross)
+test <- data.frame(cover.cross)
+temp = reshape(test, direction = "long", varying = list(names(test)))
+temp$time <- as.factor(temp$time)
+
+cover.PLOT <- ggplot(temp, aes(x = time, y = cover.distro.rcb)) + geom_boxplot()
+
+cover.PLOT
+
+# boxplot(split(temp[,3], temp[,1]))
+#
+# apply(cover.cross, 2, boxplot)
+
+# boxplot(cover.cross)
