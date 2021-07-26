@@ -1,24 +1,31 @@
 ################################################################################
 # Main script Functional Limits of Agreement (FLoA)
 #
-# FLoA are calculated using a randomized cluster bootstrap
+# FLoA derived by different methods are compared
+#   * Randomized Cluster Bootstrap      (floa.rcb)
+#   * Point-by-point Gaussian intervals (floa.point)
+#   * Method Lenhoff et al. (1999)      (curently not implemented)
+#   * Method Roislien et al. (2012)     (curently not implemented)
 #
 # Thus far, a transformation of time series data to functional data (Fourier,
 # Splines etc.) is not implemented.
 #
+# For demonstration, different (synthetic) data sets can be chosen
+# (see subsection data sets)
+#
 # TODO:
 #   * Implement balanced data in floa_rcb.R
 #   * Simulierte Daten in einer Funktion zusammenfassen
-#   * Cross validation
 #   * mean oder median as estimator?
 #   * Method comparisons: Against FDA (Lenhoff/Roislien) and pointwise!?
-#   * See appendix Lenhoff et al.
 #   * Use only synthetic data? (Leave out real world example?)
 #   * Umbennung in CLoA (Continuous LoA)?
 #   * quantile() function: Bias correction useful/necessary?
-#   * Lenhoff (1999)
 #   * Konvergenzanalyse --> "[...] the  achieved  level  of  bootstrap bands  is
 # roughly  equal  to  the nominal  level  with as  few  as  25  or  so  curves.
+
+# Further reading:
+#   * (Appendix) Lenhoff et al. (1999)
 ################################################################################
 
 # library(fda)
@@ -36,6 +43,7 @@ source("floa_rcb.R")
 source("floa_point.R")
 source("plot_loa.R")
 source("get_coverage.R")
+source("crossval_coverage.R")
 # source("fdaDelta.R")
 
 
@@ -76,11 +84,11 @@ floa.boot.percentiles.intrp <- floa_rcb(data, n.boot, plt = TRUE)
 # ------------------------------------------------------------------------------
 floa.point <- floa_point(data)
 
-# Method Roislien et al.
-# ------------------------------------------------------------------------------
+# # Method Lenhoff et al. (1999)
+# # ------------------------------------------------------------------------------
 
-# Method Lenhoff
-# ------------------------------------------------------------------------------
+# # Method Roislien et al. (2012)
+# # ------------------------------------------------------------------------------
 
 
 ################################### Plot data ##################################
@@ -102,7 +110,7 @@ print(coverage)
 ############################### Cross validation ###############################
 
 # Leave-one (subject) out method to estimate the achieved coverage
-# See Lenhoff (1999)
+# See Lenhoff et al. (1999)
 #
 # Specify method calculated in crossval_coverage()
 #   * method = "all"
@@ -115,39 +123,6 @@ print(coverage)
 # ------------------------------------------------------------------------------
 
 cover.cross <- crossval_coverage(data, method)
-
-crossval_coverage <- function (data, method) {
-
-  n.subj <- unique(data$subjectID)
-
-  cover.distro  <- c()
-
-  for (i in n.subj) {
-
-    data.subset <- subset(data, subjectID != i)
-
-    if (method == "floa.rcb" | method == "all") {
-
-      floa.boot.percentiles.intrp <- floa_rcb(data.subset, n.boot, plt = TRUE)
-      floa.rcb <- data.frame(t(floa.boot.percentiles.intrp))
-
-      cover.distro <- c(cover.distro,
-                        get_coverage(data, t(floa.rcb)) # Select floa method
-      )
-    }
-
-    if (method == "floa.point"  | method == "all") {
-
-      floa.point <- floa_point(data)
-      floa.point <- data.frame(t(floa.point))
-
-      cover.distro <- c(cover.distro,
-                        get_coverage(data, t(floa.rcb)) # Select floa method
-      )
-    }
-  }
-}
-
 
 # Boxplot of coverage distribution
 boxplot(cover.distro)
