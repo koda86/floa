@@ -1,4 +1,4 @@
-draw_clusters <- function(data, ver) { # fd.basis
+draw_clusters <- function(data, version) { # fd.basis
 
   # ----------------------------------------------------------------------------
   # This function represents the first of two stages in the randomized cluster
@@ -10,7 +10,7 @@ draw_clusters <- function(data, ver) { # fd.basis
   # v3 : Fetch a single stride only form all strides
   # ----------------------------------------------------------------------------
 
-  if (ver == "v1") {
+  if (version == "v1") {
 
     #### v1 ####
     # Strides are selected from the entire set of curves (NOT! one curve per subject)
@@ -31,7 +31,7 @@ draw_clusters <- function(data, ver) { # fd.basis
   }
 
 
-  if (ver == "v2") {
+  if (version == "v2") {
 
     # #### v1.1 (functional data) ####
     # #
@@ -54,7 +54,7 @@ draw_clusters <- function(data, ver) { # fd.basis
   }
 
 
-  if (ver == "v3") {
+  if (version == "v3") {
 
     # v3
     # Fetch a single stride only (from the entire set of curves)

@@ -79,9 +79,16 @@ n.boot <- 100
 # of curves (NOT! one curve per subject).
 # * The process is repeated n.boot times.
 # From the resulting distribution, percentiles (2.5%, 50%, 97.5%) are calculated.
+#
+# In current implementation: Specify version number (ver):
+# v1  : n=length(subjects) random strides from all strides
+# v2  : Functional data version of v1
+# v3  : Fetch a single stride only form all strides
+# vall: Returns all implemented versions
+# ------------------------------------------------------------------------------
+ver = ""
 
-# Function returns percentiles (2.5%, 50%, 97.5%)
-floa.boot.percentiles.intrp <- floa_rcb(data, n.boot, plt = TRUE)
+floa.boot.percentiles.intrp <- floa_rcb(data, n.boot, ver)
 
 # Pointwise LoA
 # ------------------------------------------------------------------------------

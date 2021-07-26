@@ -1,4 +1,4 @@
-floa_rcb <- function(data, n.boot, plt) { # , fd.basis
+floa_rcb <- function(data, n.boot, ver) { # , fd.basis
 
   library(ggplot2)
 
@@ -16,7 +16,7 @@ floa_rcb <- function(data, n.boot, plt) { # , fd.basis
     # v1 : n=length(subjects) random strides from all strides
     # v2 : Functional data version of v1
     # v3 : Fetch a single stride only form all strides
-    clust.boot.agg[[boot.idx]] <- draw_clusters(data, ver = "v1") # , fd.basis
+    clust.boot.agg[[boot.idx]] <- draw_clusters(data, version = ver) # , fd.basis
   }
 
   # (Row-wise) Arrange difference curves to facilitate computing percentiles
