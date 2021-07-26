@@ -7,15 +7,18 @@
 # Splines etc.) is not implemented.
 #
 # TODO:
-#     * Implement balanced data in floa_rcb.R
-#     * Simulierte Daten in einer Funktion zusammenfassen
-#     * Cross validation
-#     * mean oder median as estimator?
-#     * Method comparisons: Against FDA (Lenhoff/Roislien) and pointwise!?
-#     * See appendix Lenhoff et al.
-#     * Use only synthetic data? (Leave out real world example?)
-#     * Umbennung in CLoA (Continuous LoA)?
-#     * quantile() function: Bias correction useful/necessary?
+#   * Implement balanced data in floa_rcb.R
+#   * Simulierte Daten in einer Funktion zusammenfassen
+#   * Cross validation
+#   * mean oder median as estimator?
+#   * Method comparisons: Against FDA (Lenhoff/Roislien) and pointwise!?
+#   * See appendix Lenhoff et al.
+#   * Use only synthetic data? (Leave out real world example?)
+#   * Umbennung in CLoA (Continuous LoA)?
+#   * quantile() function: Bias correction useful/necessary?
+#   * Lenhoff (1999)
+#   * Konvergenzanalyse --> "[...] the  achieved  level  of  bootstrap bands  is
+# roughly  equal  to  the nominal  level  with as  few  as  25  or  so  curves.
 ################################################################################
 
 # library(fda)
@@ -69,25 +72,28 @@ n.boot <- 100
 # Function returns percentiles (2.5%, 50%, 97.5%)
 floa.boot.percentiles.intrp <- floa_rcb(data, n.boot, plt = TRUE)
 
-# Pointwise LoA ----------------------------------------------------------------
+# Pointwise LoA
+# ------------------------------------------------------------------------------
 floa.point <- floa_point(data)
 
-# Method Roislien et al. -------------------------------------------------------
+# Method Roislien et al.
+# ------------------------------------------------------------------------------
 
-# Method Lenhoff ---------------------------------------------------------------
+# Method Lenhoff
+# ------------------------------------------------------------------------------
 
 
 ################################### Plot data ##################################
 
-floa.rcb <- data.frame(t(floa.boot.percentiles.intrp)) # FLOA RCB
-floa.point <- data.frame(t(floa.point))                # FLOA POINT
+floa.rcb <- data.frame(t(floa.boot.percentiles.intrp))
+floa.point <- data.frame(t(floa.point))
 
 plot_loa(data, floa.rcb) # Select floa method
 
 
 #################################### Coverage ##################################
 
-# Calculate coverage (entire curves within the percentile boundaries) ----------
+# Calculate coverage (entire curves within the percentile boundaries)
 coverage <- get_coverage(data, t(floa.rcb)) # Select floa method
 
 print(coverage)
@@ -96,13 +102,52 @@ print(coverage)
 ############################### Cross validation ###############################
 
 # Leave-one (subject) out method to estimate the achieved coverage
-# See Lenhoff
+# See Lenhoff (1999)
+#
+# Specify method calculated in crossval_coverage()
+#   * method = "all"
+#   * method = "floa.rcb"
+#   * method = "floa.point"
 #
 # Output:
-#     * Coverage level (%)
-#     * Standard error of estimate
-#     * "[...] the  achieved  level  of  bootstrap bands  is  roughly  equal  to  the
-# nominal  level  with as  few  as  25  or  so  curves. --> Konvergenzanalyse
+#   * Coverage levels [%] and SEM across n=length(subjectID) iterations
+#   * Standard error of estimate
+# ------------------------------------------------------------------------------
+
+cover.cross <- crossval_coverage(data, method)
+
+crossval_coverage <- function (data, method) {
+
+  n.subj <- unique(data$subjectID)
+
+  cover.distro  <- c()
+
+  for (i in n.subj) {
+
+    data.subset <- subset(data, subjectID != i)
+
+    if (method == "floa.rcb" | method == "all") {
+
+      floa.boot.percentiles.intrp <- floa_rcb(data.subset, n.boot, plt = TRUE)
+      floa.rcb <- data.frame(t(floa.boot.percentiles.intrp))
+
+      cover.distro <- c(cover.distro,
+                        get_coverage(data, t(floa.rcb)) # Select floa method
+      )
+    }
+
+    if (method == "floa.point"  | method == "all") {
+
+      floa.point <- floa_point(data)
+      floa.point <- data.frame(t(floa.point))
+
+      cover.distro <- c(cover.distro,
+                        get_coverage(data, t(floa.rcb)) # Select floa method
+      )
+    }
+  }
+}
 
 
-
+# Boxplot of coverage distribution
+boxplot(cover.distro)
