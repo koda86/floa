@@ -26,11 +26,11 @@ crossval_coverage <- function (data, n.boot, method) {
       cover.distro <- c(cover.distro,
                         get_coverage(data, t(floa.point)) # Select floa method
       )
+    } else {
+
+      print("Method does not exist")
     }
-  } else {
 
-    print("Method does not exist")
   }
-
   return(cover.distro)
 }
