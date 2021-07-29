@@ -92,6 +92,9 @@ floa.boot.percentiles.intrp <- floa_rcb(data, n.boot, ver)
 
 # Pointwise LoA
 # ------------------------------------------------------------------------------
+
+# Mean and SD are calculated across all strides (and subjects).
+# No bootstrap or other resampling strategies are applied.
 floa.point <- floa_point(data)
 
 # # Method Lenhoff et al. (1999)
