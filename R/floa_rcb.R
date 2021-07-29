@@ -11,11 +11,6 @@ floa_rcb <- function(data, n.boot, ver) { # , fd.basis
   for (boot.idx in 1:n.boot) {
 
     # draw_clusters returns difference curves (device1 - device2)
-    #
-    # In current implementation: Specify version number (ver):
-    # v1 : n=length(subjects) random strides from all strides
-    # v2 : Functional data version of v1
-    # v3 : Fetch a single stride only form all strides
     clust.boot.agg[[boot.idx]] <- draw_clusters(data, version = ver) # , fd.basis
   }
 

@@ -86,7 +86,7 @@ n.boot <- 100
 # v3  : Fetch a single stride only form all strides
 # vall: Returns all implemented versions
 # ------------------------------------------------------------------------------
-ver = ""
+ver = "v3"
 
 floa.boot.percentiles.intrp <- floa_rcb(data, n.boot, ver)
 
