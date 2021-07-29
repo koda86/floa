@@ -47,6 +47,7 @@ source("floa_point.R")
 source("plot_loa.R")
 source("get_coverage.R")
 source("crossval_coverage.R")
+source("plot_cov_ver.R")
 # source("fdaDelta.R")
 
 
@@ -84,7 +85,6 @@ n.boot <- 100
 # v1  : n=length(subjects) random strides from all strides
 # v2  : Functional data version of v1
 # v3  : Fetch a single stride only form all strides
-# vall: Returns all implemented versions
 # ------------------------------------------------------------------------------
 ver = "v3"
 
@@ -115,7 +115,7 @@ plot_loa(data, floa.rcb) # Select floa method
 ################################### Coverage ###################################
 
 # Calculate coverage (entire curves within the percentile boundaries)
-coverage <- get_coverage(data, t(floa.rcb)) # Select floa method
+coverage <- get_coverage(data, t(floa.point)) # Select floa method
 
 print(coverage)
 
@@ -123,27 +123,32 @@ print(coverage)
 ############################### Cross validation ###############################
 
 # Leave-one (subject) out method to estimate the achieved coverage
-# See Lenhoff et al. (1999)
+# See e. g. Lenhoff et al. (1999)
 #
 # Specify method calculated in crossval_coverage()
 #   * method = "all"
 #   * method = "floa.rcb"
 #   * method = "floa.point"
 #
+# Select a version for the calculation of floa.rcb (see above)
+
+# Currently, different version of the sampling process in draw_clusters() (nested)
+# in floa_rcb()) are implemented (specified by the function argument ver).
+
+# Select a version:
+# v1  : n=length(subjects) random strides from all strides
+# v2  : Functional data version of v1
+# v3  : Fetch a single stride only form all strides
+#
 # Output:
 #   * Coverage levels [%] and SEM across n=length(subjectID) iterations
 #   * Standard error of estimate
 # ------------------------------------------------------------------------------
 
-cover.cross <- crossval_coverage(data, n.boot, method = "all")
+cover.cross.v1 <- crossval_coverage(data, n.boot, method = "all", ver = "v1")
+cover.cross.v3 <- crossval_coverage(data, n.boot, method = "all", ver = "v3")
 
-# Prepare data for (gg)plotting
-cover.cross.df <- data.frame(cover.cross)
-cover.cross.long <- reshape(cover.cross.df, direction = "long", varying = list(names(cover.cross.df)))[, 1:2]
-cover.cross.long$time <- as.factor(cover.cross.long$time)
-names(cover.cross.long)[names(cover.cross.long) != 'time'] <- 'value'
-names(cover.cross.long)[names(cover.cross.long) == 'time'] <- 'method'
+plot_cov_ver(cover.cross.v1)
+plot_cov_ver(cover.cross.v3)
 
-cover.PLOT <- ggplot(cover.cross.long, aes(x = method, y = value)) + geom_boxplot()
-cover.PLOT
 

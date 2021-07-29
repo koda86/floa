@@ -11,6 +11,9 @@ floa_rcb <- function(data, n.boot, ver) { # , fd.basis
   for (boot.idx in 1:n.boot) {
 
     # draw_clusters returns difference curves (device1 - device2)
+    #
+    # Currently, different versions of the sampling process in draw_clusters() are
+    # implemented (specified by the function argument ver).
     clust.boot.agg[[boot.idx]] <- draw_clusters(data, version = ver) # , fd.basis
   }
 
