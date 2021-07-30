@@ -14,11 +14,9 @@
 # (see subsection data sets)
 #
 # TODO:
-#   * Compare v1 (Chris) and v3 (Doris) floa methods
+#   * Implement FDA!?
 #   * Implement balanced data in floa_rcb.R
-#   * Simulierte Daten in einer Funktion zusammenfassen
-#   * mean oder median as estimator?
-#   * Method comparisons: Against FDA (Lenhoff/Roislien) and pointwise!?
+#   * FLoA_RCB: mean oder median as estimator?
 #   * Use only synthetic data? (Leave out real world example?)
 #   * Umbennung in CLoA (Continuous LoA)?
 #   * quantile() function: Bias correction useful/necessary?
@@ -65,7 +63,7 @@ source("plot_cov_ver.R")
 # * Log-normal error data (no bias,  constant variance, no trend): "log_normal"
 # * Data with shock peaks (no bias, no trend): "shock"
 
-data <- example_data(dat = "smooth", dir.data)
+data <- example_data(dat = "bias", dir.data)
 
 
 ################################ Calculate FLoA ################################
@@ -86,7 +84,7 @@ n.boot <- 100
 # v2  : Functional data version of v1
 # v3  : Fetch a single stride only form all strides
 # ------------------------------------------------------------------------------
-ver = "v3"
+ver = "v1"
 
 floa.boot.percentiles.intrp <- floa_rcb(data, n.boot, ver)
 
@@ -150,5 +148,8 @@ cover.cross.v3 <- crossval_coverage(data, n.boot, method = "all", ver = "v3")
 
 plot_cov_ver(cover.cross.v1)
 plot_cov_ver(cover.cross.v3)
+
+
+############################# Convergence analysis #############################
 
 

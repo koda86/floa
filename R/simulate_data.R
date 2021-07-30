@@ -219,19 +219,18 @@ for (subj.idx in 1:n.subj) {
     w <- rnorm(n.frames, mean = subj.mean, sd = subj.sd.1)
     v <- rnorm(n.frames, mean = subj.mean, sd = subj.sd.2)
 
+    offset <- 10
+
     # Autoregressive signal with trend
-    for (t in 2:n.frames) {
+    for (t in 1:n.frames) {
 
-      if (t == 1) {
-
-        mc[t] <- rnorm(1, mean = subj.mean, sd = subj.sd.2)
-        imu[t] <- rnorm(1, mean = subj.mean, sd = subj.sd.1)
+      if (t < offset) {
+        mc[t] <- v[t]
+        imu[t] <- w[t]
+      } else {
+        mc[t] <- v[t]
+        imu[t] <- phi.1[1] * imu[t-(offset-1)] + w[t] + trend.1*t
       }
-
-      # mc[t] <- phi.2[1] * mc[t-1] + v[t] + trend.2*t
-      mc[t] <- v[t]
-      imu[t] <- phi.1[1] * imu[t-1] + w[t] + trend.1*t # offset
-
     }
 
     value.subj <- c(value.subj, c(imu, mc))
