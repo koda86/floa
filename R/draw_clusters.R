@@ -66,7 +66,7 @@ draw_clusters <- function(data, version) { # fd.basis
 
       tmp <- data[data$subjectID == subj.idx, ]
 
-      curve.idx.subj <- as.numeric(sample(tmp$strideID, length(unique(data$subjectID)), size = 1))
+      curve.idx.subj <- as.numeric(sample(tmp$strideID, size = 1))
       curve.idx <- c(curve.idx, curve.idx.subj)
     }
 
