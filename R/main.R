@@ -80,9 +80,10 @@ n.boot <- 100
 # From the resulting distribution, percentiles (2.5%, 50%, 97.5%) are calculated.
 #
 # In current implementation: Specify version number (ver):
-# v1  : n=length(subjects) random strides from all strides
-# v2  : Functional data version of v1
-# v3  : Fetch a single stride only form all strides
+# v1   : n = length(subjects) random strides from all strides
+# v1.1 : Functional data version of v1
+# v2   : One stride per subject
+# v3   : Fetch a single stride only form all strides
 # ------------------------------------------------------------------------------
 ver = "v1"
 
@@ -140,7 +141,6 @@ print(coverage)
 #
 # Output:
 #   * Coverage levels [%] and SEM across n=length(subjectID) iterations
-#   * Standard error of estimate
 # ------------------------------------------------------------------------------
 
 cover.cross.v1 <- crossval_coverage(data, n.boot, method = "all", ver = "v1")

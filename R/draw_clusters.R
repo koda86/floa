@@ -5,9 +5,10 @@ draw_clusters <- function(data, version) { # fd.basis
   # bootstrap.
   #
   # There are several variants to choose from:
-  # v1 : n = length(subjects) random strides from all strides
-  # v2 : Functional data version of v1
-  # v3 : Fetch a single stride only form all strides
+  # v1   : n = length(subjects) random strides from all strides
+  # v1.1 : Functional data version of v1
+  # v2   : One stride per subject
+  # v3   : Fetch a single stride only form all strides
   # ----------------------------------------------------------------------------
 
   if (version == "v1") {
@@ -30,27 +31,54 @@ draw_clusters <- function(data, version) { # fd.basis
     diff.curves <- curve0 - curve1
   }
 
+  # if (version == "v1.1") {
+
+  # #### v1.1 (functional data) ####
+  # #
+  # # Not implemented correctly, yet!
+  # # ----------------------------------------------------------------------------
+  # #
+  # # library(fda.usc)
+  # #
+  # # TODO: implement
+  #
+  # # diff.curves.fd <- Data2fd(argvals = diff.curve, basisobj = fd.basis)
+  #
+  # # # Pick a single curve per subject
+  # # curve.samp <- sample(1:ncol(diff.curves), size = 1)
+  #
+  # # diff.curve.samp <- diff.curves[, curve.samp]
+  #
+  # # # Convert class fd to class fdata (required by fdata.bootstrap())
+  # # cluster.fdata <- fdata(diff_curve.fd)
+  # }
 
   if (version == "v2") {
 
-    # #### v1.1 (functional data) ####
-    # #
-    # # Not implemented correctly, yet!
-    # # ----------------------------------------------------------------------------
-    # #
-    # # library(fda.usc)
-    # #
-    # # TODO: implement
-    #
-    # # diff.curves.fd <- Data2fd(argvals = diff.curve, basisobj = fd.basis)
-    #
-    # # # Pick a single curve per subject
-    # # curve.samp <- sample(1:ncol(diff.curves), size = 1)
-    #
-    # # diff.curve.samp <- diff.curves[, curve.samp]
-    #
-    # # # Convert class fd to class fdata (required by fdata.bootstrap())
-    # # cluster.fdata <- fdata(diff_curve.fd)
+    #### v2 ####
+    # One stride per subject
+    # ----------------------------------------------------------------------------
+
+    # Select one random curve per subject
+    curve.idx <- c()
+
+    for (subj.idx in 1:11) {
+
+      tmp <- data[data$subjectID == subj.idx, ]
+
+      curve.idx.subj <- as.numeric(sample(tmp$strideID, length(unique(data$subjectID)), size = 1))
+      curve.idx <- c(curve.idx, curve.idx.subj)
+    }
+
+    curve <- data[data$strideID %in% curve.idx, ]
+
+    curve0 <- subset(curve, device  == "IMU")$value
+    curve0 <- matrix(curve0, ncol = length(curve0) / 100)
+
+    curve1 <- subset(curve, device  == "MC")$value
+    curve1 <- matrix(curve1, ncol = length(curve1) / 100)
+
+    diff.curves <- curve0 - curve1
   }
 
 
