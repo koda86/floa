@@ -1,4 +1,4 @@
-draw_clusters <- function(data, version) { # fd.basis
+draw_clusters <- function(data, ver) { # fd.basis
 
   # ----------------------------------------------------------------------------
   # This function represents the first of two stages in the randomized cluster
@@ -11,7 +11,7 @@ draw_clusters <- function(data, version) { # fd.basis
   # v3   : Fetch a single stride only form all strides
   # ----------------------------------------------------------------------------
 
-  if (version == "v1") {
+  if (ver == "v1") {
 
     #### v1 ####
     # Strides are selected from the entire set of curves (NOT! one curve per subject)
@@ -31,7 +31,7 @@ draw_clusters <- function(data, version) { # fd.basis
     diff.curves <- curve0 - curve1
   }
 
-  # if (version == "v1.1") {
+  # if (ver == "v1.1") {
 
   # #### v1.1 (functional data) ####
   # #
@@ -53,21 +53,27 @@ draw_clusters <- function(data, version) { # fd.basis
   # # cluster.fdata <- fdata(diff_curve.fd)
   # }
 
-  if (version == "v2") {
+  if (ver == "v2") {
 
     #### v2 ####
     # One stride per subject
     # ----------------------------------------------------------------------------
 
     # Select one random curve per subject
+    n.subj <- length(unique(data$subjectID))
+
     curve.idx <- c()
 
-    for (subj.idx in 1:11) {
+    # Index starts at two because during the cross validation one subject is always removed (leave one out approach)
+    for (subj.idx in 1:n.subj) {
 
-      tmp <- data[data$subjectID == subj.idx, ]
+      if (subj.idx %in% unique(data$subjectID)) {
 
-      curve.idx.subj <- as.numeric(sample(tmp$strideID, size = 1))
-      curve.idx <- c(curve.idx, curve.idx.subj)
+        tmp <- data[data$subjectID == subj.idx, ]
+
+        curve.idx.subj <- as.numeric(sample(tmp$strideID, size = 1))
+        curve.idx <- c(curve.idx, curve.idx.subj)
+      }
     }
 
     curve <- data[data$strideID %in% curve.idx, ]
@@ -82,7 +88,7 @@ draw_clusters <- function(data, version) { # fd.basis
   }
 
 
-  if (version == "v3") {
+  if (ver == "v3") {
 
     # v3
     # Fetch a single stride only (from the entire set of curves)

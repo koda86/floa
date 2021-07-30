@@ -14,7 +14,7 @@ floa_rcb <- function(data, n.boot, ver) { # , fd.basis
     #
     # Currently, different versions of the sampling process in draw_clusters() are
     # implemented (specified by the function argument ver).
-    clust.boot.agg[[boot.idx]] <- draw_clusters(data, version = ver) # , fd.basis
+    clust.boot.agg[[boot.idx]] <- draw_clusters(data, ver = ver) # , fd.basis
   }
 
   # (Row-wise) Arrange difference curves to facilitate computing percentiles
