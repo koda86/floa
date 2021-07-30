@@ -63,7 +63,7 @@ source("plot_cov_ver.R")
 # * Log-normal error data (no bias,  constant variance, no trend): "log_normal"
 # * Data with shock peaks (no bias, no trend): "shock"
 
-data <- example_data(dat = "bias", dir.data)
+data <- example_data(dat = "smooth", dir.data)
 
 
 ################################ Calculate FLoA ################################
@@ -82,10 +82,10 @@ n.boot <- 100
 # In current implementation: Specify version number (ver):
 # v1   : n = length(subjects) random strides from all strides
 # v1.1 : Functional data version of v1
-# v2   : One stride per subject
-# v3   : Fetch a single stride only form all strides
+# v2   : One random stride per subject (similar to Roislien et al., 2012)
+# v3   : Fetch a SINGLE random stride from all strides
 # ------------------------------------------------------------------------------
-ver = "v1"
+ver = "v2"
 
 floa.boot.percentiles.intrp <- floa_rcb(data, n.boot, ver)
 
@@ -143,10 +143,12 @@ print(coverage)
 #   * Coverage levels [%] and SEM across n=length(subjectID) iterations
 # ------------------------------------------------------------------------------
 
-cover.cross.v1 <- crossval_coverage(data, n.boot, method = "all", ver = "v1")
-cover.cross.v3 <- crossval_coverage(data, n.boot, method = "all", ver = "v3")
+cover.cross.v1 <- crossval_coverage(data, n.boot, method = "floa.rcb", ver = "v1") # method = "all"
+cover.cross.v2 <- crossval_coverage(data, n.boot, method = "floa.rcb", ver = "v2")
+cover.cross.v3 <- crossval_coverage(data, n.boot, method = "floa.rcb", ver = "v3")
 
 plot_cov_ver(cover.cross.v1)
+plot_cov_ver(cover.cross.v2)
 plot_cov_ver(cover.cross.v3)
 
 

@@ -36,7 +36,7 @@ crossval_coverage <- function (data, n.boot, method, ver) {
 
     } else if (method == "floa.rcb") {
 
-      floa.boot.percentiles.intrp <- floa_rcb(data.subset, n.boot)
+      floa.boot.percentiles.intrp <- floa_rcb(data.subset, n.boot, ver)
       floa.rcb <- data.frame(t(floa.boot.percentiles.intrp))
 
       cover.distro <- c(cover.distro,
