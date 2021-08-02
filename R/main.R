@@ -3,9 +3,10 @@
 #
 # FLoA derived by different methods are compared
 #   * Randomized Cluster Bootstrap      (floa.rcb)
+#     * Different strategies
 #   * Point-by-point Gaussian intervals (floa.point)
-#   * Method Lenhoff et al. (1999)      (curently not implemented)
-#   * Method Roislien et al. (2012)     (curently not implemented)
+#   (* Method Lenhoff et al. (1999)      (curently not implemented))
+#   (* Method Roislien et al. (2012)     (curently not implemented))
 #
 # Thus far, a transformation of time series data to functional data (Fourier,
 # Splines etc.) is not implemented.
@@ -14,17 +15,15 @@
 # (see subsection data sets)
 #
 # TODO:
-#   * Implement FDA!?
-#   * Implement balanced data in floa_rcb.R
+#   * Implementieren FDA!?
+#   * Nur synthetische Daten verwenden? (Leave out real world example?)
+#   * Welche weiteren (simulierten) Daten?
 #   * FLoA_RCB: mean oder median as estimator?
-#   * Use only synthetic data? (Leave out real world example?)
 #   * Umbennung in CLoA (Continuous LoA)?
 #   * quantile() function: Bias correction useful/necessary?
 #   * Konvergenzanalyse --> "[...] the  achieved  level  of  bootstrap bands  is
-# roughly  equal  to  the nominal  level  with as  few  as  25  or  so  curves.
-
-# Further reading:
-#   * (Appendix) Lenhoff et al. (1999)
+#   roughly  equal  to  the nominal  level  with as  few  as  25  or  so  curves.
+#   * Implement balanced data in floa_rcb.R
 ################################################################################
 
 # library(fda)
@@ -58,12 +57,10 @@ source("plot_cov_ver.R")
 # * Empirical validation data: "imu_mc"
 # * Smooth, wave data (normal error, constant variance, no trend): "smooth"
 # * Biased data (constant variance, no trend): "bias"
-# * Non-constant variance data (normal error, no trend): "non_const_var"
 # * Non-stationary data (trend, no bias) data:"non_stationary"
-# * Log-normal error data (no bias,  constant variance, no trend): "log_normal"
 # * Data with shock peaks (no bias, no trend): "shock"
 
-data <- example_data(dat = "smooth", dir.data)
+data <- example_data(dat = "non_const_var", dir.data)
 
 
 ################################ Calculate FLoA ################################
@@ -106,9 +103,9 @@ floa.point <- floa_point(data)
 ################################### Plot data ##################################
 
 floa.rcb <- data.frame(t(floa.boot.percentiles.intrp))
-floa.point <- data.frame(t(floa.point))
-
 plot_loa(data, floa.rcb) # Select floa method
+
+floa.point <- data.frame(t(floa.point))
 
 
 ################################### Coverage ###################################
@@ -140,7 +137,7 @@ print(coverage)
 # v3  : Fetch a single stride only form all strides
 #
 # Output:
-#   * Coverage levels [%] and SEM across n=length(subjectID) iterations
+#   * Coverage levels [%] across n=length(subjectID) iterations
 # ------------------------------------------------------------------------------
 
 system.time(
