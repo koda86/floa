@@ -54,9 +54,10 @@ source("plot_cov_ver.R")
 #
 # Function arguments:
 #
-# * Empirical validation data: "imu_mc"
+# (* Empirical validation data: "imu_mc")
 # * Smooth, wave data (normal error, constant variance, no trend): "smooth"
 # * Biased data (constant variance, no trend): "bias"
+# * Non-constant variance data (normal error, no trend): "non_const_var"
 # * Non-stationary data (trend, no bias) data:"non_stationary"
 # * Data with shock peaks (no bias, no trend): "shock"
 
@@ -82,9 +83,8 @@ n.boot <- 100
 # v2   : One random stride per subject
 # v3   : Fetch a SINGLE random stride from all strides
 # ------------------------------------------------------------------------------
-ver = "v2"
 
-floa.boot.percentiles.intrp <- floa_rcb(data, n.boot, ver)
+floa.boot.percentiles.intrp <- floa_rcb(data, n.boot, ver = "v2")
 
 # Pointwise LoA
 # ------------------------------------------------------------------------------

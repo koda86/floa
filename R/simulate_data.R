@@ -5,19 +5,22 @@
 # Inspired by ...
 # https://stats.stackexchange.com/questions/330199/simulating-drift-in-the-data
 #
-# 1. Non-stationary (trend) data
-# 2. Shock (spike) data
+# Simulated data sets:
+#
+# 1. Smooth, wave data (normal error, constant variance, no trend): "smooth"
+# 2. Biased data (constant variance, no trend): "bias"
+# 3. Non-stationary data (trend, no bias) data:"non_stationary"
+# 4. Data with shock peaks (no bias, no trend): "shock"
 ################################################################################
-
-
-# ------------------------------------------------------------------------------
-# Smooth, wave data (normal error, constant variance, no trend) ----------------
-# ------------------------------------------------------------------------------
 
 n.subj <- 11
 n.strides <- 100
 n.devices <- 2
 n.frames <- 101
+
+# ------------------------------------------------------------------------------
+# Smooth, wave data (normal error, constant variance, no trend) ----------------
+# ------------------------------------------------------------------------------
 
 device <- c()
 value <- c()
@@ -37,10 +40,10 @@ for (subj.idx in 1:n.subj) {
 
   for (stride.idx in 1:(n.strides)) {
 
-    a1.1 <- rnorm(1, 3, .1) # mc
-    a1.2 <- rnorm(1, 3, .1) # imu
-    a2.1 <- 0.08 # rnorm(1, 0.1, .01)
-    a2.2 <- 0.08 # rnorm(1, 0.2, .01)
+    a1.1 <- rnorm(1, 3, .1)
+    a1.2 <- rnorm(1, 3, .1)
+    a2.1 <- 0.08
+    a2.2 <- 0.08
     b1.1 <- rnorm(1, 0.06, .001)
     b1.2 <- rnorm(1, 0.06, .001)
     b2.1 <- rnorm(1, 0.58, .001)
@@ -51,9 +54,6 @@ for (subj.idx in 1:n.subj) {
 
     mc <- a1.1 * sin(b1.1 * t) ^ (c + 3) + a2.1 * sin(b2.1 * t)
     imu <- offset + a1.2 * sin(b1.2 * t) ^ (c + 3) + a2.2 * sin(b2.1 * t)
-
-    # plot(mc, type = "l")
-    # lines(imu, col = "red")
 
     value.subj <- c(value.subj, c(imu, mc))
 
@@ -253,52 +253,6 @@ frame <- rep(0:100, times = n.strides * n.devices * n.subj)
 data <- data.frame(device, subjectID, strideID, value, frame)
 
 saveRDS(data, file = paste0("C:/Users/Daniel/Desktop/tmp/floa/R/examples/", "data_nonstat.rds"))
-
-
-# ------------------------------------------------------------------------------
-# Log-normal error data (no bias, constant variance, no trend) -----------------
-# ------------------------------------------------------------------------------
-
-device <- c()
-value <- c()
-subjectID <- c()
-
-for (subj.idx in 1:n.subj) {
-
-  value.subj <- c()
-  device.subj <- c()
-  subjectID.subj <- c()
-
-  # Sample subjectwise parameters
-  subj.mean <- rnorm(1)
-  subj.sd.1 <- runif(1)
-  subj.sd.2 <- runif(1)
-
-  for (stride.idx in 1:(n.strides)) {
-
-    mc <- rlnorm(n.frames, meanlog = subj.mean, sdlog = subj.sd.2) # rnorm(n.frames, mean = subj.mean, sd = subj.sd.2)
-    imu <- rnorm(n.frames, mean = subj.mean, sd = subj.sd.1)
-
-    value.subj <- c(value.subj, c(imu, mc))
-
-    device.imu <- rep("IMU", n.frames)
-    device.mc <- rep("MC", n.frames)
-    device.subj <- c(device.subj, c(device.imu, device.mc))
-
-    subjectID.subj <- c(subjectID.subj, rep(subj.idx, 2 * n.frames))
-  }
-
-  device <- c(device, device.subj)
-  value <- c(value, value.subj)
-  subjectID <- c(subjectID, subjectID.subj)
-}
-
-strideID <- rep(1:(n.strides * n.subj), each = n.devices * n.frames)
-frame <- rep(0:100, times = n.strides * n.devices * n.subj)
-
-data <- data.frame(device, subjectID, strideID, value, frame)
-
-saveRDS(data, file = paste0("C:/Users/Daniel/Desktop/tmp/floa/R/examples/", "log_normal.rds"))
 
 
 # ------------------------------------------------------------------------------
