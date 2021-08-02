@@ -82,7 +82,7 @@ n.boot <- 100
 # In current implementation: Specify version number (ver):
 # v1   : n = length(subjects) random strides from all strides
 # v1.1 : Functional data version of v1
-# v2   : One random stride per subject (similar to Roislien et al., 2012)
+# v2   : One random stride per subject
 # v3   : Fetch a SINGLE random stride from all strides
 # ------------------------------------------------------------------------------
 ver = "v2"
@@ -143,9 +143,12 @@ print(coverage)
 #   * Coverage levels [%] and SEM across n=length(subjectID) iterations
 # ------------------------------------------------------------------------------
 
-cover.cross.v1 <- crossval_coverage(data, n.boot, method = "all", ver = "v1")
+system.time(
+  cover.cross.v1 <- crossval_coverage(data, n.boot, method = "all", ver = "v1")
+  )
 cover.cross.v2 <- crossval_coverage(data, n.boot, method = "all", ver = "v2")
 cover.cross.v3 <- crossval_coverage(data, n.boot, method = "all", ver = "v3")
+
 
 plot_cov_ver(cover.cross.v1)
 plot_cov_ver(cover.cross.v2)
