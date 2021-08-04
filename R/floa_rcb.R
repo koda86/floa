@@ -1,7 +1,5 @@
 floa_rcb <- function(data, n.boot, ver) { # , fd.basis
 
-  library(ggplot2)
-
   # ############################################################################
   # Randomized Cluster Bootstrap
   # ############################################################################
@@ -37,12 +35,16 @@ floa_rcb <- function(data, n.boot, ver) { # , fd.basis
   perc50 <- floa.boot.percentiles[which(names(floa.boot.percentiles) == "50%")]
   perc97.5 <- floa.boot.percentiles[which(names(floa.boot.percentiles) == "97.5%")]
 
-  # Interpolate to 101 data points ---------------------------------------------
-  floa.boot.percentiles.intrp <- rbind(approx(perc2.5, n = 101)$y,
+  # Split the long percentile vector into 101 data points each -----------------
+  floa.boot.percentiles.split <- rbind(approx(perc2.5, n = 101)$y,
                                        approx(perc50, n = 101)$y,
                                        approx(perc97.5, n = 101)$y
                                        )
 
+  # Add (pointwise) mean
+  floa.boot.mean <- colMeans(clust.agg.intrp, dims = 1)
+  floa <- rbind(floa.boot.percentiles.intrp, floa.boot.mean)
+  row.names(floa) <- c("lower", "median", "upper", "mean")
 
-  return(floa.boot.percentiles.intrp)
+  return(floa)
 }
