@@ -122,7 +122,7 @@ for (subj.idx in 1:n.subj) {
     b1.1 <- rnorm(1, mean = 0.06, sd = b.sd)
     b1.2 <- rnorm(1, mean = 0.06, sd = b.sd)
     b2.1 <- rnorm(1, mean = 0.58, sd = b.sd)
-    b2.2 <- rnorm(1, mean = 0.58, sd = b.sd)
+    b2.2 <- rnorm(1, mean = 0.58, sd =b.sd)
     c <- 2
 
     offset <- rnorm(1, offset.mean, 0.05)

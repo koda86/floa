@@ -122,8 +122,8 @@ floa.point <- floa_point(data)
 
 ################################### Plot data ##################################
 
-floa.rcb <- data.frame(t(floa))
-plot_loa(data, floa.rcb) # Select floa method
+# Select limits of agreement method and central tendency parameter
+plot_loa(data, floa, central.tendency = "mean")
 
 floa.point <- data.frame(t(floa.point))
 
