@@ -107,6 +107,12 @@ for (subj.idx in 1:n.subj) {
   # Subjectwise wave parameters
   offset.mean <- runif(1, min = -0.5, max = 0.5)
 
+  # Subjectwise wave parameters
+  offset.mean <- runif(1, min = -0.5, max = 0.5)
+
+  # subj.sd.1 <- runif(1, min = 0.04, max = 0.06)
+  # subj.sd.2 <- runif(1, min = 0.1, max = 0.2)
+
   for (stride.idx in 1:(n.strides)) {
 
     a1.1 <- rnorm(1, 3, .1)
@@ -119,7 +125,7 @@ for (subj.idx in 1:n.subj) {
     b2.2 <- rnorm(1, 0.58, .001)
     c <- 2
 
-    # offset <- rnorm(1, offset.mean, 0.05)
+    offset <- rnorm(1, offset.mean, 0.05)
 
     sine.1 <- a1.1 * sin(b1.1 * t) ^ (c + 3)
     sine.2 <- a2.1 * sin(b2.1 * t)
@@ -130,7 +136,7 @@ for (subj.idx in 1:n.subj) {
     trend <- (1 / 100000) * seq(0.5, 50.5, 0.5)^3
 
     mc <- sine.1 + sine.2
-    imu <- sine.3 + sine.4 + trend
+    imu <- offset + sine.3 + sine.4 + trend
 
     # plot(mc, type = "l")
     # lines(imu, col = "red")

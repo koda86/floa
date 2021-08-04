@@ -71,7 +71,7 @@ source("plot_cov_ver.R")
 data <- example_data(dat = "smooth_trend", dir.data)
 
 # Plot data of a single subject
-subject <- 4
+subject <- 1
 data.single.mc <- subset(data, subjectID == subject & device == "MC")
 data.single.imu <- subset(data, subjectID == subject & device == "IMU")
 
