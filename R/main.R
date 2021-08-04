@@ -104,7 +104,7 @@ n.boot <- 100
 # v3   : Fetch a SINGLE random stride from all strides
 # ------------------------------------------------------------------------------
 
-floa.boot.percentiles.intrp <- floa_rcb(data, n.boot, ver = "v2")
+floa <- floa_rcb(data, n.boot, ver = "v2")
 
 # Pointwise LoA
 # ------------------------------------------------------------------------------
@@ -122,7 +122,7 @@ floa.point <- floa_point(data)
 
 ################################### Plot data ##################################
 
-floa.rcb <- data.frame(t(floa.boot.percentiles.intrp))
+floa.rcb <- data.frame(t(floa))
 plot_loa(data, floa.rcb) # Select floa method
 
 floa.point <- data.frame(t(floa.point))
