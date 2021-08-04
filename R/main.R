@@ -15,15 +15,18 @@
 # (see subsection data sets)
 #
 # TODO:
-#   * Implementieren FDA!?
-#   * Nur synthetische Daten verwenden? (Leave out real world example?)
-#   * Welche weiteren (simulierten) Daten?
-#   * FLoA_RCB: mean oder median as estimator?
+#   * Paper als *.RMD
+#   * Implementieren FDA
+#   * Datensätze: 1. "smooth", 2. "smooth+trend" 3. "Chi-Quadrat"
+#   * FLoA_RCB: mean oder median as estimator? Eher mean (beides ausprobieren!)
 #   * Umbennung in CLoA (Continuous LoA)?
 #   * quantile() function: Bias correction useful/necessary?
-#   * Konvergenzanalyse --> "[...] the  achieved  level  of  bootstrap bands  is
-#   roughly  equal  to  the nominal  level  with as  few  as  25  or  so  curves.
+#   * Konvergenzanalyse --> ja, aber "nur" intern
 #   * Implement balanced data in floa_rcb.R
+#
+# TODO_READ:
+#   * Ratkowsky - Handbook of nonlinear regression models
+#   * https://cran.r-project.org/web/packages/smooth/vignettes/simulate.html
 ################################################################################
 
 # library(fda)
@@ -56,12 +59,27 @@ source("plot_cov_ver.R")
 #
 # (* Empirical validation data: "imu_mc")
 # * Smooth, wave data (normal error, constant variance, no trend): "smooth"
-# * Biased data (constant variance, no trend): "bias"
+# * Smooth wave data with nonlinear trend (no bias, constant variance): "smooth_trend"
+# * Something asymmetric (non-gaussian error)
+
+# Older versions:
+
 # * Non-constant variance data (normal error, no trend): "non_const_var"
 # * Non-stationary data (trend, no bias) data:"non_stationary"
 # * Data with shock peaks (no bias, no trend): "shock"
 
-data <- example_data(dat = "non_const_var", dir.data)
+data <- example_data(dat = "smooth_trend", dir.data)
+
+# Plot data of a single subject
+subject <- 4
+data.single.mc <- subset(data, subjectID == subject & device == "MC")
+data.single.imu <- subset(data, subjectID == subject & device == "IMU")
+
+PLOT <- ggplot(data = data.single.mc, aes(x = frame, y = value, group = strideID)) +
+  geom_line() +
+  geom_line(data = data.single.imu, aes(x = frame, y = value, group = strideID, col = "red"))
+
+PLOT
 
 
 ################################ Calculate FLoA ################################
@@ -111,7 +129,7 @@ floa.point <- data.frame(t(floa.point))
 ################################### Coverage ###################################
 
 # Calculate coverage (entire curves within the percentile boundaries)
-coverage <- get_coverage(data, t(floa.point)) # Select floa method
+coverage <- get_coverage(data, t(floa.rcb)) # Select floa method
 
 print(coverage)
 
@@ -136,7 +154,7 @@ print(coverage)
 # v2  : Functional data version of v1
 # v3  : Fetch a single stride only form all strides
 #
-# Output:
+# Output:()
 #   * Coverage levels [%] across n=length(subjectID) iterations
 # ------------------------------------------------------------------------------
 

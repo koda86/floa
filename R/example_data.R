@@ -15,6 +15,10 @@ example_data <- function(dat, dir.data) {
 
     data <- readRDS(paste0(dir.data, "/", "smooth.rds"))
 
+  } else if (dat == "smooth_trend") {
+
+    data <- readRDS(paste0(dir.data, "/", "smooth_trend.rds"))
+
   } else if (dat == "non_const_var") {
 
     data <- readRDS(paste0(dir.data, "/", "non_const_var.rds"))
