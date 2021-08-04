@@ -18,7 +18,9 @@
 #   * Paper als *.RMD
 #   * Implementieren FDA
 #   * Datensätze: 1. "smooth", 2. "smooth+trend" 3. "Chi-Quadrat"
+#   * Something asymmetric (non-gaussian error)
 #   * FLoA_RCB: mean oder median as estimator? Eher mean (beides ausprobieren!)
+#   * Quantile: Über die gesamte Verteilung oder die "Ausreisser-Quantile" einzelner/extremer Probanden
 #   * Umbennung in CLoA (Continuous LoA)?
 #   * quantile() function: Bias correction useful/necessary?
 #   * Konvergenzanalyse --> ja, aber "nur" intern

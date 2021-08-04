@@ -40,16 +40,19 @@ for (subj.idx in 1:n.subj) {
   # Subjectwise wave parameters
   offset.mean <- runif(1, min = -0.5, max = 0.5)
 
+  a.sd <- runif(1, min = 0.05, max = 0.15) # .1
+  b.sd <- runif(1, min = 0.0001, max = 0.002) # .001
+
   for (stride.idx in 1:(n.strides)) {
 
-    a1.1 <- rnorm(1, 3, .1)
-    a1.2 <- rnorm(1, 3, .1)
+    a1.1 <- rnorm(1, mean = 3, sd = a.sd) # .1
+    a1.2 <- rnorm(1, mean = 3, sd = a.sd) # .1
     a2.1 <- 0.08
     a2.2 <- 0.08
-    b1.1 <- rnorm(1, 0.06, .001)
-    b1.2 <- rnorm(1, 0.06, .001)
-    b2.1 <- rnorm(1, 0.58, .001)
-    b2.2 <- rnorm(1, 0.58, .001)
+    b1.1 <- rnorm(1, mean = 0.06, sd = b.sd) # 0.001
+    b1.2 <- rnorm(1, mean = 0.06, sd = b.sd) # 0.001
+    b2.1 <- rnorm(1, mean = 0.58, sd = b.sd) # 0.001
+    b2.2 <- rnorm(1, mean = 0.58, sd = b.sd) # 0.001
     c <- 2
 
     sine.1 <- a1.1 * sin(b1.1 * t) ^ (c + 3)
@@ -107,22 +110,19 @@ for (subj.idx in 1:n.subj) {
   # Subjectwise wave parameters
   offset.mean <- runif(1, min = -0.5, max = 0.5)
 
-  # Subjectwise wave parameters
-  offset.mean <- runif(1, min = -0.5, max = 0.5)
-
-  # subj.sd.1 <- runif(1, min = 0.04, max = 0.06)
-  # subj.sd.2 <- runif(1, min = 0.1, max = 0.2)
+  a.sd <- runif(1, min = 0.05, max = 0.15) # .1
+  b.sd <- runif(1, min = 0.0001, max = 0.002) # .001
 
   for (stride.idx in 1:(n.strides)) {
 
-    a1.1 <- rnorm(1, 3, .1)
-    a1.2 <- rnorm(1, 3, .1)
+    a1.1 <- rnorm(1, mean = 3, sd = a.sd)
+    a1.2 <- rnorm(1, mean = 3, sd = a.sd)
     a2.1 <- 0.08
     a2.2 <- 0.08
-    b1.1 <- rnorm(1, 0.06, .001)
-    b1.2 <- rnorm(1, 0.06, .001)
-    b2.1 <- rnorm(1, 0.58, .001)
-    b2.2 <- rnorm(1, 0.58, .001)
+    b1.1 <- rnorm(1, mean = 0.06, sd = b.sd)
+    b1.2 <- rnorm(1, mean = 0.06, sd = b.sd)
+    b2.1 <- rnorm(1, mean = 0.58, sd = b.sd)
+    b2.2 <- rnorm(1, mean = 0.58, sd = b.sd)
     c <- 2
 
     offset <- rnorm(1, offset.mean, 0.05)
