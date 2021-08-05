@@ -1,12 +1,9 @@
-################################################################################
 # Main script Functional Limits of Agreement (FLoA)
 #
 # FLoA derived by different methods are compared
 #   * Randomized Cluster Bootstrap      (floa.rcb)
 #     * Different strategies
 #   * Point-by-point Gaussian intervals (floa.point)
-#   (* Method Lenhoff et al. (1999)      (curently not implemented))
-#   (* Method Roislien et al. (2012)     (curently not implemented))
 #
 # Thus far, a transformation of time series data to functional data (Fourier,
 # Splines etc.) is not implemented.
@@ -15,9 +12,7 @@
 # (see subsection data sets)
 #
 # TODO:
-#   + Paper als *.RMD
 #   + Implementieren FDA
-#   + Datensätze: 1. "smooth", 2. "smooth+trend" 3. "smooth + non-gaussian error (asymmetric) # Chi-Quadrat"
 #   + Quantile: Über die gesamte Verteilung oder die "Ausreisser-Quantile" einzelner/extremer Probanden
 #     + quantile() function: Bias correction useful/necessary?
 #   + Konvergenzanalyse --> ja, aber "nur" intern
@@ -28,6 +23,7 @@
 #   + https://cran.r-project.org/web/packages/smooth/vignettes/simulate.html
 #
 # TODO STYLE:
+#   + Make variable names more universal (e.g. "device.1" instead "mc")
 #   + Add namespaces (package names ::)
 #   + No line between header and body in loops
 ################################################################################
@@ -64,7 +60,7 @@ source("plot_cov_ver.R")
 # * Data with non-gaussian (Weibull distributed) error (no trend): "non_gaussian"
 # * Data with shock peaks (no bias, no trend): "shock"
 
-data <- example_data(dat = "non_gaussian", dir.data)
+data <- example_data(dat = "smooth", dir.data)
 
 # Plot data
 # data$subjectID <- as.factor(data$subjectID)
@@ -115,28 +111,21 @@ floa <- floa_rcb(data, n.boot, ver = "v2")
 # No bootstrap or other resampling strategies are applied.
 floa.point <- floa_point(data)
 
-# # Method Lenhoff et al. (1999)
-# # ------------------------------------------------------------------------------
-
-# # Method Roislien et al. (2012)
-# # ------------------------------------------------------------------------------
-
 
 ################################### Plot data ##################################
 
 # Select limits of agreement method and central tendency parameter
 plot_loa(data, floa, central.tendency = "mean")
 
-floa.point <- data.frame(t(floa.point))
+# floa.point <- data.frame(t(floa.point))
 
 
 ################################### Coverage ###################################
 
-# Calculate coverage (entire curves within the percentile boundaries)
-coverage <- get_coverage(data, t(floa.rcb)) # Select floa method
+# Calculate coverage (entire curves within the limits of agreement)
+coverage <- get_coverage(data, floa.point) # Select floa method: floa or floa.point
 
 print(coverage)
-
 
 ############################### Cross validation ###############################
 

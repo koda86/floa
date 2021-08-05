@@ -44,6 +44,7 @@ floa_rcb <- function(data, n.boot, ver) { # , fd.basis
   # Add (pointwise) mean
   floa.boot.mean <- colMeans(clust.agg.intrp, dims = 1)
   floa <- rbind(floa.boot.percentiles.split, floa.boot.mean)
+
   row.names(floa) <- c("lower", "median", "upper", "mean")
 
   return(floa)
