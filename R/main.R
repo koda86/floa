@@ -17,12 +17,9 @@
 # TODO:
 #   * Paper als *.RMD
 #   * Implementieren FDA
-#   * Datensätze: 1. "smooth", 2. "smooth+trend" 3. "Chi-Quadrat"
-#   * Something asymmetric (non-gaussian error)
-#   * FLoA_RCB: mean oder median as estimator? Eher mean (beides ausprobieren!)
+#   * Datensätze: 1. "smooth", 2. "smooth+trend" 3. "smooth + non-gaussian error (asymmetric) # Chi-Quadrat"
 #   * Quantile: Über die gesamte Verteilung oder die "Ausreisser-Quantile" einzelner/extremer Probanden
-#   * Umbennung in CLoA (Continuous LoA)?
-#   * quantile() function: Bias correction useful/necessary?
+#     * quantile() function: Bias correction useful/necessary?
 #   * Konvergenzanalyse --> ja, aber "nur" intern
 #   * Implement balanced data in floa_rcb.R
 #
@@ -55,19 +52,12 @@ source("plot_cov_ver.R")
 
 ################################### Data sets ##################################
 
-# Wrapper function for example data sets.
-#
-# Function arguments:
+# Wrapper function for example data sets. Function arguments:
 #
 # (* Empirical validation data: "imu_mc")
 # * Smooth, wave data (normal error, constant variance, no trend): "smooth"
 # * Smooth wave data with nonlinear trend (no bias, constant variance): "smooth_trend"
 # * Something asymmetric (non-gaussian error)
-
-# Older versions:
-
-# * Non-constant variance data (normal error, no trend): "non_const_var"
-# * Non-stationary data (trend, no bias) data:"non_stationary"
 # * Data with shock peaks (no bias, no trend): "shock"
 
 data <- example_data(dat = "smooth_trend", dir.data)
