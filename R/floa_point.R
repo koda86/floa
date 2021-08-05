@@ -39,7 +39,7 @@ floa_point <- function(data) {
                           floa.point$mean.diff - 1.96 * (floa.point$sd.between + floa.point$sd.within)
                           )
 
-  row.names(floa.point.bnd) <- c("lower", "median", "upper", "mean")
+  row.names(floa.point.bnd) <- c("upper", "mean", "median", "lower")
 
   return(floa.point.bnd)
 }
