@@ -98,7 +98,7 @@ floa.point <- floa_point(data)
 
 ### Synthetic data sets
 
-FÜr die Validierung der Methode wurden Zeitreihen simuliert, die gängigen biomechanischen Messsignalen qualitativ ähneln und typische Fehlercharakteristika abbilden. Die verschiedenen Zeitreihen wurden als Fourierreihen aus additiv überlagerten Sinusfunktionen modelliert. Jeder Datensatz enthält n.ts = 100 Kurven von n.subj = 11 fiktiven Probanden. Jede Kurve besteht aus t = 101 Datenpunkten.
+Für die Validierung der Methode wurden Zeitreihen simuliert, die gängigen biomechanischen Messsignalen qualitativ ähneln und typische Fehlercharakteristika abbilden. Die verschiedenen Zeitreihen wurden als Fourierreihen aus additiv überlagerten Sinusfunktionen modelliert. Jeder Datensatz enthält n.ts = 100 Kurven von n.subj = 11 fiktiven Probanden. Jede Kurve besteht aus t = 101 Datenpunkten.
 
 ```{r warning = FALSE, message = FALSE, eval = FALSE}
 n.subj <- 11
