@@ -151,11 +151,9 @@ print(coverage)
 #   * Coverage levels [%] across n=length(subjectID) iterations
 # ------------------------------------------------------------------------------
 
-system.time(
-  cover.cross.v1 <- crossval_coverage(data, n.boot, method = "all", ver = "v1")
-  )
-cover.cross.v2 <- crossval_coverage(data, n.boot, method = "all", ver = "v2")
-cover.cross.v3 <- crossval_coverage(data, n.boot, method = "all", ver = "v3")
+cover.cross.v1 <- crossval_coverage(data, floa, floa.point, method = "all", ver = "v1")
+cover.cross.v2 <- crossval_coverage(data, floa, floa.point, method = "all", ver = "v2")
+cover.cross.v3 <- crossval_coverage(data, floa, floa.point, method = "all", ver = "v3")
 
 
 plot_cov_ver(cover.cross.v1)

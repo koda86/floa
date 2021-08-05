@@ -1,4 +1,4 @@
-crossval_coverage <- function (data, n.boot, method, ver) {
+crossval_coverage <- function (data, floa, floa.point, method, ver) {
 
   n.subj <- unique(data$subjectID)
 
@@ -8,53 +8,36 @@ crossval_coverage <- function (data, n.boot, method, ver) {
 
   for (i in n.subj) {
 
+    # Leave subject "i" out
     data.subset <- subset(data, subjectID != i)
 
     if (method == "all") {
 
       # FLoA RCB
       # --------------------------------------------------------------------
-      floa.boot.percentiles.intrp <- floa_rcb(data.subset, n.boot, ver)
-      floa.rcb <- data.frame(t(floa.boot.percentiles.intrp))
-
       cover.distro.rcb <- c(cover.distro.rcb,
-                            get_coverage(data, t(floa.rcb)) # Select floa method
+                            get_coverage(data.subset, floa)
                             )
-
       # print(paste("floa.rcb", i))
 
       # FLoA Point
       # --------------------------------------------------------------------
-      floa.point <- floa_point(data)
-      floa.point <- data.frame(t(floa.point))
-
       cover.distro.point <- c(cover.distro.point,
-                              get_coverage(data, t(floa.point)) # Select floa method
+                              get_coverage(data.subset, floa.point)
       )
-
-      print(paste("floa.point", i))
+      # print(paste("floa.point", i))
 
     } else if (method == "floa.rcb") {
 
-      floa.boot.percentiles.intrp <- floa_rcb(data.subset, n.boot, ver)
-      floa.rcb <- data.frame(t(floa.boot.percentiles.intrp))
-
       cover.distro <- c(cover.distro,
-                        get_coverage(data, t(floa.rcb)) # Select floa method
+                        get_coverage(data.subset, floa)
       )
-
-      # print(paste("floa.rcb", i))
 
     } else if (method == "floa.point" | method == "all") {
 
-      floa.point <- floa_point(data)
-      floa.point <- data.frame(t(floa.point))
-
       cover.distro <- c(cover.distro,
-                        get_coverage(data, t(floa.point)) # Select floa method
+                        get_coverage(data.subset, floa.point)
       )
-
-      # print(paste("floa.point", i))
 
     } else {
 
