@@ -6,9 +6,8 @@ floa_point <- function(data) {
 
   library(lme4)
 
-  # data.long.joint <- data.long[data.long$joint==joint & data.long$side == side, ]
-
   mean.diff <- list()
+  median.diff <- list()
   sd.between <- list()
   sd.within <- list()
 
@@ -23,20 +22,24 @@ floa_point <- function(data) {
                  REML = FALSE) # method=REML to get unbiased estimates of the variance
 
     mean.diff[[frame.idx + 1]] <- mean(data.by.frame$value[data.by.frame$device == "IMU"] - data.by.frame$value[data.by.frame$device == "MC"])
+    median.diff[[frame.idx + 1]] <- mean(data.by.frame$value[data.by.frame$device == "IMU"] - data.by.frame$value[data.by.frame$device == "MC"])
 
     sd.between[[frame.idx + 1]] <- summary(LMEM)$coefficients[2, 2] # standard error of the difference MC - IMU
     sd.within[[frame.idx + 1]] <- data.frame(summary(LMEM)$varcor)$sdcor[1]
   }
 
-  floa.point <- data.frame(unlist(mean.diff), unlist(sd.between), unlist(sd.within))
-  names(floa.point) <- c("mean.diff", "sd.between", "sd.within")
+  floa.point <- data.frame(unlist(median.diff), unlist(mean.diff), unlist(sd.between), unlist(sd.within))
+  names(floa.point) <- c("median.diff", "mean.diff", "sd.between", "sd.within")
 
   # Calculate mean, upper and lower limits of agreement (boundaries) to get the
   # same structure as returned by the other methods (i. e. floa_rcb)
   floa.point.bnd <- rbind(floa.point$mean.diff + 1.96 * (floa.point$sd.between + floa.point$sd.within),
                           floa.point$mean.diff,
+                          floa.point$median.diff,
                           floa.point$mean.diff - 1.96 * (floa.point$sd.between + floa.point$sd.within)
                           )
+
+  row.names(floa) <- c("lower", "median", "upper", "mean")
 
   return(floa.point.bnd)
 }
