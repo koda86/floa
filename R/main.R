@@ -60,20 +60,28 @@ source("plot_cov_ver.R")
 #
 # (* Empirical validation data: "imu_mc")
 # * Smooth, wave data (normal error, constant variance, no trend): "smooth"
-# * Smooth wave data with nonlinear trend (no bias, constant variance): "smooth_trend"
+# * Smooth wave data with nonlinear trend (constant variance): "smooth_trend"
 # * Data with non-gaussian (Weibull distributed) error (no trend): "non_gaussian"
 # * Data with shock peaks (no bias, no trend): "shock"
 
 data <- example_data(dat = "non_gaussian", dir.data)
 
-# Plot data of a single subject
-subject <- 1
-data.single.mc <- subset(data, subjectID == subject & device == "MC")
-data.single.imu <- subset(data, subjectID == subject & device == "IMU")
+# Plot data
+# data$subjectID <- as.factor(data$subjectID)
 
-PLOT <- ggplot(data = data.single.mc, aes(x = frame, y = value, group = strideID)) +
-  geom_line() +
-  geom_line(data = data.single.imu, aes(x = frame, y = value, group = strideID, col = "red"))
+data.single.mc <- subset(data, device == "MC")
+data.single.imu <- subset(data, device == "IMU")
+
+PLOT <- ggplot(data = data.single.mc, aes(x = frame, y = value, group = strideID)) + # , colour = subjectID
+  geom_line(alpha = 0.7) +
+  geom_line(data = data.single.imu, aes(x = frame, y = value, group = strideID, col = "red"), alpha = 0.3) + #, colour = subjectID
+  labs(x = "Time-normalized signal [%]", y = "Difference") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(size = 20),
+        axis.title.x = element_text(size = 22),
+        axis.text.y = element_text(size = 20),
+        axis.title.y = element_text(size = 22),
+        legend.position = "none")
 
 PLOT
 
@@ -148,7 +156,7 @@ print(coverage)
 # Select a version:
 # v1  : n=length(subjects) random strides from all strides
 # v2  : Functional data version of v1
-# v3  : Fetch a single stride only form all strides
+# v3  : Fetch a single stride only from all strides
 #
 # Output:()
 #   * Coverage levels [%] across n=length(subjectID) iterations
