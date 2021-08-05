@@ -19,10 +19,7 @@ n.strides <- 100
 n.devices <- 2
 n.frames <- 101
 
-# ------------------------------------------------------------------------------
 # Smooth wave data (constant variance, no trend) -------------------------------
-# ------------------------------------------------------------------------------
-
 device <- c()
 value <- c()
 subjectID <- c()
@@ -89,10 +86,7 @@ data <- data.frame(device, subjectID, strideID, value, frame)
 saveRDS(data, file = paste0("C:/Users/Daniel/Desktop/tmp/floa/R/examples/", "smooth.rds"))
 
 
-# ------------------------------------------------------------------------------
-# Smooth wave data with nonlinear trend (constant variance) --------------------
-# ------------------------------------------------------------------------------
-
+# Smooth wave data with nonlinear trend ----------------------------------------
 device <- c()
 value <- c()
 subjectID <- c()
@@ -160,6 +154,80 @@ frame <- rep(0:100, times = n.strides * n.devices * n.subj)
 data <- data.frame(device, subjectID, strideID, value, frame)
 
 saveRDS(data, file = paste0("C:/Users/Daniel/Desktop/tmp/floa/R/examples/", "smooth_trend.rds"))
+
+
+# Non-gaussian (Weibull distributed) error (no trend) --------------------------
+device <- c()
+value <- c()
+subjectID <- c()
+
+for (subj.idx in 1:n.subj) {
+
+  value.subj <- c()
+  device.subj <- c()
+  subjectID.subj <- c()
+
+  t <- seq(0, 100)
+
+  # Subjectwise wave parameters
+  offset.mean <- runif(1, min = -0.5, max = 0.5)
+
+  a.sd <- runif(1, min = 0.05, max = 0.15) # .1
+
+  b.sd <- runif(1, min = 0.0001, max = 0.002) # rweibull(1, shape = 1.5, scale=1) - factorial(1/1.5)
+
+  for (stride.idx in 1:(n.strides)) {
+
+    a1.1 <- rnorm(1, mean = 3, sd = a.sd) # .1
+    a1.2 <- rnorm(1, mean = rweibull(1, shape = 1.5, scale=1) -
+                    factorial(1/1.5), # center the error around 0
+                  sd = a.sd) # .1
+    a2.1 <- 0.08
+    a2.2 <- 0.08
+    b1.1 <- rnorm(1, mean = 0.06, sd = b.sd) # 0.001
+    b1.2 <- rnorm(1, mean = 0.06, sd = b.sd) # 0.001
+    b2.1 <- rnorm(1, mean = 0.58, sd = b.sd) # 0.001
+    b2.2 <- rnorm(1, mean = 0.58, sd = b.sd) # 0.001
+    c <- 2
+
+    sine.1 <- a1.1 * sin(b1.1 * t) ^ (c + 3)
+    sine.2 <- a2.1 * sin(b2.1 * t)
+    sine.3 <- a1.2 * sin(b1.2 * t) ^ (c + 3)
+    sine.4 <- a2.2 * sin(b2.1 * t)
+
+    offset <- rnorm(1, offset.mean, 0.05)
+
+    mc <- sine.1 + sine.2
+    imu <- offset + sine.3 + sine.4
+
+    # plot(mc, type = "l")
+    # lines(imu, col = "red")
+
+    value.subj <- c(value.subj, c(imu, mc))
+
+    device.imu <- rep("IMU", n.frames)
+    device.mc <- rep("MC", n.frames)
+    device.subj <- c(device.subj, c(device.imu, device.mc))
+
+    subjectID.subj <- c(subjectID.subj, rep(subj.idx, 2 * n.frames))
+  }
+
+  # Data is stored for long format output
+  device <- c(device, device.subj)
+  value <- c(value, value.subj)
+  subjectID <- c(subjectID, subjectID.subj)
+}
+
+strideID <- rep(1:(n.strides * n.subj), each = n.devices * n.frames)
+frame <- rep(0:100, times = n.strides * n.devices * n.subj)
+
+data <- data.frame(device, subjectID, strideID, value, frame)
+
+saveRDS(data, file = paste0("C:/Users/Daniel/Desktop/tmp/floa/R/examples/", "non_gaussian.rds"))
+
+
+
+
 
 
 # # ------------------------------------------------------------------------------

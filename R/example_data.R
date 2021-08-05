@@ -19,21 +19,9 @@ example_data <- function(dat, dir.data) {
 
     data <- readRDS(paste0(dir.data, "/", "smooth_trend.rds"))
 
-  } else if (dat == "non_const_var") {
+  } else if (dat == "non_gaussian") {
 
-    data <- readRDS(paste0(dir.data, "/", "non_const_var.rds"))
-
-  } else if (dat == "bias") {
-
-    data <- readRDS(paste0(dir.data, "/", "bias.rds"))
-
-  } else if (dat == "non_stationary") {
-
-    data <- readRDS(paste0(dir.data, "/", "data_nonstat.rds"))
-
-  } else if (dat == "log_normal") {
-
-    data <- readRDS(paste0(dir.data, "/", "log_normal.rds"))
+    data <- readRDS(paste0(dir.data, "/", "non_gaussian.rds"))
 
   } else if (dat == "shock") {
 

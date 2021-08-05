@@ -15,17 +15,21 @@
 # (see subsection data sets)
 #
 # TODO:
-#   * Paper als *.RMD
-#   * Implementieren FDA
-#   * Datensätze: 1. "smooth", 2. "smooth+trend" 3. "smooth + non-gaussian error (asymmetric) # Chi-Quadrat"
-#   * Quantile: Über die gesamte Verteilung oder die "Ausreisser-Quantile" einzelner/extremer Probanden
-#     * quantile() function: Bias correction useful/necessary?
-#   * Konvergenzanalyse --> ja, aber "nur" intern
-#   * Implement balanced data in floa_rcb.R
+#   + Paper als *.RMD
+#   + Implementieren FDA
+#   + Datensätze: 1. "smooth", 2. "smooth+trend" 3. "smooth + non-gaussian error (asymmetric) # Chi-Quadrat"
+#   + Quantile: Über die gesamte Verteilung oder die "Ausreisser-Quantile" einzelner/extremer Probanden
+#     + quantile() function: Bias correction useful/necessary?
+#   + Konvergenzanalyse --> ja, aber "nur" intern
+#   + Implement balanced data in floa_rcb.R
 #
-# TODO_READ:
-#   * Ratkowsky - Handbook of nonlinear regression models
-#   * https://cran.r-project.org/web/packages/smooth/vignettes/simulate.html
+# TODO READ:
+#   + Ratkowsky - Handbook of nonlinear regression models
+#   + https://cran.r-project.org/web/packages/smooth/vignettes/simulate.html
+#
+# TODO STYLE:
+#   + Add namespaces (package names ::)
+#   + No line between header and body in loops
 ################################################################################
 
 # library(fda)
@@ -57,10 +61,10 @@ source("plot_cov_ver.R")
 # (* Empirical validation data: "imu_mc")
 # * Smooth, wave data (normal error, constant variance, no trend): "smooth"
 # * Smooth wave data with nonlinear trend (no bias, constant variance): "smooth_trend"
-# * Something asymmetric (non-gaussian error)
+# * Data with non-gaussian (Weibull distributed) error (no trend): "non_gaussian"
 # * Data with shock peaks (no bias, no trend): "shock"
 
-data <- example_data(dat = "smooth_trend", dir.data)
+data <- example_data(dat = "non_gaussian", dir.data)
 
 # Plot data of a single subject
 subject <- 1
