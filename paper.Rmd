@@ -1,0 +1,223 @@
+---
+title: "Asymmetric functional prediction bands for assessing the validity of biomechanical curve data"
+author:
+  - name: Daniel Koska
+    email: daniel.koska@hsw.tu-chemnitz.de
+    affiliation: Chemnitz University of Technology, Research Methodology and Data Analysis in Biomechanics
+    footnote: Corresponding Author
+  - name: Doris Oriwol
+    email: doris.oriwol@partner.kit.edu
+    affiliation: Karlsruhe Institute of Technology
+  - name: Christian Maiwald
+    email: christian.maiwal@hsw.tu-chemnitz.de
+    affiliation: Chemnitz University of Technology, Research Methodology and Data Analysis in Biomechanics
+# address:
+#   - code: Chemnitz University of Technology
+#     address:  Thüringer Weg 11, 09126 Chemnitz
+#   - code: Another University
+#     address: Department, Street, City, State, Zip
+abstract: |
+  This is the abstract.
+
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+journal: "An awesome journal"
+# bibliography: sendaFAB.bib
+# output: rticles::elsevier_article
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    theme: united
+---
+
+### TODO
+- bar
+
+```{r echo = FALSE, warning = FALSE, message = FALSE}
+library(ggplot2)
+
+dir.script <- "C:/Users/Daniel/Desktop/tmp/floa/R"
+dir.data <- "C:/Users/Daniel/Desktop/tmp/floa/R/examples"
+
+# setwd(dir.script)
+source(paste0(dir.script, "/example_data.R"))
+source(paste0(dir.script, "/draw_clusters.R"))
+source(paste0(dir.script, "/floa_rcb.R"))
+source(paste0(dir.script, "/floa_point.R"))
+source(paste0(dir.script, "/plot_loa.R"))
+source(paste0(dir.script, "/get_coverage.R"))
+source(paste0(dir.script, "/crossval_coverage.R"))
+source(paste0(dir.script, "/plot_cov_ver.R"))
+# source("fdaDelta.R")
+```
+
+# Introduction
+
+# Methods
+
+## Limits of agreement methods
+
+FLoA derived by different methods are compared
+
+* Randomized Cluster Bootstrap (floa.rcb)
+  + Different strategies
+
+* Point-by-point Gaussian intervals (floa.point)
+
+```{r echo = FALSE, warning = FALSE, message = FALSE}
+# Wrapper function for example data sets. Function arguments:
+#
+# (* Empirical validation data: "imu_mc")
+# * Smooth, wave data (normal error, constant variance, no trend): "smooth"
+# * Smooth wave data with nonlinear trend (constant variance): "smooth_trend"
+# * Data with non-gaussian (Weibull distributed) error (no trend): "non_gaussian"
+# * Data with shock peaks (no bias, no trend): "shock"
+
+data <- example_data(dat = "smooth", dir.data)
+
+n.boot <- 100
+
+floa <- floa_rcb(data, n.boot, ver = "v2")
+
+# Mean and SD are calculated across all strides (and subjects).
+# No bootstrap or other resampling strategies are applied.
+floa.point <- floa_point(data)
+```
+
+## Validation
+
+### Synthetic data sets
+
+```{r echo = FALSE, warning = FALSE, message = FALSE}
+
+```
+
+### Smooth, wave data (normal error, constant variance, no trend)
+
+```{r echo = FALSE, warning = FALSE, message = FALSE}
+data <- example_data(dat = "smooth", dir.data)
+
+data.single.mc <- subset(data, device == "MC")
+data.single.imu <- subset(data, device == "IMU")
+
+PLOT <- ggplot(data = data.single.mc, aes(x = frame, y = value, group = strideID)) + # , colour = subjectID
+  geom_line(alpha = 0.7) +
+  geom_line(data = data.single.imu, aes(x = frame, y = value, group = strideID, col = "red"), alpha = 0.3) + #, colour = subjectID
+  labs(x = "Time-normalized signal [%]", y = "Difference") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(size = 20),
+        axis.title.x = element_text(size = 22),
+        axis.text.y = element_text(size = 20),
+        axis.title.y = element_text(size = 22),
+        legend.position = "none")
+
+PLOT
+```
+
+### Smooth wave data with nonlinear trend
+
+```{r echo = FALSE, warning = FALSE, message = FALSE}
+data <- example_data(dat = "smooth_trend", dir.data)
+
+data.single.mc <- subset(data, device == "MC")
+data.single.imu <- subset(data, device == "IMU")
+
+PLOT <- ggplot(data = data.single.mc, aes(x = frame, y = value, group = strideID)) + # , colour = subjectID
+  geom_line(alpha = 0.7) +
+  geom_line(data = data.single.imu, aes(x = frame, y = value, group = strideID, col = "red"), alpha = 0.3) + #, colour = subjectID
+  labs(x = "Time-normalized signal [%]", y = "Difference") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(size = 20),
+        axis.title.x = element_text(size = 22),
+        axis.text.y = element_text(size = 20),
+        axis.title.y = element_text(size = 22),
+        legend.position = "none")
+
+PLOT
+```
+
+#### Data with non-gaussian (Weibull distributed) error (no trend)
+
+```{r echo = FALSE, warning = FALSE, message = FALSE}
+data <- example_data(dat = "non_gaussian", dir.data)
+
+data.single.mc <- subset(data, device == "MC")
+data.single.imu <- subset(data, device == "IMU")
+
+PLOT <- ggplot(data = data.single.mc, aes(x = frame, y = value, group = strideID)) + # , colour = subjectID
+  geom_line(alpha = 0.7) +
+  geom_line(data = data.single.imu, aes(x = frame, y = value, group = strideID, col = "red"), alpha = 0.3) + #, colour = subjectID
+  labs(x = "Time-normalized signal [%]", y = "Difference") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(size = 20),
+        axis.title.x = element_text(size = 22),
+        axis.text.y = element_text(size = 20),
+        axis.title.y = element_text(size = 22),
+        legend.position = "none")
+
+PLOT
+```
+
+### Cross validation
+
+Leave-one (subject) out method to estimate the achieved coverage
+
+Versions:
+
+* v1   : n = length(subjects) random strides from all strides
+
+* v1.1 : Functional data version of v1
+
+* v2   : One random stride per subject
+
+* v3   : Fetch a SINGLE random stride from all strides
+
+<!-- $$ -->
+<!-- RMSE_{delta} = \sqrt{\frac{1}{N}(target_1 - pedal_1)^2 + (target_2 - pedal_2)^2 + ... + (target_N - pedal_N)^2} -->
+<!-- $$ -->
+
+<!-- $$ -->
+<!-- RMSE_{pedal} = \sqrt{\frac{1}{n}[(pedal_1 - \mu)^2 + (m_2 - \mu)^2 + ... + (pedal_N - \mu)^2]}, where \mu = \frac{1}{N}(pedal_1 + ... + pedal_N) -->
+<!-- $$ -->
+
+<!-- $$ -->
+<!-- Z = \{z_1, z_2, z_3,...,z_i\} -->
+<!-- $$ -->
+
+# Results
+
+### Cross validation
+
+#### v1 (n = length(subjects) random strides from all strides)
+
+```{r echo = FALSE, warning = FALSE, message = FALSE}
+data <- example_data(dat = "smooth", dir.data)
+```
+
+```{r echo = FALSE, warning = FALSE, message = FALSE}
+cover.cross.v1 <- crossval_coverage(data, n.boot, method = "all", ver = "v1")
+
+plot_cov_ver(cover.cross.v1)
+```
+
+### V2 (One random stride per subject)
+
+```{r echo = FALSE, warning = FALSE, message = FALSE}
+cover.cross.v2 <- crossval_coverage(data, n.boot, method = "all", ver = "v2")
+
+plot_cov_ver(cover.cross.v2)
+```
+
+### v3 (Fetch a SINGLE random stride from all strides)
+
+```{r echo = FALSE, warning = FALSE, message = FALSE}
+cover.cross.v3 <- crossval_coverage(data, n.boot, method = "all", ver = "v3")
+
+plot_cov_ver(cover.cross.v3)
+```
+
+# Discussion
+
+
+# Conclusion
+

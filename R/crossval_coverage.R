@@ -21,7 +21,7 @@ crossval_coverage <- function (data, n.boot, method, ver) {
                             get_coverage(data, t(floa.rcb)) # Select floa method
                             )
 
-      print(paste("floa.rcb", i))
+      # print(paste("floa.rcb", i))
 
       # FLoA Point
       # --------------------------------------------------------------------
@@ -43,7 +43,7 @@ crossval_coverage <- function (data, n.boot, method, ver) {
                         get_coverage(data, t(floa.rcb)) # Select floa method
       )
 
-      print(paste("floa.rcb", i))
+      # print(paste("floa.rcb", i))
 
     } else if (method == "floa.point" | method == "all") {
 
@@ -54,7 +54,7 @@ crossval_coverage <- function (data, n.boot, method, ver) {
                         get_coverage(data, t(floa.point)) # Select floa method
       )
 
-      print(paste("floa.point", i))
+      # print(paste("floa.point", i))
 
     } else {
 
