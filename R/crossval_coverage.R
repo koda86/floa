@@ -1,4 +1,4 @@
-crossval_coverage <- function (data, floa, floa.point, method, ver) {
+crossval_coverage <- function (data, floa, floa.point, method) {
 
   n.subj <- unique(data$subjectID)
 

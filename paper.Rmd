@@ -9,7 +9,7 @@ author:
     email: doris.oriwol@partner.kit.edu
     affiliation: Karlsruhe Institute of Technology
   - name: Christian Maiwald
-    email: christian.maiwal@hsw.tu-chemnitz.de
+    email: christian.maiwald@hsw.tu-chemnitz.de
     affiliation: Chemnitz University of Technology, Research Methodology and Data Analysis in Biomechanics
 # address:
 #   - code: Chemnitz University of Technology
@@ -296,7 +296,7 @@ data <- example_data(dat = "smooth", dir.data)
 ```
 
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
-cover.cross.v1 <- crossval_coverage(data, n.boot, method = "all", ver = "v1")
+cover.cross.v1 <- crossval_coverage(data, floa, floa.point, method = "all", ver = "v1")
 
 plot_cov_ver(cover.cross.v1)
 ```
@@ -304,7 +304,7 @@ plot_cov_ver(cover.cross.v1)
 #### V2 (One random stride per subject)
 
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
-cover.cross.v2 <- crossval_coverage(data, n.boot, method = "all", ver = "v2")
+cover.cross.v2 <- crossval_coverage(data, floa, floa.point, method = "all", ver = "v2")
 
 plot_cov_ver(cover.cross.v2)
 ```
@@ -312,7 +312,7 @@ plot_cov_ver(cover.cross.v2)
 #### v3 (Fetch a SINGLE random stride from all strides)
 
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
-cover.cross.v3 <- crossval_coverage(data, n.boot, method = "all", ver = "v3")
+cover.cross.v3 <- crossval_coverage(data, floa, floa.point, method = "all", ver = "v3")
 
 plot_cov_ver(cover.cross.v3)
 ```
