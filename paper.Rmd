@@ -1,5 +1,5 @@
 ---
-title: "Asymmetric functional prediction bands for assessing the validity of biomechanical curve data"
+title: "Asymmetric functional prediction bands for assessing the validity of spatiotemporally smooth biomechanical curve data"
 author:
   - name: Daniel Koska
     email: daniel.koska@hsw.tu-chemnitz.de
@@ -53,6 +53,20 @@ source(paste0(dir.script, "/plot_cov_ver.R"))
 
 # Introduction
 
+Knowing the size of the measurement error is a basic requirement for evaluating the results of empirical studies. Uncertainty about the error increases the risk of false positive (i.e. errors are incorrectly interpreted as effects) or false negative (i.e. effect and noise are inseperable) results and may negatively impact the reproducibility of study outcomes.
+
+The classic linear error model describes measurement error as the sum of systematic and random deviations from the true value. The full characterization of measurement error, however, is considerably more complex, as different sources of variance (within, between) and noise must be considered. In particular, the output of many biomechanical measurement systems is available in the form of spatiotemporally smooth curves within which the error can vary over time.
+
+However, to apply statistical standard models, in most cases the dimensionality of curves is reduced to just discrete features, such as local extrema, rates of change, or ranges of motion. A number of problems arise from this: (i) non-stationary error processes are not considered (ii) most traditional point statistics are either not suitable (e.g. statistical tests of mean differences), or are only suitable to a limited extent (e.g. product-moment correlation) to
+quantify the agreement between two measurement systems (Bland and Altman, 1986) (iii) the validity of statements derived from discrete variables is limited by domain alignment (i. e. phase shift) and the risk of examining points that have little relevance for the system under investigation [Donoghue et al. (2008), Pataky et al. (2008), Richter et al. (2014), Park et al. (2017)].
+
+Therefore, when analyzing the validity of continuous data, the entire length of the curve should be accounted for. This can be accomplished by either breaking down the curve into a single
+value using e. g. distance measures such as the root mean square error, or by applying statistics (e. g. standard deviation) separately to all points of the curve [Pini et al. (2019)].
+
+The pointwise approach allows for an error representation over the entire domain, but ignores the fact, that the sampling points of biomechanical curves are locally correlated [Deluzio et al. (2007), Pataky]. From a statistical point of view, this implies that random measurement error is likely underrepresented when the (nonzero) covariance term of adjacent sampling points is not accounted for [Lenhoff et al., 1999].
+
+The principal object of this paper was to demonstrate a method for curve data that addresses the aforementioned issues (functional data representation, linear model assumptions, repeated measures), and thus enables the adequate characterization of the agreement between measurement curves on the basis of easy to interpret prediction bands (i.e. LoA in the actual measurement unit).
+
 # Methods
 
 ## Limits of agreement methods
@@ -75,10 +89,6 @@ FLoA derived by different methods are compared
 
 data <- example_data(dat = "smooth", dir.data)
 
-n.boot <- 100
-
-floa <- floa_rcb(data, n.boot, ver = "v2")
-
 # Mean and SD are calculated across all strides (and subjects).
 # No bootstrap or other resampling strategies are applied.
 floa.point <- floa_point(data)
@@ -88,11 +98,85 @@ floa.point <- floa_point(data)
 
 ### Synthetic data sets
 
-```{r echo = FALSE, warning = FALSE, message = FALSE}
+FÜr die Validierung der Methode wurden Zeitreihen simuliert, die gängigen biomechanischen Messsignalen qualitativ ähneln und typische Fehlercharakteristika abbilden. Die verschiedenen Zeitreihen wurden als Fourierreihen aus additiv überlagerten Sinusfunktionen modelliert. Jeder Datensatz enthält n.ts = 100 Kurven von n.subj = 11 fiktiven Probanden. Jede Kurve besteht aus t = 101 Datenpunkten.
 
+```{r warning = FALSE, message = FALSE, eval = FALSE}
+n.subj <- 11
+n.ts <- 100
+
+t <- seq(0, 100)
+
+for (subject.idx in 1:n.subj) {
+
+  # Subjectwise parameters
+  offset.mean <- runif(1, min = -0.5, max = 0.5)
+
+  a.sd <- runif(1, min = 0.05, max = 0.15)
+  b.sd <- runif(1, min = 0.0001, max = 0.002)
+
+  for (ts.idx in 1:(n.ts)) {
+
+    a1.device1 <- rnorm(1, mean = 3, sd = a.sd)
+    a1.device2 <- rnorm(1, mean = 3, sd = a.sd)
+    a2.device1 <- 0.08
+    a2.device2 <- 0.08
+    b1.device1 <- rnorm(1, mean = 0.06, sd = b.sd)
+    b1.device2 <- rnorm(1, mean = 0.06, sd = b.sd)
+    b2.device1 <- rnorm(1, mean = 0.58, sd = b.sd)
+    b2.device2 <- rnorm(1, mean = 0.58, sd = b.sd)
+    c <- 2
+
+    sine.1 <- a1.device1 * sin(b1.device1 * t) ^ (c + 3)
+    sine.2 <- a2.device1 * sin(b2.device1 * t)
+    sine.3 <- a1.device2 * sin(b1.device2 * t) ^ (c + 3)
+    sine.4 <- a2.device2 * sin(b2.device1 * t)
+
+    offset <- rnorm(1, offset.mean, 0.05)
+    
+    # Model (i). (ii), or (iii)
+    # ...
 ```
 
-### Smooth, wave data (normal error, constant variance, no trend)
+* (i) Smooth curves with normally distributed errors, constant variance, and no trend. Within and between subject differences between curves were modeled using random systematic offset (bias) and random variation of curve parameters. The data resembles e. g. kinematic joint angle curves captured by camera-based measurement systems or goniometers.
+
+```{r warning = FALSE, message = FALSE, eval = FALSE}
+# ...
+
+# Model (i)
+device.1 <- sine.1 + sine.2
+device.2 <- offset + sine.3 + sine.4
+```
+
+* (ii) Smooth curves created using the same model and parameters as in (i), but with a nonlinear trend underlying one of the two signals. A similar trend (drift) behavior can be observed in e. g. when the same joint angle curves are calculated by integrating the signal of gyropscopes applied to measure the movement.
+
+```{r warning = FALSE, message = FALSE, eval = FALSE}
+# ...
+trend <- (1 / 100000) * seq(0.5, 50.5, 0.5)^3
+
+# Model (ii)
+device.1 <- sine.1 + sine.2
+device.1 <- offset + sine.3 + sine.4 + trend
+```
+
+* (iii) Smooth curves created using the same model and parameters as in (i), but Weibulll distributed random curve (amplitude) parameters. This introduces non-gaussian measurement error (asymmetric/skewed distribution of differences around the mean difference).
+
+```{r warning = FALSE, message = FALSE, eval = FALSE}
+# ...
+a1.device2 <- rnorm(n = 1,
+                    mean = rweibull(1, shape = 1.5, scale=1) - factorial(1/1.5), # factorial() used to center around 0
+                    sd = a.sd)
+# ...
+sine.3 <- a1.device2 * sin(b1.device2 * t) ^ (c + 3)
+# ...
+
+# Model (iii)
+device.1 <- sine.1 + sine.2
+device.2 <- offset + sine.3 + sine.4
+```
+
+
+
+### Smooth curves (normal error, constant variance, no trend)
 
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
 data <- example_data(dat = "smooth", dir.data)
@@ -114,7 +198,7 @@ PLOT <- ggplot(data = data.single.mc, aes(x = frame, y = value, group = strideID
 PLOT
 ```
 
-### Smooth wave data with nonlinear trend
+### Smooth curves nonlinear error trend
 
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
 data <- example_data(dat = "smooth_trend", dir.data)
@@ -136,7 +220,7 @@ PLOT <- ggplot(data = data.single.mc, aes(x = frame, y = value, group = strideID
 PLOT
 ```
 
-#### Data with non-gaussian (Weibull distributed) error (no trend)
+#### Smooth curves with non-gaussian (Weibull) error (no trend)
 
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
 data <- example_data(dat = "non_gaussian", dir.data)
@@ -186,6 +270,23 @@ Versions:
 
 # Results
 
+### Functional limits of agreement
+
+```{r echo = FALSE, warning = FALSE, message = FALSE}
+data <- example_data(dat = "smooth", dir.data)
+n.boot <- 100
+floa <- floa_rcb(data, n.boot, ver = "v2")
+plot_loa(data, floa, central.tendency = "mean")
+
+data <- example_data(dat = "smooth_trend", dir.data)
+floa <- floa_rcb(data, n.boot, ver = "v2")
+plot_loa(data, floa, central.tendency = "mean")
+
+data <- example_data(dat = "non_gaussian", dir.data)
+floa <- floa_rcb(data, n.boot, ver = "v2")
+plot_loa(data, floa, central.tendency = "mean")
+```
+
 ### Cross validation
 
 #### v1 (n = length(subjects) random strides from all strides)
@@ -200,7 +301,7 @@ cover.cross.v1 <- crossval_coverage(data, n.boot, method = "all", ver = "v1")
 plot_cov_ver(cover.cross.v1)
 ```
 
-### V2 (One random stride per subject)
+#### V2 (One random stride per subject)
 
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
 cover.cross.v2 <- crossval_coverage(data, n.boot, method = "all", ver = "v2")
@@ -208,7 +309,7 @@ cover.cross.v2 <- crossval_coverage(data, n.boot, method = "all", ver = "v2")
 plot_cov_ver(cover.cross.v2)
 ```
 
-### v3 (Fetch a SINGLE random stride from all strides)
+#### v3 (Fetch a SINGLE random stride from all strides)
 
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
 cover.cross.v3 <- crossval_coverage(data, n.boot, method = "all", ver = "v3")

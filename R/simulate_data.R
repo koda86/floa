@@ -174,20 +174,20 @@ for (subj.idx in 1:n.subj) {
 
   a.sd <- runif(1, min = 0.05, max = 0.15) # .1
 
-  b.sd <- runif(1, min = 0.0001, max = 0.002) # rweibull(1, shape = 1.5, scale=1) - factorial(1/1.5)
+  b.sd <- runif(1, min = 0.0001, max = 0.002)
 
   for (stride.idx in 1:(n.strides)) {
 
-    a1.1 <- rnorm(1, mean = 3, sd = a.sd) # .1
-    a1.2 <- rnorm(1, mean = rweibull(1, shape = 1.5, scale=1) -
-                    factorial(1/1.5), # center the error around 0
-                  sd = a.sd) # .1
+    a1.1 <- rnorm(1, mean = 3, sd = a.sd)
+    a1.2 <- rnorm(n = 1,
+                  mean = rweibull(1, shape = 1.5, scale=1) - factorial(1/1.5), # factorial() used to center around 0
+                  sd = a.sd)
     a2.1 <- 0.08
     a2.2 <- 0.08
-    b1.1 <- rnorm(1, mean = 0.06, sd = b.sd) # 0.001
-    b1.2 <- rnorm(1, mean = 0.06, sd = b.sd) # 0.001
-    b2.1 <- rnorm(1, mean = 0.58, sd = b.sd) # 0.001
-    b2.2 <- rnorm(1, mean = 0.58, sd = b.sd) # 0.001
+    b1.1 <- rnorm(1, mean = 0.06, sd = b.sd)
+    b1.2 <- rnorm(1, mean = 0.06, sd = b.sd)
+    b2.1 <- rnorm(1, mean = 0.58, sd = b.sd)
+    b2.2 <- rnorm(1, mean = 0.58, sd = b.sd)
     c <- 2
 
     sine.1 <- a1.1 * sin(b1.1 * t) ^ (c + 3)
