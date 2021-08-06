@@ -82,11 +82,14 @@ PLOT <- ggplot(data = data.single.mc, aes(x = frame, y = value, group = strideID
 PLOT
 
 
-# ************* Approximate time series using Fourier functions ****************
-
-fd.basis <- 1 # Number of basic (Fourier) functions
-
-tmp <- fdaDelta(data, fd.basis)
+# # ****** Approximate time series (differences) using Fourier functions *********
+#
+# # Number of basic (Fourier) functions
+# # ... appears to plateau around 50 basis vectors
+# fd.basis <- fda::create.fourier.basis(nbasis = 50)
+#
+# # Returns functional data representation of difference curves
+# data.diff.fd <- fdaDelta(data, fd.basis)
 
 
 # ****************************** Calculate FLoA ********************************
@@ -112,8 +115,7 @@ floa <- floa_rcb(data, n.boot, ver = "v2")
 
 # Pointwise LoA ----------------------------------------------------------------
 
-# Mean and SD are calculated across all strides (and subjects).
-# No bootstrap or other resampling strategies are applied.
+# Mean + SD are calculated across all strides/subjects using linear mixed models
 floa.point <- floa_point(data)
 
 

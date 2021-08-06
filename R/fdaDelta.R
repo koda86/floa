@@ -2,7 +2,7 @@ fdaDelta <- function(data, fd.basis){
 
   # Approximates time series using Fourier functions ---------------------------
 
-  library(Data2fd)
+  library(fda)
 
   # First device
   # --------------------------
@@ -10,8 +10,8 @@ fdaDelta <- function(data, fd.basis){
 
   dev1.wide <- matrix(dev1, ncol = length(dev1) / 101)
 
-  # Functional data object
-  dev1.wide.fd <- Data2fd(argvals = dev1.wide, basisobj = fd.basis)
+  # Create functional data object
+  dev1.wide.fd <- fda::Data2fd(argvals = dev1.wide, basisobj = fd.basis)
 
   # Second device
   # --------------------------
