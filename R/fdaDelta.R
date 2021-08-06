@@ -1,8 +1,8 @@
 fdaDelta <- function(data, fd.basis){
 
-  ##############################################################################
-  # Approximates empirical time series data using Fourier series (functions)
-  ##############################################################################
+  # Approximates time series using Fourier functions ---------------------------
+
+  library(Data2fd)
 
   # First device
   # --------------------------
@@ -28,8 +28,6 @@ fdaDelta <- function(data, fd.basis){
   # point-wise statistics
   mean.diff.fd <- mean.fd(fd.diff)
   sd.diff.fd <- std.fd(fd.diff)
-
-
 
   fda <- list()
 

@@ -5,8 +5,6 @@
 #     * Different strategies
 #   * Point-by-point Gaussian intervals (floa.point)
 #
-# Thus far, a transformation of time series data to functional data (Fourier,
-# Splines etc.) is not implemented.
 #
 # For demonstration, different (synthetic) data sets can be chosen
 # (see subsection data sets)
@@ -26,7 +24,7 @@
 #   + Make variable names more universal (e.g. "device.1" instead "mc")
 #   + Add namespaces (package names ::)
 #   + No line between header and body in loops
-################################################################################
+# ******************************************************************************
 
 # library(fda)
 # library(funData)
@@ -40,6 +38,7 @@ dir.data <- "C:/Users/Daniel/Desktop/tmp/floa/R/examples"
 
 setwd(dir.script)
 source("example_data.R")
+source("fdaDelta.R")
 source("draw_clusters.R")
 source("floa_rcb.R")
 source("floa_point.R")
@@ -47,10 +46,9 @@ source("plot_loa.R")
 source("get_coverage.R")
 source("crossval_coverage.R")
 source("plot_cov_ver.R")
-# source("fdaDelta.R")
 
 
-################################### Data sets ##################################
+# ********************************* Data sets **********************************
 
 # Wrapper function for example data sets. Function arguments:
 #
@@ -62,7 +60,9 @@ source("plot_cov_ver.R")
 
 data <- example_data(dat = "smooth", dir.data)
 
-# Plot data
+# Plot data --------------------------------------------------------------------
+
+# uncommment when subject differences need to be plotted
 # data$subjectID <- as.factor(data$subjectID)
 
 data.single.mc <- subset(data, device == "MC")
@@ -82,13 +82,19 @@ PLOT <- ggplot(data = data.single.mc, aes(x = frame, y = value, group = strideID
 PLOT
 
 
-################################ Calculate FLoA ################################
+# ************* Approximate time series using Fourier functions ****************
+
+fd.basis <- 1 # Number of basic (Fourier) functions
+
+tmp <- fdaDelta(data, fd.basis)
+
+
+# ****************************** Calculate FLoA ********************************
 
 n.boot <- 100
 
-# Randomized Cluster Bootstrap
-# ------------------------------------------------------------------------------
-
+# Randomized Cluster Bootstrap -------------------------------------------------
+#
 # * In the first stage, n=length(subjects) random strides are sampled
 # from all strides (with replacement). Strides are selected from the entire set
 # of curves (NOT! one curve per subject).
@@ -104,15 +110,14 @@ n.boot <- 100
 
 floa <- floa_rcb(data, n.boot, ver = "v2")
 
-# Pointwise LoA
-# ------------------------------------------------------------------------------
+# Pointwise LoA ----------------------------------------------------------------
 
 # Mean and SD are calculated across all strides (and subjects).
 # No bootstrap or other resampling strategies are applied.
 floa.point <- floa_point(data)
 
 
-################################### Plot data ##################################
+# ********************************* Plot data **********************************
 
 # Select limits of agreement method and central tendency parameter
 plot_loa(data, floa, central.tendency = "mean")
@@ -120,14 +125,15 @@ plot_loa(data, floa, central.tendency = "mean")
 # floa.point <- data.frame(t(floa.point))
 
 
-################################### Coverage ###################################
+# ********************************* Coverage ***********************************
 
 # Calculate coverage (entire curves within the limits of agreement)
 coverage <- get_coverage(data, floa.point) # Select floa method: floa or floa.point
 
 print(coverage)
 
-############################### Cross validation ###############################
+
+# ***************************** Cross validation *******************************
 
 # Leave-one (subject) out method to estimate the achieved coverage
 # See e. g. Lenhoff et al. (1999)
@@ -159,8 +165,5 @@ cover.cross.v3 <- crossval_coverage(data, floa, floa.point, method = "all", ver 
 plot_cov_ver(cover.cross.v1)
 plot_cov_ver(cover.cross.v2)
 plot_cov_ver(cover.cross.v3)
-
-
-############################# Convergence analysis #############################
 
 
