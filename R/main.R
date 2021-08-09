@@ -10,6 +10,8 @@
 # (see subsection data sets)
 #
 # TODO:
+#   + Finish floa_roislien()
+#   + Reimplement crossval_coverage.R
 #   + Implementieren FDA
 #   + Quantile: Über die gesamte Verteilung oder die "Ausreisser-Quantile" einzelner/extremer Probanden
 #     + quantile() function: Bias correction useful/necessary?
@@ -42,6 +44,7 @@ source("fdaDelta.R")
 source("draw_clusters.R")
 source("floa_rcb.R")
 source("floa_point.R")
+source("floa_roislien.R")
 source("plot_loa.R")
 source("get_coverage.R")
 source("crossval_coverage.R")
@@ -105,10 +108,11 @@ n.boot <- 100
 # From the resulting distribution, percentiles (2.5%, 50%, 97.5%) are calculated.
 #
 # In current implementation: Specify version number (ver):
-# v1   : n = length(subjects) random strides from all strides
-# v1.1 : Functional data version of v1
-# v2   : One random stride per subject
-# v3   : Fetch a SINGLE random stride from all strides
+# v1 : n = length(subjects) random strides from all strides
+# v2 : One random stride per subject
+# v3 : Fetch a SINGLE random stride from all strides
+# v4 : Roislien approach (Get one random stride from each subject ONCE and boot-
+#      strap the resulting sample (of length (n=length(subjects))
 # ------------------------------------------------------------------------------
 
 floa <- floa_rcb(data, n.boot, ver = "v2")
@@ -140,32 +144,21 @@ print(coverage)
 # Leave-one (subject) out method to estimate the achieved coverage
 # See e. g. Lenhoff et al. (1999)
 #
-# Specify method calculated in crossval_coverage()
-#   * method = "all"
-#   * method = "floa.rcb"
-#   * method = "floa.point"
+# Currently, different versions of the sampling process in draw_clusters() (nested
+# in floa_rcb()) are implemented:
 #
-# Select a version for the calculation of floa.rcb (see above)
-
-# Currently, different version of the sampling process in draw_clusters() (nested)
-# in floa_rcb()) are implemented (specified by the function argument ver).
-
-# Select a version:
-# v1  : n=length(subjects) random strides from all strides
-# v2  : Functional data version of v1
-# v3  : Fetch a single stride only from all strides
+# v1 : n = length(subjects) random strides from all strides
+# v2 : One random stride per subject
+# v3 : Fetch a SINGLE random stride from all strides
+# v4 : Roislien approach (Get one random stride from each subject ONCE and boot-
+#      strap the resulting sample (of length (n=length(subjects))
 #
-# Output:()
+# Output:
 #   * Coverage levels [%] across n=length(subjectID) iterations
 # ------------------------------------------------------------------------------
 
-cover.cross.v1 <- crossval_coverage(data, floa, floa.point, method = "all", ver = "v1")
-cover.cross.v2 <- crossval_coverage(data, floa, floa.point, method = "all", ver = "v2")
-cover.cross.v3 <- crossval_coverage(data, floa, floa.point, method = "all", ver = "v3")
-
+cover.cross <- crossval_coverage(data, n.boot)
 
 plot_cov_ver(cover.cross.v1)
-plot_cov_ver(cover.cross.v2)
-plot_cov_ver(cover.cross.v3)
 
 

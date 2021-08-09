@@ -16,9 +16,10 @@ draw_clusters <- function(data, ver) { # fd.basis
     #### v1 ####
     # Strides are selected from the entire set of curves (NOT! one curve per subject)
     # ----------------------------------------------------------------------------
-
     # Pick n=length(subjects) random strides
-    curve.idx <- as.numeric(sample(data$strideID, length(unique(data$subjectID)), replace = TRUE))
+    curve.idx <- as.numeric(sample(data$strideID,
+                                   length(unique(data$subjectID)),
+                                   replace = TRUE))
 
     curve <- data[data$strideID %in% curve.idx, ]
 
@@ -58,9 +59,7 @@ draw_clusters <- function(data, ver) { # fd.basis
     #### v2 ####
     # One stride per subject
     # ----------------------------------------------------------------------------
-
-    # Select one random curve per subject
-    n.subj <- length(unique(data$subjectID))
+    n.subj <- length(unique(data$subjectID)) # Select one random curve per subject
 
     curve.idx <- c()
 
@@ -87,13 +86,11 @@ draw_clusters <- function(data, ver) { # fd.basis
     diff.curves <- curve0 - curve1
   }
 
-
   if (ver == "v3") {
 
     # v3
     # Fetch a single stride only (from the entire set of curves)
     # ----------------------------------------------------------------------------
-
     curve.idx <- sample(unique(data$strideID), size = 1)
 
     curve <- data[data$strideID %in% curve.idx, ]
@@ -106,7 +103,6 @@ draw_clusters <- function(data, ver) { # fd.basis
 
     diff.curves <- curve0 - curve1
   }
-
 
   return(diff.curves) # diff.curve.samp # cluster.fdata
 }
