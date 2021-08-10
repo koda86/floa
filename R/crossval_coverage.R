@@ -20,22 +20,28 @@ crossval_coverage <- function (data, n.boot) {
 
   n.subj <- unique(data$subjectID)
 
-  floa.point  <- floa_point(data)
-  floa.v1     <- floa_rcb(data, n.boot, ver = "v1")
-  floa.v2     <- floa_rcb(data, n.boot, ver = "v2")
-  floa.v3     <- floa_rcb(data, n.boot, ver = "v3")
-  floa.roislien     <- floa_roislien(data, n.boot)
-
-  cover.cross  <- c()
-  cover.cross.rcb  <- c()
-  cover.cross.point  <- c()
+  cover.cross.rcb.v1   <- c()
+  cover.cross.rcb.v2   <- c()
+  cover.cross.rcb.v3   <- c()
+  cover.cross.point    <- c()
+  cover.cross.roislien <- c()
 
   for (i in n.subj) {
 
-    data.subset <- subset(data, subjectID != i) # Leave subject "i" out
-
-    # FLoA
+    # Calculate FLoA with one subject left out
     # --------------------------------------------------------------------
+    data.one.out <- subset(data, subjectID != i) # Leave subject "i" out
+
+    floa.point    <- floa_point(data.one.out)
+    floa.v1       <- floa_rcb(data.one.out, n.boot, ver = "v1")
+    floa.v2       <- floa_rcb(data.one.out, n.boot, ver = "v2")
+    floa.v3       <- floa_rcb(data.one.out, n.boot, ver = "v3")
+    floa.roislien <- floa_roislien(data.one.out, n.boot)
+
+    # Get coverage of unseen (excluded) subject vs. the FLoA
+    # --------------------------------------------------------------------
+    data.subset <- subset(data, subjectID == i) # Only one subject "i"
+
     cover.cross.rcb.v1 <- c(cover.cross.rcb.v1,
                              get_coverage(data.subset, floa.v1)
                              )

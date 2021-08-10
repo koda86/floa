@@ -51,14 +51,15 @@ dir.data <- "C:/Users/Daniel/Desktop/tmp/floa/R/examples"
 
 # setwd(dir.script)
 source(paste0(dir.script, "/example_data.R"))
+source(paste0(dir.script, "/pick_subwise_curves.R"))
 source(paste0(dir.script, "/draw_clusters.R"))
 source(paste0(dir.script, "/floa_rcb.R"))
 source(paste0(dir.script, "/floa_point.R"))
+source(paste0(dir.script, "/floa_roislien.R"))
 source(paste0(dir.script, "/plot_loa.R"))
 source(paste0(dir.script, "/get_coverage.R"))
 source(paste0(dir.script, "/crossval_coverage.R"))
 source(paste0(dir.script, "/plot_cov_ver.R"))
-# source("fdaDelta.R")
 ```
 
 # Introduction
@@ -67,7 +68,11 @@ Having a good estimate of the amount of measurement error is a basic requirement
 
 Therefore, when analyzing the validity of continuous data, the entire length of the curve should be accounted for. This can be accomplished e. g. by applying statistics (e. g. standard deviation) separately to all points of the curve [Pini et al. (2019)]. The pointwise approach allows for an error representation over the entire domain, but ignores the fact, that the sampling points of biomechanical curves are locally correlated [Deluzio & Astephen, 2007; Pataky, 2010]. From a statistical point of view, this implies that the random error component is likely underrepresented when the (nonzero) covariance term of adjacent sampling points is not accounted for [Lenhoff et al., 1999]. In addition, most traditional point statistics are either not suitable (e.g. statistical tests of mean differences), or are only suitable to a limited extent (e.g. product-moment correlation) to quantify the agreement between two measurement systems (Bland and Altman, 1986).
 
-One possibility to address te problem of a pointwise analysis is to treat curves as single objects rather than as a series of unconnected points [Ramsay & Silverman, 2005]. Røislien et al. [2012] presented a method that extends the Limits of Agreement (LoA) concept [11] to functional data. This is achieved by approximating curves using Fourier series and resampling the thus obtained functions. The approach accounts for the autocorrelation characteristic in the signal and at the same time allows for an intuitive description of the systematic and random error terms in the original sampling space (e.g. actual degrees). Røislien et al. [10], however, make a number of strong assumptions, which are often not or only partially fulfilled in empirical data sets:
+One possibility to address te problem of a pointwise analysis is to treat curves as single objects rather than as a series of unconnected points [Ramsay & Silverman, 2005]. Røislien et al. [2012] presented a method that extends the Limits of Agreement (LoA) concept [11] to functional data. This is achieved by approximating curves using Fourier series and resampling the thus obtained functions. 
+
+<!-- Anwendung der Argumentation der Reviewer* auf die "Roislien_FLoA": In Roislien et al. werden 95% Konfidenzintervalle gebootstrapped. The authors are producing the arithmetic mean curves, the variability of which will reflect variation between means. It is the variability of individual values that is relevant, and the limits will be too narrow by a factor of approximately the square root of n.subj. -->
+
+The approach accounts for the autocorrelation characteristic in the signal and at the same time allows for an intuitive description of the systematic and random error terms in the original sampling space (e.g. actual degrees). Røislien et al. [10], however, make a number of strong assumptions, which are often not or only partially fulfilled in empirical data sets:
 
 (i) Time-continuous differences of two measurement systems and the corresponding averages must be uncorrelated.
 This assumption is violated considerably in many validation data sets [12]. E.g., Atallah et al. [13] found that the agreement between an ear-worn accelerometer and a force-plate instrumented treadmill was associated with gait speed when estimating gait cycle duration. When validating a foot-worn gyroscope for treadmill running, Koska & Maiwald [14] observed a linear error trend that was associated with foot strike behavior.
@@ -267,11 +272,12 @@ Versions:
 
 * v1   : n = length(subjects) random strides from all strides
 
-* v1.1 : Functional data version of v1
-
 * v2   : One random stride per subject
 
 * v3   : Fetch a SINGLE random stride from all strides
+
+* v4 : Roislien approach (Get one random stride from each subject ONCE and boot-
+       strap the resulting sample (of length (n=length(subjects))
 
 <!-- $$ -->
 <!-- RMSE_{delta} = \sqrt{\frac{1}{N}(target_1 - pedal_1)^2 + (target_2 - pedal_2)^2 + ... + (target_N - pedal_N)^2} -->
@@ -304,47 +310,57 @@ floa <- floa_rcb(data, n.boot, ver = "v2")
 plot_loa(data, floa, central.tendency = "mean")
 ```
 
-### Cross validation
-
-#### v1 (n = length(subjects) random strides from all strides)
+### Leave-one-out cross validation
 
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
 data <- example_data(dat = "smooth", dir.data)
+
+n.boot <- 100
+cover.cross <- crossval_coverage(data, n.boot)
+
+plot_cov_ver(cover.cross)
 ```
 
-```{r echo = FALSE, warning = FALSE, message = FALSE}
-floa <- floa_rcb(data, n.boot, ver = "v1")
-floa.point <- floa_point(data)
+<!-- #### v1 (n = length(subjects) random strides from all strides) -->
 
-cover.cross.v1 <- crossval_coverage(data, floa, floa.point, method = "all")
+<!-- ```{r echo = FALSE, warning = FALSE, message = FALSE} -->
+<!-- data <- example_data(dat = "smooth", dir.data) -->
+<!-- ``` -->
 
-plot_cov_ver(cover.cross.v1)
-```
+<!-- ```{r echo = FALSE, warning = FALSE, message = FALSE} -->
+<!-- floa <- floa_rcb(data, n.boot, ver = "v1") -->
+<!-- floa.point <- floa_point(data) -->
 
-#### V2 (One random stride per subject)
+<!-- cover.cross.v1 <- crossval_coverage(data, floa, floa.point, method = "all") -->
 
-```{r echo = FALSE, warning = FALSE, message = FALSE}
-floa <- floa_rcb(data, n.boot, ver = "v2")
-floa.point <- floa_point(data)
+<!-- plot_cov_ver(cover.cross.v1) -->
+<!-- ``` -->
 
-cover.cross.v2 <- crossval_coverage(data, floa, floa.point, method = "all")
+<!-- #### V2 (One random stride per subject) -->
 
-plot_cov_ver(cover.cross.v2)
-```
+<!-- ```{r echo = FALSE, warning = FALSE, message = FALSE} -->
+<!-- floa <- floa_rcb(data, n.boot, ver = "v2") -->
+<!-- floa.point <- floa_point(data) -->
 
-#### v3 (Fetch a SINGLE random stride from all strides)
+<!-- cover.cross.v2 <- crossval_coverage(data, floa, floa.point, method = "all") -->
 
-```{r echo = FALSE, warning = FALSE, message = FALSE}
-floa <- floa_rcb(data, n.boot, ver = "v3")
-floa.point <- floa_point(data)
+<!-- plot_cov_ver(cover.cross.v2) -->
+<!-- ``` -->
 
-cover.cross.v3 <- crossval_coverage(data, floa, floa.point, method = "all")
+<!-- #### v3 (Fetch a SINGLE random stride from all strides) -->
 
-plot_cov_ver(cover.cross.v3)
-```
+<!-- ```{r echo = FALSE, warning = FALSE, message = FALSE} -->
+<!-- floa <- floa_rcb(data, n.boot, ver = "v3") -->
+<!-- floa.point <- floa_point(data) -->
+
+<!-- cover.cross.v3 <- crossval_coverage(data, floa, floa.point, method = "all") -->
+
+<!-- plot_cov_ver(cover.cross.v3) -->
+<!-- ``` -->
 
 # Discussion
 
+Anwendung der Argumentation der Reviewer* auf die "Roislien_FLoA": In Roislien et al. werden 95% Konfidenzintervalle gebootstrapped. The authors are producing the arithmetic mean curves, the variability of which will reflect variation between means. It is the variability of individual values that is relevant, and the limits will be too narrow by a factor of approximately the square root of n.subj.
 
 # Conclusion
 

@@ -10,9 +10,11 @@
 # (see subsection data sets)
 #
 # TODO:
+#   + Check leave-one-out implementation
 #   + Finish floa_roislien()
 #   + Reimplement crossval_coverage.R
 #   + Implementieren FDA
+#   + Preallocation in floa_rcb()
 #   + Quantile: Über die gesamte Verteilung oder die "Ausreisser-Quantile" einzelner/extremer Probanden
 #     + quantile() function: Bias correction useful/necessary?
 #   + Konvergenzanalyse --> ja, aber "nur" intern
@@ -41,6 +43,7 @@ dir.data <- "C:/Users/Daniel/Desktop/tmp/floa/R/examples"
 setwd(dir.script)
 source("example_data.R")
 source("fdaDelta.R")
+source("pick_subwise_curves.R")
 source("draw_clusters.R")
 source("floa_rcb.R")
 source("floa_point.R")
@@ -60,6 +63,7 @@ source("plot_cov_ver.R")
 # * Smooth wave data with nonlinear trend (constant variance): "smooth_trend"
 # * Data with non-gaussian (Weibull distributed) error (no trend): "non_gaussian"
 # * Data with shock peaks (no bias, no trend): "shock"
+
 
 data <- example_data(dat = "smooth", dir.data)
 
@@ -159,6 +163,6 @@ print(coverage)
 
 cover.cross <- crossval_coverage(data, n.boot)
 
-plot_cov_ver(cover.cross.v1)
+plot_cov_ver(cover.cross)
 
 

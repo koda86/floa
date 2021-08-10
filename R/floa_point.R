@@ -6,10 +6,12 @@ floa_point <- function(data) {
 
   library(lme4)
 
-  mean.diff <- list()
-  median.diff <- list()
-  sd.between <- list()
-  sd.within <- list()
+  n.frames <- length(unique(data$frame))
+
+  mean.diff <- vector(mode = "list", length = n.frames)
+  median.diff <- vector(mode = "list", length = n.frames)
+  sd.between <- vector(mode = "list", length = n.frames)
+  sd.within <- vector(mode = "list", length = n.frames)
 
   for (frame.idx in 0:100){
 

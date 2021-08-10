@@ -17,7 +17,7 @@ floa_rcb <- function(data, n.boot, ver) { # , fd.basis
 
   # (Row-wise) Arrange difference curves to facilitate computing percentiles
   clust.agg.intrp <- matrix(unlist(clust.boot.agg),
-                      ncol  = 101, # length(fd.basis$names)
+                      ncol  = length(unique(data$frame)), # length(fd.basis$names)
                       byrow = TRUE)
 
   # clust.agg.intrp <- t(sapply(apply(t(clust.agg), 2, approx, n = 101), "[[", "y"))

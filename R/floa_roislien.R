@@ -1,26 +1,33 @@
-floa_roislien <- function(data, n.boot, ver) { # , fd.basis
+floa_roislien <- function(data, n.boot) {
 
-  # ############################################################################
+  # ****************************************************************************
   # Functional limits of agreement according to Roislien et al. (2012)
-  # ############################################################################
+  #
+  # In Roislien et al., FLoA are calculated as 95% CI.
+  # ****************************************************************************
 
   # Get one random stride from each subject ONCE and bootstrap the resulting
   # sample (of length (n=length(subjects))
   # ----------------------------------------------------------------------------
-  curve.idx <- sample(unique(data$strideID), size = 1)
 
-  curve <- data[data$strideID %in% curve.idx, ]
+  source("pick_subwise_curves.R")
+  source("functional_mean.R")
+  source("functional_sd.R")
+  source("boot_mean_sd.R")
 
-  curve0 <- subset(curve, device  == "IMU")$value
-  curve0 <- matrix(curve0, ncol = length(curve0) / 100)
-
-  curve1 <- subset(curve, device  == "MC")$value
-  curve1 <- matrix(curve1, ncol = length(curve1) / 100)
-
-  diff.curves <- curve0 - curve1
+  # Bootstrap to get 95% CI FLoA -----------------------------------------------
+  func.boot <- boot_mean_sd(data, n.boot) # data need to have dimension [101, x]
 
   # Calculate Limits of Agreement ----------------------------------------------
+  func.mean.boot <- functional_mean(func.boot) # mean of bootstrapped distribution
+  func.sd.boot <- functional_sd(func.boot)
 
+  # Get the same structure as returned by the other methods (i. e. floa_rcb)
+  floa.roislien <- rbind(func.mean.boot + 1.96 * func.sd.boot,
+                         func.mean.boot,
+                         func.mean.boot - 1.96 * func.sd.boot)
 
-  return(floa)
+  row.names(floa.roislien) <- c("upper", "mean", "lower")
+
+  return(floa.roislien)
 }

@@ -24,7 +24,10 @@ get_coverage <- function (data, floa) {
   n.strides <- length(unique(device.diff$strideID))
   outside <- 0
 
-  for (stride.idx in 1:n.strides){
+  # Account for stride indices not starting at 1
+  stride.indices <- unique(data$strideID)
+
+  for (stride.idx in stride.indices){
 
     tmp <- subset(device.diff, strideID == stride.idx)
 

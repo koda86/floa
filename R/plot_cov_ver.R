@@ -8,6 +8,10 @@ plot_cov_ver <- function (cover.cross) {
   names(cover.cross.long)[names(cover.cross.long) != 'time'] <- 'value'
   names(cover.cross.long)[names(cover.cross.long) == 'time'] <- 'method'
 
-  cover.PLOT <- ggplot(cover.cross.long, aes(x = method, y = value)) + geom_boxplot()
+  cover.PLOT <- ggplot(cover.cross.long, aes(x = method, y = value)) +
+    geom_boxplot() +
+    ylim(0, 1) +
+    ylab("coverage")
+
   cover.PLOT
 }

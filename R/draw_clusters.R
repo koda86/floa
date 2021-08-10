@@ -8,12 +8,13 @@ draw_clusters <- function(data, ver) { # fd.basis
   # v1   : n = length(subjects) random strides from all strides
   # v1.1 : Functional data version of v1
   # v2   : One stride per subject
-  # v3   : Fetch a single stride only form all strides
+  # v3   : Fetch a single stride only from all available strides
   # ----------------------------------------------------------------------------
+
+  source("pick_subwise_curves.R")
 
   if (ver == "v1") {
 
-    #### v1 ####
     # Strides are selected from the entire set of curves (NOT! one curve per subject)
     # ----------------------------------------------------------------------------
     # Pick n=length(subjects) random strides
@@ -56,39 +57,13 @@ draw_clusters <- function(data, ver) { # fd.basis
 
   if (ver == "v2") {
 
-    #### v2 ####
     # One stride per subject
     # ----------------------------------------------------------------------------
-    n.subj <- length(unique(data$subjectID)) # Select one random curve per subject
-
-    curve.idx <- c()
-
-    # Index starts at two because during the cross validation one subject is always removed (leave one out approach)
-    for (subj.idx in 1:n.subj) {
-
-      if (subj.idx %in% unique(data$subjectID)) {
-
-        tmp <- data[data$subjectID == subj.idx, ]
-
-        curve.idx.subj <- as.numeric(sample(tmp$strideID, size = 1))
-        curve.idx <- c(curve.idx, curve.idx.subj)
-      }
-    }
-
-    curve <- data[data$strideID %in% curve.idx, ]
-
-    curve0 <- subset(curve, device  == "IMU")$value
-    curve0 <- matrix(curve0, ncol = length(curve0) / 100)
-
-    curve1 <- subset(curve, device  == "MC")$value
-    curve1 <- matrix(curve1, ncol = length(curve1) / 100)
-
-    diff.curves <- curve0 - curve1
+    diff.curves <- pick_subwise_curves(data)
   }
 
   if (ver == "v3") {
 
-    # v3
     # Fetch a single stride only (from the entire set of curves)
     # ----------------------------------------------------------------------------
     curve.idx <- sample(unique(data$strideID), size = 1)
