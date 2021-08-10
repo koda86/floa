@@ -11,8 +11,7 @@
 #
 # TODO:
 #   + Check leave-one-out implementation
-#   + Finish floa_roislien()
-#   + Reimplement crossval_coverage.R
+#   + Programming challenge: Vectorize (or at least preallocate as much as possible)
 #   + Implementieren FDA
 #   + Preallocation in floa_rcb()
 #   + Quantile: Über die gesamte Verteilung oder die "Ausreisser-Quantile" einzelner/extremer Probanden
