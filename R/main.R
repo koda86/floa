@@ -10,9 +10,8 @@
 # (see subsection data sets)
 #
 # TODO:
-#   + Adjust example_data() so that n.subj and n.strides can be chosen
 #   + Rename n.strides to n.curves()
-#   + Zeitlichen Versatz (x-Achse) in example_data() einbringen (siehe Grafike Lenhof)
+#   + Zeitlichen Versatz (x-Achse) in example_data() einbringen (siehe Grafike Lenhoff)
 #   + Check leave-one-out implementation
 #   + Programming challenge: Vectorize (or at least preallocate as much as possible)
 #   + Implementieren FDA
