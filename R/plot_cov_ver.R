@@ -9,9 +9,12 @@ plot_cov_ver <- function (cover.cross) {
   names(cover.cross.long)[names(cover.cross.long) == 'time'] <- 'method'
 
   cover.PLOT <- ggplot(cover.cross.long, aes(x = method, y = value)) +
-    geom_boxplot() +
-    ylim(0, 1) +
+    geom_boxplot(width = .5) +
+    # geom_jitter(size = 3, width = .15, colour = "red") +
+    # geom_violin() +
+    ylim(-0.1, 1.1) +
     ylab("coverage")
 
   cover.PLOT
-}
+
+  }

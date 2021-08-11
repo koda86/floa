@@ -46,12 +46,17 @@ source("example_data.R")
 source("fdaDelta.R")
 source("pick_subwise_curves.R")
 source("draw_clusters.R")
+source("functional_mean.R")
+source("functional_sd.R")
+source("boot_mean_sd.R")
 source("floa_rcb.R")
 source("floa_point.R")
 source("floa_roislien.R")
 source("plot_loa.R")
 source("get_coverage.R")
+source("get_coverage_fraction.R")
 source("crossval_coverage.R")
+source("crossval_coverage_fraction.R")
 source("plot_cov_ver.R")
 
 
@@ -161,7 +166,11 @@ print(coverage)
 # ------------------------------------------------------------------------------
 cover.cross <- crossval_coverage(data, n.boot)
 
-# Display cross validation coverages as boxplots across methods
+# Display cross validation coverages (entire curve covered) across methods
 plot_cov_ver(cover.cross)
 
+# Display cross validation coverages (fraction of the curve that is covered) across methods
+cover.cross.fraction <- crossval_coverage_fraction(data, n.boot)
+
+plot_cov_ver(cover.cross.fraction)
 

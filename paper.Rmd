@@ -17,7 +17,7 @@ author:
 #   - code: Another University
 #     address: Department, Street, City, State, Zip
 abstract: |
-  This is the abstract.
+  Paper als short communication / technical note?
 
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 journal: "An awesome journal"
@@ -49,16 +49,20 @@ library(ggplot2)
 dir.script <- "C:/Users/Daniel/Desktop/tmp/floa/R"
 dir.data <- "C:/Users/Daniel/Desktop/tmp/floa/R/examples"
 
-# setwd(dir.script)
 source(paste0(dir.script, "/example_data.R"))
 source(paste0(dir.script, "/pick_subwise_curves.R"))
 source(paste0(dir.script, "/draw_clusters.R"))
+source(paste0(dir.script, "/functional_mean.R"))
+source(paste0(dir.script, "/functional_sd.R"))
+source(paste0(dir.script, "/boot_mean_sd.R"))
 source(paste0(dir.script, "/floa_rcb.R"))
 source(paste0(dir.script, "/floa_point.R"))
 source(paste0(dir.script, "/floa_roislien.R"))
 source(paste0(dir.script, "/plot_loa.R"))
 source(paste0(dir.script, "/get_coverage.R"))
+source(paste0(dir.script, "/get_coverage_fraction.R"))
 source(paste0(dir.script, "/crossval_coverage.R"))
+source(paste0(dir.script, "/crossval_coverage_fraction.R"))
 source(paste0(dir.script, "/plot_cov_ver.R"))
 ```
 
@@ -266,18 +270,20 @@ PLOT
 
 ### Cross validation
 
-Leave-one (subject) out method to estimate the achieved coverage
+Leave-one out method to estimate the achieved coverage
 
-Versions:
+Prediction intervals are calculated from size.dataset = number.subjects - 1 and then validated against the left out subjects curves for five different methods:
 
-* v1   : n = length(subjects) random strides from all strides
+* FLoA~RCB_v1~   : n = length(subjects) random strides from all strides
 
-* v2   : One random stride per subject
+* FLoA~RCB_v2~   : One random stride per subject
 
-* v3   : Fetch a SINGLE random stride from all strides
+* FLoA~RCB_v3~   : Fetch a SINGLE random stride from all strides
 
-* v4 : Roislien approach (Get one random stride from each subject ONCE and boot-
+* FLoA~RCB_Roislien~ : Roislien approach (Get one random stride from each subject ONCE and boot-
        strap the resulting sample (of length (n=length(subjects))
+       
+* FLoA~RCB_Point~ : Pointwise B & A Limits of Agreement
 
 <!-- $$ -->
 <!-- RMSE_{delta} = \sqrt{\frac{1}{N}(target_1 - pedal_1)^2 + (target_2 - pedal_2)^2 + ... + (target_N - pedal_N)^2} -->
@@ -297,7 +303,7 @@ Versions:
 
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
 data <- example_data(dat = "smooth", dir.data)
-n.boot <- 100
+n.boot <- 400
 floa <- floa_rcb(data, n.boot, ver = "v2")
 plot_loa(data, floa, central.tendency = "mean")
 
@@ -312,55 +318,102 @@ plot_loa(data, floa, central.tendency = "mean")
 
 ### Leave-one-out cross validation
 
+Displayed are boxes for five different methods:
+
+* 1. FLoA~RCB_v1~ : n = length(subjects) random strides from all strides
+
+* 2. FLoA~RCB_v2~ : One random stride per subject
+
+* 3. FLoA~RCB_v3~ : Fetch a SINGLE random stride from all strides
+
+* 4. FLoA~RCB_Roislien~ : Roislien approach (Get one random stride from each subject ONCE and boot-
+       strap the resulting sample (of length (n=length(subjects))
+
+* 5. FLoA~RCB_Point~ : Pointwise B & A Limits of Agreement
+
+Coverages are displayed for two different scenarios:
+
+* 1: Coverage of the entire curve
+
+* 2: Percentage of curve points within the respective FLoA
+
+#### Smooth, wave data (normal error, constant variance, no trend)
+
+Coverage of the entire curve
+
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
 data <- example_data(dat = "smooth", dir.data)
 
-n.boot <- 100
 cover.cross <- crossval_coverage(data, n.boot)
+# colnames(cover.cross) <- c("RCB_1", "RCB_2", "RCB_3", "Roislien_4", "Point_5")
 
 plot_cov_ver(cover.cross)
+
+# knitr::kable(cover.cross, caption = "Percentages (entire curve covered) for every leave one out fold")
 ```
 
-<!-- #### v1 (n = length(subjects) random strides from all strides) -->
+Percentage of curve points within the respective FLoA
 
-<!-- ```{r echo = FALSE, warning = FALSE, message = FALSE} -->
-<!-- data <- example_data(dat = "smooth", dir.data) -->
-<!-- ``` -->
+```{r echo = FALSE, warning = FALSE, message = FALSE}
+# Display cross validation coverages (fraction of the curve that is covered) across methods
+cover.cross.fraction <- crossval_coverage_fraction(data, n.boot)
 
-<!-- ```{r echo = FALSE, warning = FALSE, message = FALSE} -->
-<!-- floa <- floa_rcb(data, n.boot, ver = "v1") -->
-<!-- floa.point <- floa_point(data) -->
+plot_cov_ver(cover.cross.fraction)
+```
 
-<!-- cover.cross.v1 <- crossval_coverage(data, floa, floa.point, method = "all") -->
+#### Smooth wave data with nonlinear trend (constant variance)
 
-<!-- plot_cov_ver(cover.cross.v1) -->
-<!-- ``` -->
+Coverage of the entire curve
 
-<!-- #### V2 (One random stride per subject) -->
+```{r echo = FALSE, warning = FALSE, message = FALSE}
+data <- example_data(dat = "smooth_trend", dir.data)
 
-<!-- ```{r echo = FALSE, warning = FALSE, message = FALSE} -->
-<!-- floa <- floa_rcb(data, n.boot, ver = "v2") -->
-<!-- floa.point <- floa_point(data) -->
+cover.cross <- crossval_coverage(data, n.boot)
+# colnames(cover.cross) <- c("RCB_1", "RCB_2", "RCB_3", "Roislien_4", "Point_5")
 
-<!-- cover.cross.v2 <- crossval_coverage(data, floa, floa.point, method = "all") -->
+plot_cov_ver(cover.cross)
 
-<!-- plot_cov_ver(cover.cross.v2) -->
-<!-- ``` -->
+# knitr::kable(cover.cross, caption = "Percentages (entire curve covered) for every leave one out fold")
+```
 
-<!-- #### v3 (Fetch a SINGLE random stride from all strides) -->
+Percentage of curve points within the respective FLoA
 
-<!-- ```{r echo = FALSE, warning = FALSE, message = FALSE} -->
-<!-- floa <- floa_rcb(data, n.boot, ver = "v3") -->
-<!-- floa.point <- floa_point(data) -->
+```{r echo = FALSE, warning = FALSE, message = FALSE}
+# Display cross validation coverages (fraction of the curve that is covered) across methods
+cover.cross.fraction <- crossval_coverage_fraction(data, n.boot)
 
-<!-- cover.cross.v3 <- crossval_coverage(data, floa, floa.point, method = "all") -->
+plot_cov_ver(cover.cross.fraction)
+```
 
-<!-- plot_cov_ver(cover.cross.v3) -->
-<!-- ``` -->
+#### Data with non-gaussian (Weibull distributed) error (no trend)
+
+Coverage of the entire curve
+
+```{r echo = FALSE, warning = FALSE, message = FALSE}
+data <- example_data(dat = "non_gaussian", dir.data)
+
+cover.cross <- crossval_coverage(data, n.boot)
+# colnames(cover.cross) <- c("RCB_1", "RCB_2", "RCB_3", "Roislien_4", "Point_5")
+
+plot_cov_ver(cover.cross)
+
+# knitr::kable(cover.cross, caption = "Percentages (entire curve covered) for every leave one out fold")
+```
+
+Percentage of curve points within the respective FLoA
+
+```{r echo = FALSE, warning = FALSE, message = FALSE}
+# Display cross validation coverages (fraction of the curve that is covered) across methods
+cover.cross.fraction <- crossval_coverage_fraction(data, n.boot)
+
+plot_cov_ver(cover.cross.fraction)
+```
 
 # Discussion
 
 Anwendung der Argumentation der Reviewer* auf die "Roislien_FLoA": In Roislien et al. werden 95% Konfidenzintervalle gebootstrapped. The authors are producing the arithmetic mean curves, the variability of which will reflect variation between means. It is the variability of individual values that is relevant, and the limits will be too narrow by a factor of approximately the square root of n.subj.
+
+It might be beneficial to work with functional data as suggested by Lenhoff et al. (1999) or Roislien et al. (2012) when e. g. interpolating data to a standardized length. This approach, however, wasn't necessary in this paper, since the synthetic data were created from functions and were designed to all have equal length (101 data points).
 
 # Conclusion
 

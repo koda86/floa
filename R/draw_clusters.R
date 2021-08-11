@@ -11,7 +11,7 @@ draw_clusters <- function(data, ver) { # fd.basis
   # v3   : Fetch a single stride only from all available strides
   # ----------------------------------------------------------------------------
 
-  source("pick_subwise_curves.R")
+  # source("pick_subwise_curves.R")
 
   if (ver == "v1") {
 

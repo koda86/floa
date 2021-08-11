@@ -29,7 +29,6 @@ plot_loa <- function (data, method.loa, central.tendency) {
 
 
   # Actually plot the prepared data --------------------------------------------
-
   if (central.tendency == "median") {
 
     # For line graphs, the data points must be grouped so that it knows which points to connect.
