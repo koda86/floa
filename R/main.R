@@ -10,6 +10,9 @@
 # (see subsection data sets)
 #
 # TODO:
+#   + Adjust example_data() so that n.subj and n.strides can be chosen
+#   + Rename n.strides to n.curves()
+#   + Zeitlichen Versatz (x-Achse) in example_data() einbringen (siehe Grafike Lenhof)
 #   + Check leave-one-out implementation
 #   + Programming challenge: Vectorize (or at least preallocate as much as possible)
 #   + Implementieren FDA
@@ -62,8 +65,6 @@ source("plot_cov_ver.R")
 # * Smooth wave data with nonlinear trend (constant variance): "smooth_trend"
 # * Data with non-gaussian (Weibull distributed) error (no trend): "non_gaussian"
 # * Data with shock peaks (no bias, no trend): "shock"
-
-
 data <- example_data(dat = "smooth", dir.data)
 
 # Plot data --------------------------------------------------------------------
@@ -145,7 +146,6 @@ print(coverage)
 # ***************************** Cross validation *******************************
 
 # Leave-one (subject) out method to estimate the achieved coverage
-# See e. g. Lenhoff et al. (1999)
 #
 # Currently, different versions of the sampling process in draw_clusters() (nested
 # in floa_rcb()) are implemented:
@@ -155,13 +155,14 @@ print(coverage)
 # v3 : Fetch a SINGLE random stride from all strides
 # v4 : Roislien approach (Get one random stride from each subject ONCE and boot-
 #      strap the resulting sample (of length (n=length(subjects))
+# v5 : Pointwise B & A Limits of Agreement
 #
 # Output:
 #   * Coverage levels [%] across n=length(subjectID) iterations
 # ------------------------------------------------------------------------------
-
 cover.cross <- crossval_coverage(data, n.boot)
 
+# Display cross validation coverages as boxplots across methods
 plot_cov_ver(cover.cross)
 
 

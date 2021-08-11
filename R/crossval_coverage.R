@@ -38,13 +38,18 @@ crossval_coverage <- function (data, n.boot) {
     floa.v3       <- floa_rcb(data.one.out, n.boot, ver = "v3")
     floa.roislien <- floa_roislien(data.one.out, n.boot)
 
-    # Get coverage of unseen (excluded) subject vs. the FLoA
+    # Get coverage of the left out (unseen) curves of subject "i"
     # --------------------------------------------------------------------
-    data.subset <- subset(data, subjectID == i) # Only one subject "i"
+    data.subset <- subset(data, subjectID == i)
 
     cover.cross.rcb.v1 <- c(cover.cross.rcb.v1,
-                             get_coverage(data.subset, floa.v1)
-                             )
+                            get_coverage(data.subset, floa.v1)
+    )
+
+    # plot(floa.v1["mean", ], type = "l", col = "red", ylim = c(-1, 1))
+    # lines(floa.v1["upper", ], col = "red")
+    # lines(floa.v1["lower", ], col = "red")
+    # lines(tmp$value)
 
     cover.cross.rcb.v2 <- c(cover.cross.rcb.v2,
                              get_coverage(data.subset, floa.v2)
@@ -57,6 +62,11 @@ crossval_coverage <- function (data, n.boot) {
     cover.cross.roislien <- c(cover.cross.roislien,
                              get_coverage(data.subset, floa.roislien)
     )
+
+    # plot(floa.roislien["mean", ], type = "l", col = "red", ylim = c(-1, 1))
+    # lines(floa.roislien["upper", ], col = "red")
+    # lines(floa.roislien["lower", ], col = "red")
+    # lines(tmp$value)
 
     cover.cross.point <- c(cover.cross.point,
                             get_coverage(data.subset, floa.point)

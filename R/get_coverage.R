@@ -37,6 +37,7 @@ get_coverage <- function (data, floa) {
 
     points.outside <- sum(above.thresh) + sum(below.thresh)
 
+    # Check if the entire curve is within the limits
     if (points.outside > 0) {
       outside <- outside + 1
     }
