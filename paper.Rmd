@@ -1,5 +1,5 @@
 ---
-title: "Asymmetric functional prediction bands for assessing the validity of spatiotemporally smooth biomechanical curve data"
+title: "Asymmetric continuous prediction bands for assessing the validity of spatiotemporally smooth biomechanical curve data"
 author:
   - name: Daniel Koska
     email: daniel.koska@hsw.tu-chemnitz.de
@@ -37,7 +37,7 @@ output:
 - Begriff spatiotemporal überdenken (wie ist das im Kontext FDA definiert)
 - Ratkowsky besorgen
 
-### TODO read (ee 'Literature' folder on Nextcloud)
+### TODO read
 - Horvath, Kokoszka & Reeder (2013) Estimation of the mean of functional time series and a two-sample problem
 - Generell die Kooperationspaper von Hörmann und Kokoszka zu FDA Statistik,insbesondere 'Inference for Functional Data with Applications' (2012)
 - Ratkowsky 1990 Handbook of nonlinear regression models
@@ -68,30 +68,40 @@ source(paste0(dir.script, "/plot_cov_ver.R"))
 
 # Introduction
 
-Having a good estimate of the amount of measurement error is a basic requirement when analyzing movement data. The classic linear error model describes measurement error as the sum of systematic and random deviations from the true value. A complete characterization of the measurement error, however, is complex, as different sources of variance (within, between) and noise must be considered. The analysis of sensor data is further complicated by the fact that the output of many measurement systems in biomechanics - such as e. g. joint angles, ground reaction forces, or center of mass trajectories - is available in the form of rather smooth curves within which the error can vary over time.
+Having a good estimate of the amount of measurement error is a basic requirement when analyzing movement data. The classic linear error model describes measurement error as the sum of systematic and random deviations from the true value. A complete characterization of the measurement error, however, is complex, as different sources of variance (within, between) and noise must be considered. The analysis of sensor data is further complicated by the fact that the output of many measurement systems in biomechanics - such as e. g. joint angles, ground reaction forces, or center of mass trajectories - is available in the form of continuous signals (curve data) within which the error can vary over time.
 
-Therefore, when analyzing the validity of continuous data, the entire length of the curve should be accounted for. This can be accomplished e. g. by applying statistics (e. g. standard deviation) separately to all points of the curve [Pini et al. (2019)]. The pointwise approach allows for an error representation over the entire domain, but ignores the fact, that the sampling points of biomechanical curves are locally correlated [Deluzio & Astephen, 2007; Pataky, 2010]. From a statistical point of view, this implies that the random error component is likely underrepresented when the (nonzero) covariance term of adjacent sampling points is not accounted for [Lenhoff et al., 1999]. In addition, most traditional point statistics are either not suitable (e.g. statistical tests of mean differences), or are only suitable to a limited extent (e.g. product-moment correlation) to quantify the agreement between two measurement systems (Bland and Altman, 1986).
+Therefore, when analyzing the validity of curve data, the entire length of the curve should be accounted for. This can be accomplished e. g. by applying statistics (e. g. standard deviation) separately to all points of the curve [Pini et al. (2019)]. The pointwise approach allows for an error representation over the entire domain, but ignores the fact, that the sampling points of biomechanical curves are locally correlated (Deluzio & Astephen, 2007; Pataky, 2010). From a statistical point of view, this implies that the random error component is likely underrepresented when the (nonzero) covariance term of adjacent sampling points is not accounted for (Lenhoff et al., 1999). In addition, most traditional point statistics are either not suitable (e.g. statistical tests of mean differences), or are only suitable to a limited extent (e.g. product-moment correlation) to quantify the agreement between two measurement systems (Bland and Altman, 1986).
 
-One possibility to address te problem of a pointwise analysis is to treat curves as single objects rather than as a series of unconnected points [Ramsay & Silverman, 2005]. Røislien et al. [2012] presented a method that extends the Limits of Agreement (LoA) concept [11] to functional data. This is achieved by approximating curves using Fourier series and resampling the thus obtained functions. 
+One possibility to address the problem of pointwise analysis is to treat entire curves as (functional) objects rather than as a series of unconnected points [Ramsay & Silverman, 2005]. Røislien et al. (2012) presented a method that extends the Limits of Agreement (LoA) suggested by Bland & Altman to functional data by approximating measurement signals using Fourier series. These function are used to calculated functional difference curves which are then bootstrapped to obtain 95% confidence intervals. The approach accounts for the autocorrelation characteristic in the signal and at the same time allows for an intuitive description of the systematic and random error terms in the original sampling space (e.g. actual degrees). Røislien et al., however, make a number of strong assumptions, which are often not or only partially fulfilled in empirical data sets:
+
+(i) The error distribution is approximately normal.
+
+The construction of symmetric prediction bands as described in Røislien et al. [10] relies on normally distributed measurement data. Non-normality, however, is often present when e.g. sensor values are truncated because of limited range or resolution, or because values drift over time.
+
+(ii) Time-continuous differences of two measurement systems and the corresponding averages must be uncorrelated.
+
+This assumption is violated considerably in many validation data sets [12]. E.g., Atallah et al. [13] found that the agreement between an ear-worn accelerometer and a force-plate instrumented treadmill was associated with gait speed when estimating gait cycle duration. When validating a foot-worn gyroscope for treadmill running, Koska & Maiwald [14] observed a linear error trend that was associated with foot strike behavior.
+
+(iii) Aus einem Datensatz bestehend aus einer Kurve eines Probanden werden 95% Konfidenzintervalle gebootrapped, die ein geeignetes Maß für die estimation uncertainty darstellen.
+
+In jeder Iteration des Bootstrap wird eine arithmetische mean curve gebildet. ... the limits will be too narrow by a factor of approximately the square root of n.subj.
+
+<!-- Prädiktionsbänder sind weiter als Konfidenzbänder ... und eigentlich will man ja Prädiktionsbänder, oder!?! -->
 
 <!-- Anwendung der Argumentation der Reviewer* auf die "Roislien_FLoA": In Roislien et al. werden 95% Konfidenzintervalle gebootstrapped. The authors are producing the arithmetic mean curves, the variability of which will reflect variation between means. It is the variability of individual values that is relevant, and the limits will be too narrow by a factor of approximately the square root of n.subj. -->
 
-The approach accounts for the autocorrelation characteristic in the signal and at the same time allows for an intuitive description of the systematic and random error terms in the original sampling space (e.g. actual degrees). Røislien et al. [10], however, make a number of strong assumptions, which are often not or only partially fulfilled in empirical data sets:
+<!-- Formulierung aus dem alten Skript -->
+<!-- (iii) Measurement uncertainty can be estimated adequately by bootstrapping the error variance from a sample that consists of a single curve per subject. -->
+<!-- If no repeated measurements are included in the sample, an essential error component (intra-individual variance) is ignored. The bootstrap – like any other statistical procedure – cannot solve this problem, as it can only estimate proportions of variance that are contained in the sample. -->
 
-(i) Time-continuous differences of two measurement systems and the corresponding averages must be uncorrelated.
-This assumption is violated considerably in many validation data sets [12]. E.g., Atallah et al. [13] found that the agreement between an ear-worn accelerometer and a force-plate instrumented treadmill was associated with gait speed when estimating gait cycle duration. When validating a foot-worn gyroscope for treadmill running, Koska & Maiwald [14] observed a linear error trend that was associated with foot strike behavior.
-
-(ii) The error distribution is approximately normal.
-The construction of symmetric prediction bands as described in Røislien et al. [10] relies on normally distributed measurement data. Non-normality, however, is often present when e.g. sensor values are truncated because of limited range or resolution, or because values drift over time.
-
-(iii) Measurement uncertainty can be estimated adequately by bootstrapping the error variance from a sample that consists of a single curve per subject.
-If no repeated measurements are included in the sample, an essential error component (intra-individual variance) is ignored. The bootstrap – like any other statistical procedure – cannot solve this problem, as it can only estimate proportions of variance that are contained in the sample.
+<!-- Weiterer ("zugehöriger) Reviewerkommentar: -->
+<!-- In looking at limits of agreement, the authors are considering the extent of within pair variation. However, in looking at the point wise limits of agreement, these are defined to incorporate a between pair standard deviation. Even if it was appropriate to utilise between pair variability, the authors should note that it is variances that are additive and not SDs. Perhaps the authors' lack of understanding comes from their erroneous assumption (iii).  -->
 
 Olsen et al. [15] examined the validity of an inertial measurement unit (IMU) for analyzing the spatial displacement of the distal limbs of horses using functional LoA (FLoA). Their approach differs from Røislien et al. [10] in that initially linear mixed models were fitted to the repeated measurements of different horses. Functional data estimates of the mean trends in the strides were then determined from the model fits and FLoA were calculated. This procedure accounts for repeated measurements and eliminates the need to emulate empirical curves with Fourier series or splines. The FLoA computed this way performed well in comparison with traditional Bland & Altman LoA. The procedure, however, is subject to the same restrictions as any conventional linear regression model and is therefore limited when model assumptions are violated.
 
-The principal object of this paper was to demonstrate a method for curve data that addresses the aforementioned issues (analyzing the whole curve, linear model assumptions, repeated measures), and thus enables a more appropriate characterization of the agreement between measurement curves on the basis of easy to interpret prediction bands (i.e. LoA in the actual measurement unit).
+The principal object of this paper was to demonstrate a method for constructing continuous prediction intervals from curve data that addresses the aforementioned issues (analyzing the whole curve, including repeated measures, (parametric) model assumptions), and thus enables a more appropriate characterization of the agreement between measurement curves on the basis of easy to interpret error bands (i.e. LoA in the actual measurement unit).
 
-We use synthetic time series data sets containing typical curves of biomechanical measurement systems to illustrate the method and compare the resulting prediction bands to pointwise Bland & Altman parameters.
+We use synthetic time series data sets containing typical curves of biomechanical measurement systems to illustrate the method and compare the resulting prediction bands to pointwise Bland & Altman parameters and LoA constructed similar to the method described in Roislien et al. (2012). For model validation, the respective LoA are cross validated using a leave-one-out approach.
 
 # Methods
 
@@ -99,10 +109,18 @@ We use synthetic time series data sets containing typical curves of biomechanica
 
 FLoA derived by different methods are compared
 
-* Randomized Cluster Bootstrap (floa.rcb)
-  + Different strategies
+* Randomized Cluster Bootstrap (FLoA~RCB~)
+  + n = length(subjects) random strides from all strides (FLoA~RCB_v1~)
+  + One random stride per subject (FLoA~RCB_v2~)
+  + Fetch a SINGLE random stride from all strides (FLoA~RCB_v3~)
 
-* Point-by-point Gaussian intervals (floa.point)
+* Pointwise Gaussian intervals (FLoA~Point~)
+  + FLoA~Point~ are calculated using mean and standard deviations (derived from linear mixed effects models)
+
+* Roislien-like intervals (FLoA~Roslien~)
+  + (Get one random stride from each subject ONCE and boot-
+       strap the resulting sample (of length (n=length(subjects))
+
 
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
 # Wrapper function for example data sets. Function arguments:
@@ -124,7 +142,7 @@ floa.point <- floa_point(data)
 
 ### Synthetic data sets
 
-Für die Validierung der Methode wurden Zeitreihen simuliert, die gängigen biomechanischen Messsignalen qualitativ ähneln und typische Fehlercharakteristika abbilden. Die verschiedenen Zeitreihen wurden als Fourierreihen aus additiv überlagerten Sinusfunktionen modelliert. Jeder Datensatz enthält n.ts = 100 Kurven von n.subj = 11 fiktiven Probanden. Jede Kurve besteht aus t = 101 Datenpunkten.
+Für die Validierung der Methode wurden Zeitreihen simuliert, die gängigen biomechanischen Messsignalen qualitativ ähneln und typische Fehlercharakteristika abbilden. Die verschiedenen Zeitreihen wurden als Fourierreihen aus additiv überlagerten Sinusfunktionen modelliert. Jeder Datensatz enthält n.strides = 10 Kurven von n.subj = 11 fiktiven Probanden. Jede Kurve besteht aus t = 101 Datenpunkten.
 
 ```{r warning = FALSE, message = FALSE, eval = FALSE}
 n.subj <- 11
@@ -140,7 +158,7 @@ for (subject.idx in 1:n.subj) {
   a.sd <- runif(1, min = 0.05, max = 0.15)
   b.sd <- runif(1, min = 0.0001, max = 0.002)
 
-  for (ts.idx in 1:(n.ts)) {
+  for (stride.idx in 1:(n.strides)) {
 
     a1.device1 <- rnorm(1, mean = 3, sd = a.sd)
     a1.device2 <- rnorm(1, mean = 3, sd = a.sd)
@@ -280,10 +298,10 @@ Prediction intervals are calculated from size.dataset = number.subjects - 1 and 
 
 * FLoA~RCB_v3~   : Fetch a SINGLE random stride from all strides
 
-* FLoA~RCB_Roislien~ : Roislien approach (Get one random stride from each subject ONCE and boot-
+* FLoA~Roislien~ : Roislien approach (Get one random stride from each subject ONCE and boot-
        strap the resulting sample (of length (n=length(subjects))
        
-* FLoA~RCB_Point~ : Pointwise B & A Limits of Agreement
+* FLoA~Point~ : Pointwise B & A Limits of Agreement
 
 <!-- $$ -->
 <!-- RMSE_{delta} = \sqrt{\frac{1}{N}(target_1 - pedal_1)^2 + (target_2 - pedal_2)^2 + ... + (target_N - pedal_N)^2} -->
@@ -326,20 +344,44 @@ Displayed are boxes for five different methods:
 
 * 3. FLoA~RCB_v3~ : Fetch a SINGLE random stride from all strides
 
-* 4. FLoA~RCB_Roislien~ : Roislien approach (Get one random stride from each subject ONCE and boot-
+* 4. FLoA~Roislien~ : Roislien approach (Get one random stride from each subject ONCE and boot-
        strap the resulting sample (of length (n=length(subjects))
 
-* 5. FLoA~RCB_Point~ : Pointwise B & A Limits of Agreement
+* 5. FLoA~Point~ : Pointwise B & A Limits of Agreement
 
 Coverages are displayed for two different scenarios:
 
-* 1: Coverage of the entire curve
+* a: Percentage of entirely covered curves (all points within the limits): Each box consists of n~ = 11 values (one percentage for each subject).
 
-* 2: Percentage of curve points within the respective FLoA
+* b: Mean percentage of curve points within the respective FLoA: The fraction of points along a curve within the limits is calculated and averaged across all curves of a subject.
 
 #### Smooth, wave data (normal error, constant variance, no trend)
 
-Coverage of the entire curve
+a. (coverage of the entire curve)
+
+```{r warning = FALSE, message = FALSE, eval = FALSE}
+lwr.bnd <- floa["lower", ]
+upr.bnd <- floa["upper", ]
+
+# ...
+
+for (stride.idx in stride.indices){
+    curve <- subset(device.diff, strideID == stride.idx)
+
+    # Compare difference curves with upper and lower boundaries
+    below.thresh <- curve$value < lwr.bnd
+    above.thresh <- curve$value > upr.bnd
+
+    points.outside <- sum(above.thresh) + sum(below.thresh)
+
+    # Check if the entire curve is within the limits
+    if (points.outside > 0) {
+      outside <- outside + 1
+    }
+  }
+
+coverage <- 1 - (outside / n.strides)
+```
 
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
 data <- example_data(dat = "smooth", dir.data)
@@ -352,10 +394,32 @@ plot_cov_ver(cover.cross)
 # knitr::kable(cover.cross, caption = "Percentages (entire curve covered) for every leave one out fold")
 ```
 
-Percentage of curve points within the respective FLoA
+b. (mean percentage of covered curve points)
+
+```{r warning = FALSE, message = FALSE, eval = FALSE}
+lwr.bnd <- floa["lower", ]
+upr.bnd <- floa["upper", ]
+
+# ...
+
+for (stride.idx in stride.indices){
+
+  curve <- subset(device.diff, strideID == stride.idx)
+
+  # Compare difference curves with upper and lower boundaries
+  below.thresh <- curve$value < lwr.bnd
+  above.thresh <- curve$value > upr.bnd
+
+  # Mean percentage of points outside the limits
+  inside <- below.thresh == above.thresh
+  inside.thresh.perc <- c(inside.thresh.perc,
+                          mean(sum(inside[TRUE]) / length(curve$value)))
+}
+```
+
 
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
-# Display cross validation coverages (fraction of the curve that is covered) across methods
+# Display cross validation coverages (mean fraction of the curve that is covered) across methods
 cover.cross.fraction <- crossval_coverage_fraction(data, n.boot)
 
 plot_cov_ver(cover.cross.fraction)
@@ -363,7 +427,7 @@ plot_cov_ver(cover.cross.fraction)
 
 #### Smooth wave data with nonlinear trend (constant variance)
 
-Coverage of the entire curve
+a. (coverage of the entire curve)
 
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
 data <- example_data(dat = "smooth_trend", dir.data)
@@ -376,7 +440,7 @@ plot_cov_ver(cover.cross)
 # knitr::kable(cover.cross, caption = "Percentages (entire curve covered) for every leave one out fold")
 ```
 
-Percentage of curve points within the respective FLoA
+b. (mean percentage of covered curve points)
 
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
 # Display cross validation coverages (fraction of the curve that is covered) across methods
@@ -387,7 +451,7 @@ plot_cov_ver(cover.cross.fraction)
 
 #### Data with non-gaussian (Weibull distributed) error (no trend)
 
-Coverage of the entire curve
+a. (coverage of the entire curve)
 
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
 data <- example_data(dat = "non_gaussian", dir.data)
@@ -400,7 +464,7 @@ plot_cov_ver(cover.cross)
 # knitr::kable(cover.cross, caption = "Percentages (entire curve covered) for every leave one out fold")
 ```
 
-Percentage of curve points within the respective FLoA
+b. (mean percentage of covered curve points)
 
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
 # Display cross validation coverages (fraction of the curve that is covered) across methods
@@ -411,7 +475,7 @@ plot_cov_ver(cover.cross.fraction)
 
 # Discussion
 
-Anwendung der Argumentation der Reviewer* auf die "Roislien_FLoA": In Roislien et al. werden 95% Konfidenzintervalle gebootstrapped. The authors are producing the arithmetic mean curves, the variability of which will reflect variation between means. It is the variability of individual values that is relevant, and the limits will be too narrow by a factor of approximately the square root of n.subj.
+<!-- Anwendung der Argumentation der Reviewer* auf die "Roislien_FLoA": In Roislien et al. werden 95% Konfidenzintervalle gebootstrapped. The authors are producing the arithmetic mean curves, the variability of which will reflect variation between means. It is the variability of individual values that is relevant, and the limits will be too narrow by a factor of approximately the square root of n.subj. -->
 
 It might be beneficial to work with functional data as suggested by Lenhoff et al. (1999) or Roislien et al. (2012) when e. g. interpolating data to a standardized length. This approach, however, wasn't necessary in this paper, since the synthetic data were created from functions and were designed to all have equal length (101 data points).
 
