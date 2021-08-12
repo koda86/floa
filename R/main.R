@@ -169,7 +169,7 @@ cover.cross <- crossval_coverage(data, n.boot)
 # Display cross validation coverages (entire curve covered) across methods
 plot_cov_ver(cover.cross)
 
-# Display cross validation coverages (fraction of the curve that is covered) across methods
+# Mean fraction of the curve that is covered) across methods
 cover.cross.fraction <- crossval_coverage_fraction(data, n.boot)
 
 plot_cov_ver(cover.cross.fraction)

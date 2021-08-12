@@ -29,11 +29,11 @@ get_coverage <- function (data, floa) {
 
   for (stride.idx in stride.indices){
 
-    tmp <- subset(device.diff, strideID == stride.idx)
+    curve <- subset(device.diff, strideID == stride.idx)
 
     # Compare difference curves with upper and lower boundaries
-    below.thresh <- tmp$value < lwr.bnd
-    above.thresh <- tmp$value > upr.bnd
+    below.thresh <- curve$value < lwr.bnd
+    above.thresh <- curve$value > upr.bnd
 
     points.outside <- sum(above.thresh) + sum(below.thresh)
 
