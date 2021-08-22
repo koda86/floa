@@ -31,13 +31,20 @@ output:
 ---
 
 ### TODO
+- Evtl. simulierte Datensätze um Beispiele aus https://mjskay.github.io/ggdist/articles/lineribbon.html erweitern (insbesondere das erste Beispiel mit x-versetzten Gausskurven)!
 - Simulierte Daten durch Funktionen ersetzen? Eigentlich aktuell eher unnötig, da die Zeitreihen ja eigentlich bereits mithilfe von Funktionen modelliert wurden. Zudem wird nicht interpoliert, abgeleitet o. Ä. ... letztlich für die aktuelle Idee des Papers eher ungeeignet (plus man umgeht Probleme wie mögliche Glättungsartefakte, oder die Definition eines functional mean).
 - Falls doch FDA, dann evtl. als eigenständiges Skript forken
+- Bergründung warum Prädiktionsintervalle anstelle von Konfidenzintervallen
+- Lineribbon “gradients”
+<!-- - Umbennung entire curve in "All-or-nothing" (entlehnt von Juul et al.) -->
 - .bib file anlegen
 - Begriff spatiotemporal überdenken (wie ist das im Kontext FDA definiert)
 - Ratkowsky besorgen
+- Begründung warum Prädiktionsintervalle und nicht Konfidenzintervalle (theoretisch könnte man beides machen; Prädiktionsintervalle scheinen mir aber eher das zu sein, was man will)
 
-### TODO read
+### TODO read (again)
+- Olshen et al. (1989) Gait analysis and the bootstrap
+- Curvewise point and interval summaries for tidy data frames of draws from distributions https://mjskay.github.io/ggdist/reference/curve_interval.html
 - Horvath, Kokoszka & Reeder (2013) Estimation of the mean of functional time series and a two-sample problem
 - Generell die Kooperationspaper von Hörmann und Kokoszka zu FDA Statistik,insbesondere 'Inference for Functional Data with Applications' (2012)
 - Ratkowsky 1990 Handbook of nonlinear regression models
@@ -70,23 +77,42 @@ source(paste0(dir.script, "/plot_cov_ver.R"))
 
 Having a good estimate of the amount of measurement error is a basic requirement when analyzing movement data. The classic linear error model describes measurement error as the sum of systematic and random deviations from the true value. A complete characterization of the measurement error, however, is complex, as different sources of variance (within, between) and noise must be considered. The analysis of sensor data is further complicated by the fact that the output of many measurement systems in biomechanics - such as e. g. joint angles, ground reaction forces, or center of mass trajectories - is available in the form of continuous signals (curve data) within which the error can vary over time.
 
-Therefore, when analyzing the validity of curve data, the entire length of the curve should be accounted for. This can be accomplished e. g. by applying statistics (e. g. standard deviation) separately to all points of the curve [Pini et al. (2019)]. The pointwise approach allows for an error representation over the entire domain, but ignores the fact, that the sampling points of biomechanical curves are locally correlated (Deluzio & Astephen, 2007; Pataky, 2010). From a statistical point of view, this implies that the random error component is likely underrepresented when the (nonzero) covariance term of adjacent sampling points is not accounted for (Lenhoff et al., 1999). In addition, most traditional point statistics are either not suitable (e.g. statistical tests of mean differences), or are only suitable to a limited extent (e.g. product-moment correlation) to quantify the agreement between two measurement systems (Bland and Altman, 1986).
+Therefore, when analyzing the validity of curve data, the entire length of the curve should be accounted for. This can be accomplished e. g. by applying statistics separately to all points of the curve [Pini et al. (2019). The pointwise approach allows for an error representation over the entire domain, but ignores the fact, that the sampling points within a curve are locally correlated (Deluzio & Astephen, 2007; Pataky, 2010). From a statistical point of view, this implies that the random error component is likely underrepresented when the (nonzero) covariance term of adjacent sampling points is not accounted for (Lenhoff et al., 1999).
 
-One possibility to address the problem of pointwise analysis is to treat entire curves as (functional) objects rather than as a series of unconnected points [Ramsay & Silverman, 2005]. Røislien et al. (2012) presented a method that extends the Limits of Agreement (LoA) suggested by Bland & Altman to functional data by approximating measurement signals using Fourier series. These function are used to calculated functional difference curves which are then bootstrapped to obtain 95% confidence intervals. The approach accounts for the autocorrelation characteristic in the signal and at the same time allows for an intuitive description of the systematic and random error terms in the original sampling space (e.g. actual degrees). Røislien et al., however, make a number of strong assumptions, which are often not or only partially fulfilled in empirical data sets:
+... and likely results in a systematic underrepresentation of ... values (Juul et al., 2020; Mirzagar et al. (2014).
+
+<!-- https://mjskay.github.io/ggdist/reference/curve_interval.html -->
+<!-- Hier referenzierte Paper u. a.  -->
+<!-- - Juul Jonas, Kaare Græsbøll, Lasse Engbo Christiansen, and Sune Lehmann. (2020). "Fixed-time descriptive statistics underestimate extremes of epidemic curve ensembles". arXiv e-print. arXiv:2007.05035 -->
+<!-- - Mirzargar, Mahsa, Ross T Whitaker, and Robert M Kirby. (2014). "Curve Boxplot: Generalization of Boxplot for Ensembles of Curves". IEEE Transactions on Visualization and Computer Graphics. 20(12): 2654-2663. doi: 10.1109/TVCG.2014.2346455 -->
+
+From a statistical point of view, this implies that the random error component is likely underrepresented when the (nonzero) covariance term of adjacent sampling points is not accounted for (Lenhoff et al., 1999). In addition, most traditional point statistics are either not suitable (e.g. statistical tests of mean differences), or are only suitable to a limited extent (e.g. product-moment correlation) to quantify the agreement between two measurement systems (Bland and Altman, 1986).
+
+One possibility to address the problem of pointwise analysis is to treat entire curves as (functional) objects rather than as a series of unconnected points.
+
+<!-- Es gibt eine Reihe von Ansätzen aus anderen Bereichen (z. B. Covid Prädiktion), bei denen sog. Function oder Curve Boxplots eingesetzt werden. -->
+<!-- https://mjskay.github.io/ggdist/reference/curve_interval.html -->
+<!-- Hier referenzierte Paper u. a.  -->
+<!-- - Juul Jonas, Kaare Græsbøll, Lasse Engbo Christiansen, and Sune Lehmann. (2020). "Fixed-time descriptive statistics underestimate extremes of epidemic curve ensembles". arXiv e-print. arXiv:2007.05035 -->
+<!-- - Mirzargar, Mahsa, Ross T Whitaker, and Robert M Kirby. (2014). "Curve Boxplot: Generalization of Boxplot for Ensembles of Curves". IEEE Transactions on Visualization and Computer Graphics. 20(12): 2654-2663. doi: 10.1109/TVCG.2014.2346455 -->
+
+Sutherland et al. (1988) introduced a method in which continuous signals are reconstructed using Fourier series and bootstrapped to estimate of the variation of the sample mean and thus estimate confidence intervals. Lenhoff et al. (1999) illustrated their method on a generic gait analysis data set (comprised of joint angle curves) and compared it to pointwise Gaussian intervals. The authors found that Sutherland et al. bootstrap bands provide appropriate coverage for continuous curve gait data (86% coverage for a targeted coverage of 90%) while pointwise Gaussian bands are shown to provide inadequate coverage (54% for a targeted coverage of 90%).
+
+Røislien et al. (2012) presented a similar approach to calculate a functional version of the the Limits of Agreement (LoA) method suggested by Bland & Altman. They first calculate functional difference curves which are then bootstrapped to obtain 95% confidence intervals. The approach accounts for the autocorrelation characteristic in the signal and at the same time allows for an intuitive description of the systematic and random error terms in the original sampling space (e.g. actual degrees). Røislien et al., however, rely on a number of strong model assumptions, which are often not or only partially fulfilled in empirical data sets:
 
 (i) The error distribution is approximately normal.
 
-The construction of symmetric prediction bands as described in Røislien et al. [10] relies on normally distributed measurement data. Non-normality, however, is often present when e.g. sensor values are truncated because of limited range or resolution, or because values drift over time.
+The construction of symmetric prediction bands as described in Røislien et al. [10] relies on Gaussian assumptions. Non-normality, however, is often present when e.g. sensor values are truncated because of limited range or resolution, or because values drift over time.
 
 (ii) Time-continuous differences of two measurement systems and the corresponding averages must be uncorrelated.
 
 This assumption is violated considerably in many validation data sets [12]. E.g., Atallah et al. [13] found that the agreement between an ear-worn accelerometer and a force-plate instrumented treadmill was associated with gait speed when estimating gait cycle duration. When validating a foot-worn gyroscope for treadmill running, Koska & Maiwald [14] observed a linear error trend that was associated with foot strike behavior.
 
-(iii) Aus einem Datensatz bestehend aus einer Kurve eines Probanden werden 95% Konfidenzintervalle gebootrapped, die ein geeignetes Maß für die estimation uncertainty darstellen.
+(iii) Aus einem Datensatz bestehend aus einer Kurve eines Probanden lassen sich durch Bootstrapping von mittleren Kurven Unsicherheitsintervalle bilden, die ein geeignetes Maß für die estimation uncertainty darstellen.
 
-In jeder Iteration des Bootstrap wird eine arithmetische mean curve gebildet. ... the limits will be too narrow by a factor of approximately the square root of n.subj.
+Hier werden arithmetische mean curves verwendet, the variability of which will reflect variation between means. In many cases, however, it is the variability of individual values that is relevant, and the limits will be too narrow by a factor of approximately the square root of the number of curves within the sample.
 
-<!-- Prädiktionsbänder sind weiter als Konfidenzbänder ... und eigentlich will man ja Prädiktionsbänder, oder!?! -->
+Ein weiteres Problem ist, dass die Methode keine messwiederholten Daten berücksichtigt. Da sich messwiederholte Kurven i. d. R. ähnlicher sind als unabhängige Kurven, besteht die Gefahr die Streuung des Messsystems zu überschätzen.
 
 <!-- Anwendung der Argumentation der Reviewer* auf die "Roislien_FLoA": In Roislien et al. werden 95% Konfidenzintervalle gebootstrapped. The authors are producing the arithmetic mean curves, the variability of which will reflect variation between means. It is the variability of individual values that is relevant, and the limits will be too narrow by a factor of approximately the square root of n.subj. -->
 
@@ -97,9 +123,14 @@ In jeder Iteration des Bootstrap wird eine arithmetische mean curve gebildet. ..
 <!-- Weiterer ("zugehöriger) Reviewerkommentar: -->
 <!-- In looking at limits of agreement, the authors are considering the extent of within pair variation. However, in looking at the point wise limits of agreement, these are defined to incorporate a between pair standard deviation. Even if it was appropriate to utilise between pair variability, the authors should note that it is variances that are additive and not SDs. Perhaps the authors' lack of understanding comes from their erroneous assumption (iii).  -->
 
-Olsen et al. [15] examined the validity of an inertial measurement unit (IMU) for analyzing the spatial displacement of the distal limbs of horses using functional LoA (FLoA). Their approach differs from Røislien et al. [10] in that initially linear mixed models were fitted to the repeated measurements of different horses. Functional data estimates of the mean trends in the strides were then determined from the model fits and FLoA were calculated. This procedure accounts for repeated measurements and eliminates the need to emulate empirical curves with Fourier series or splines. The FLoA computed this way performed well in comparison with traditional Bland & Altman LoA. The procedure, however, is subject to the same restrictions as any conventional linear regression model and is therefore limited when model assumptions are violated.
+<!-- Olsen et al. [15] examined the validity of an inertial measurement unit (IMU) for analyzing the spatial displacement of the distal limbs of horses using functional LoA (FLoA). Their approach differs from Røislien et al. [10] in that initially linear mixed models were fitted to the repeated measurements of different horses. Functional data estimates of the mean trends in the strides were then determined from the model fits and FLoA were calculated. This procedure accounts for repeated measurements and eliminates the need to emulate empirical curves with Fourier series or splines. The FLoA computed this way performed well in comparison with traditional Bland & Altman LoA. The procedure, however, is subject to the same restrictions as any conventional linear regression model and is therefore limited when model assumptions are violated. -->
 
-The principal object of this paper was to demonstrate a method for constructing continuous prediction intervals from curve data that addresses the aforementioned issues (analyzing the whole curve, including repeated measures, (parametric) model assumptions), and thus enables a more appropriate characterization of the agreement between measurement curves on the basis of easy to interpret error bands (i.e. LoA in the actual measurement unit).
+
+
+<!-- Warum eigentlich Prädiktionsbänder und keine Konfidenzbänder? (Siehe Einleitung Lenhoff) -->
+<!-- Aktuell würde ich es so formulieren: In der Mehrheit der Fälle ist man an der nächsten (Einzel)Observation interessiert, nicht unbedingt an Mittelwerten (obwohl es durchaus Szenarien gibt, wo das akzeptabel sein kann) + im Zweifel generell lieber breitere Fehlerintervalle -->
+
+The principal object of this paper was to demonstrate a method for constructing continuous prediction intervals from curve data that addresses the aforementioned issues (analyzing the whole curve, including repeated measures, model assumptions (normal distribution, equal variances)), and thus enables a more appropriate characterization of the agreement between measurement curves on the basis of easy to interpret error bands (i.e. LoA in the actual measurement unit).
 
 We use synthetic time series data sets containing typical curves of biomechanical measurement systems to illustrate the method and compare the resulting prediction bands to pointwise Bland & Altman parameters and LoA constructed similar to the method described in Roislien et al. (2012). For model validation, the respective LoA are cross validated using a leave-one-out approach.
 
@@ -138,7 +169,7 @@ data <- example_data(dat = "smooth", dir.data)
 floa.point <- floa_point(data)
 ```
 
-## Validation
+s## Validation
 
 ### Synthetic data sets
 
@@ -479,5 +510,28 @@ plot_cov_ver(cover.cross.fraction)
 
 It might be beneficial to work with functional data as suggested by Lenhoff et al. (1999) or Roislien et al. (2012) when e. g. interpolating data to a standardized length. This approach, however, wasn't necessary in this paper, since the synthetic data were created from functions and were designed to all have equal length (101 data points).
 
+Wir empfehlen die Daten zu plotten. Am Ende ist jeder Datensatz bzw. jede Fragestellung unterschiedlich und ein pauschaler coverage value wird der Qualität des Messgeräts (in Bezug auf die jeweilige Fragestellung möglicherweise nicht gerecht).
+
+<!-- https://mjskay.github.io/ggdist/articles/lineribbon.html -->
+<!-- In general I have found that there is no one method that consistently works well on all datasets. No matter the method, intervals often become problematic above 50%, hence the default .width for curve_interval() is 0.5 (unlike the default for point_interval(), which is 0.95). In any case, caution when using these intervals is advised. -->
+
+<!-- Welcher coverage Strategie ist besser (Entire curve (all-or-nothing) vs. percent-of-curve)? -->
+<!-- Denkansatz aus Juul et al. (2020) -->
+<!-- At the same time, however, it is clear that there is still important research to be done. We have suggested different ways of ranking centrality of ensemble curves. Each rank- -->
+<!-- ing has its merits: For example, the all-or-nothing ranking penalizes curves which are shaped differently than other ensemble curves and a weighted ranking can reward curves that are central in the very near future. A thorough investigation of these merits and trade-offs is needed. Until this has been investigated, we encourage researchers to be creative and mindful about the problems that each statistical method could have. And to communicate this uncertainty openly to decision makers. -->
+
+<!-- Für die hier untersuchten biomechanischen Signale nicht so relevant, aber an sich ein sehr interessantes Feature ist das hier: -->
+<!-- Leicht abgewandelt nach Juul et al. (2020): -->
+<!-- In addition to the ranking methods (for finding quantiles/percentiles) mentioned above, one can rank the curves according to some feature of interest. In Fig. 2E we show the curve box plots obtained when we rank curves according to their projected maximum values of newly hospitalized cases in a single day; in other words, the median projected peak value received -->
+<!-- the highest centrality. -->
+
+<!-- Interessant beim Juul Paper ist auch der Umgang mit ("abgeschnittenen") Extremwerten: -->
+<!-- Here we have argued that computing confidence intervals using fixed-time descriptive systematically suppresses trajectory extremes. This is natural. -->
+<!-- Fixed-time descriptive statistics are designed to show the least extreme predictions on a given date, not to take entire curves into account. -->
+
 # Conclusion
+
+<!-- Aus Juul et al. (2020) -->
+<!-- In summary, when making forecasts of epidemic trajectories, it is important to represent the resulting curve ensembles in a way that captures the quantities of interest -->
+<!-- in an intuitive way. -->
 
