@@ -1,5 +1,5 @@
 ---
-title: "Asymmetric continuous prediction bands for assessing the validity of spatiotemporally smooth biomechanical curve data"
+title: "Asymmetric continuous prediction bands for assessing the validity of smooth biomechanical curve data"
 author:
   - name: Daniel Koska
     email: daniel.koska@hsw.tu-chemnitz.de
@@ -31,11 +31,12 @@ output:
 ---
 
 ### TODO
+- Exemplarische Paper für die jeweiligen simulierten Datensätze raussuchen
+- Weitere synthetische Daten siehe Paper Robinson et al. (2021)
 - Evtl. simulierte Datensätze um Beispiele aus https://mjskay.github.io/ggdist/articles/lineribbon.html erweitern (insbesondere das erste Beispiel mit x-versetzten Gausskurven)!
 - Simulierte Daten durch Funktionen ersetzen? Eigentlich aktuell eher unnötig, da die Zeitreihen ja eigentlich bereits mithilfe von Funktionen modelliert wurden. Zudem wird nicht interpoliert, abgeleitet o. Ä. ... letztlich für die aktuelle Idee des Papers eher ungeeignet (plus man umgeht Probleme wie mögliche Glättungsartefakte, oder die Definition eines functional mean).
 - Falls doch FDA, dann evtl. als eigenständiges Skript forken
-- Bergründung warum Prädiktionsintervalle anstelle von Konfidenzintervallen
-- Lineribbon “gradients”
+- Begründung warum Prädiktionsintervalle anstelle von Konfidenzintervallen
 <!-- - Umbennung entire curve in "All-or-nothing" (entlehnt von Juul et al.) -->
 - .bib file anlegen
 - Begriff spatiotemporal überdenken (wie ist das im Kontext FDA definiert)
@@ -43,6 +44,7 @@ output:
 - Begründung warum Prädiktionsintervalle und nicht Konfidenzintervalle (theoretisch könnte man beides machen; Prädiktionsintervalle scheinen mir aber eher das zu sein, was man will)
 
 ### TODO read (again)
+- Robinson, Vanrenterghem, Pataky (2021) Sample size estimation for biomechanical waveforms: Current practice, recommendations and a comparison to discrete power analysis
 - Olshen et al. (1989) Gait analysis and the bootstrap
 - Curvewise point and interval summaries for tidy data frames of draws from distributions https://mjskay.github.io/ggdist/reference/curve_interval.html
 - Horvath, Kokoszka & Reeder (2013) Estimation of the mean of functional time series and a two-sample problem
@@ -76,6 +78,8 @@ source(paste0(dir.script, "/plot_cov_ver.R"))
 # Introduction
 
 Having a good estimate of the amount of measurement error is a basic requirement when analyzing movement data. The classic linear error model describes measurement error as the sum of systematic and random deviations from the true value. A complete characterization of the measurement error, however, is complex, as different sources of variance (within, between) and noise must be considered. The analysis of sensor data is further complicated by the fact that the output of many measurement systems in biomechanics - such as e. g. joint angles, ground reaction forces, or center of mass trajectories - is available in the form of continuous signals (curve data) within which the error can vary over time.
+
+Hier ein anderes Intro schreiben ... Ansatz: Neben der Validierung von Messgeräten spielt auch die Validierung von simulierten Modellergebnissen eine Rolle.
 
 Therefore, when analyzing the validity of curve data, the entire length of the curve should be accounted for. This can be accomplished e. g. by applying statistics separately to all points of the curve [Pini et al. (2019). The pointwise approach allows for an error representation over the entire domain, but ignores the fact, that the sampling points within a curve are locally correlated (Deluzio & Astephen, 2007; Pataky, 2010). From a statistical point of view, this implies that the random error component is likely underrepresented when the (nonzero) covariance term of adjacent sampling points is not accounted for (Lenhoff et al., 1999).
 
@@ -153,6 +157,10 @@ FLoA derived by different methods are compared
 * Roislien-like intervals (FLoA~Roslien~)
   + (Get one random stride from each subject ONCE and boot-
        strap the resulting sample (of length (n=length(subjects))
+       
+### FLoA~RCB~ construction
+
+<!-- See Mirzargar et al. (2014) or Juul et al. (2020) for an accessible introduction to data depth and curve boxplots / functional boxplots. -->
 
 
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
@@ -171,11 +179,18 @@ data <- example_data(dat = "smooth", dir.data)
 floa.point <- floa_point(data)
 ```
 
-s## Validation
+## Validation
 
 ### Synthetic data sets
 
-Für die Validierung der Methode wurden Zeitreihen simuliert, die gängigen biomechanischen Messsignalen qualitativ ähneln und typische Fehlercharakteristika abbilden. Die verschiedenen Zeitreihen wurden als Fourierreihen aus additiv überlagerten Sinusfunktionen modelliert. Jeder Datensatz enthält n.strides = 10 Kurven von n.subj = 11 fiktiven Probanden. Jede Kurve besteht aus t = 101 Datenpunkten.
+To compare different methods for constructing continuous LoA, smooth curve data were simulated across a range of common biomechanical signals and error characteristics.
+
+The curves were modeled as Fourier series from additively superimposed sine functions. Each data set contains n.strides = 10 curves from n.subj = 11 fictitious test subjects. Each curve consists of t = 101 data points. Note that the curves do not necessarily correspond to real-world signals as we were more concerned with illustrating the underlying principle.
+
+<!-- Aus Robinson et al. (2021) -->
+<!-- Exemplar 1D eects from the biomechanics literature across a range of signal types were collated and reported (Bakke & Besier, 2020, Barrios & Willson, 2017, Bovi, Rabuetti, Mazzoleni, & Ferrarin, 2011, Phan et al., 2017, Gomes, Ackermann, Ferreira, Orselli, & Sacco, 2017, Robinson et al., 2014). -->
+
+<!-- the code to reproduce all 1D eects is provided at https://github.com/m-a-robinson/sample-size -->
 
 ```{r warning = FALSE, message = FALSE, eval = FALSE}
 n.subj <- 11
@@ -214,7 +229,7 @@ for (subject.idx in 1:n.subj) {
     # ...
 ```
 
-* (i) Smooth curves with normally distributed errors, constant variance, and no trend. Within and between subject differences between curves were modeled using random systematic offset (bias) and random variation of curve parameters. The data resembles e. g. kinematic joint angle curves captured by camera-based measurement systems or goniometers.
+* (1) Homoscedastic (normal) error. Within and between subject differences between curves were modeled using random systematic offset (bias) and random variation of curve parameters. The data could be generated e. g. from simultaneous joint angle measurements with two kinematic measurement systems (e. g. a camera-based measurement systems and a goniometer).
 
 ```{r warning = FALSE, message = FALSE, eval = FALSE}
 # ...
@@ -224,7 +239,7 @@ device.1 <- sine.1 + sine.2
 device.2 <- offset + sine.3 + sine.4
 ```
 
-* (ii) Smooth curves created using the same model and parameters as in (i), but with a nonlinear trend underlying one of the two signals. A similar trend (drift) behavior can be observed in e. g. when the same joint angle curves are calculated by integrating the signal of gyropscopes applied to measure the movement.
+* (2) Same model as in (i), but with a nonlinear trend underlying one of the two signals. Similar errors can be observed e. g. when joint angles are calculated (numerically integrated) from gyroscope signals.
 
 ```{r warning = FALSE, message = FALSE, eval = FALSE}
 # ...
@@ -235,7 +250,11 @@ device.1 <- sine.1 + sine.2
 device.1 <- offset + sine.3 + sine.4 + trend
 ```
 
-* (iii) Smooth curves created using the same model and parameters as in (i), but Weibulll distributed random curve (amplitude) parameters. This introduces non-gaussian measurement error (asymmetric/skewed distribution of differences around the mean difference).
+* (3) Heteroscedasticity across the signal. The example consists of knee momentcurves calculated using two different methods (direct and inverse kinematic approach) (Robinson et al., 2014). The curves were generated using the example code in Robinson et al. (2021).
+
+<!-- Robinson et al. (2014) Impact of Knee Modeling Approach on Indicators and Classification of Anterior Cruciate Ligament Injury Risk -->
+
+<!-- Smooth curves created using the same model and parameters as in (i), but Weibulll distributed random curve (amplitude) parameters. This introduces non-gaussian measurement error (asymmetric/skewed distribution of differences around the mean difference). -->
 
 ```{r warning = FALSE, message = FALSE, eval = FALSE}
 # ...
@@ -251,7 +270,9 @@ device.1 <- sine.1 + sine.2
 device.2 <- offset + sine.3 + sine.4
 ```
 
+* (4) Smooth curves with peaks
 
+Ground reaction force data
 
 ### Smooth curves (normal error, constant variance, no trend)
 
