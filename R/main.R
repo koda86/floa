@@ -67,9 +67,9 @@ source("plot_cov_ver.R")
 # (* Empirical validation data: "imu_mc")
 # * Smooth, wave data (normal error, constant variance, no trend): "smooth"
 # * Smooth wave data with nonlinear trend (constant variance): "smooth_trend"
-# * Data with non-gaussian (Weibull distributed) error (no trend): "non_gaussian"
+# * Data with non-gaussian (Weibull distributed) error (no trend): "non_gaussian" # see Robinson et al. (2021)
 # * Data with shock peaks (no bias, no trend): "shock"
-data <- example_data(dat = "smooth", dir.data)
+data <- example_data(dat = "non_gaussian", dir.data)
 
 # Plot data --------------------------------------------------------------------
 

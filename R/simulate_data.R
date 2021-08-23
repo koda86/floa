@@ -526,6 +526,7 @@ saveRDS(data, file = paste0("C:/Users/Daniel/Desktop/tmp/floa/R/examples/", "dat
 # Shock (spike) data (normal error) -----------------------------------------
 # ------------------------------------------------------------------------------
 
+# Smooth wave data (constant variance, no trend) -------------------------------
 device <- c()
 value <- c()
 subjectID <- c()
@@ -536,26 +537,45 @@ for (subj.idx in 1:n.subj) {
   device.subj <- c()
   subjectID.subj <- c()
 
-  # Sample subjectwise parameters
-  subj.sd <- 0.05 # runif(1, 0.1, 0.2)
+  t <- seq(0, 100)
+
+  # Subjectwise wave parameters
+  # offset.mean <- runif(1, min = -0.5, max = 0.5)
+
+  a.sd <- runif(1, min = 0.05, max = 0.15) # .1
+  b.sd <- runif(1, min = 0.0001, max = 0.002) # .001
 
   for (stride.idx in 1:(n.strides)) {
 
-    # Error terms
-    w <- rnorm(n.frames, mean = 0, sd = subj.sd)
-    v <- rnorm(n.frames, mean = 0, sd = subj.sd)
+    a1.1 <- rnorm(1, mean = 3, sd = a.sd) # .1
+    a1.2 <- rnorm(1, mean = 3, sd = a.sd) # .1
+    a2.1 <- 0.08
+    a2.2 <- 0.08
+    b1.1 <- rnorm(1, mean = 0.06, sd = b.sd) # 0.001
+    b1.2 <- rnorm(1, mean = 0.06, sd = b.sd) # 0.001
+    b2.1 <- rnorm(1, mean = 0.58, sd = b.sd) # 0.001
+    b2.2 <- rnorm(1, mean = 0.58, sd = b.sd) # 0.001
+    c <- 2
 
-    t <- seq(0, 2*pi, 0.0625)
+    sine.1 <- a1.1 * sin(b1.1 * t) ^ (c + 3)
+    sine.2 <- a2.1 * sin(b2.1 * t)
+    sine.3 <- a1.2 * sin(b1.2 * t) ^ (c + 3)
+    sine.4 <- a2.2 * sin(b2.1 * t)
 
-    mc <- sin(t) + rnorm(n.frames, sd = subj.sd)
-    imu <- 2 * sin(t) + rnorm(n.frames, sd = subj.sd)
+    # offset <- rnorm(1, offset.mean, 0.05)
+
+    mc <- sine.1 + sine.2
+    imu <- sine.3 + sine.4 # + offset
 
     # Add shock to the curves of a subject
-    if (subj.idx == 3) { # | subj.idx == 5
+    spike.idx <- round(runif(1, min = 6, max = 7))
+    # spike.idx.mc <- round(runif(1, min = 5, max = 7))
 
-      tmp <- round(runif(1, min = 5, max = 7))
-      imu[tmp] <- imu[tmp] * rnorm(1, mean = 5)
-    }
+    imu[spike.idx] <- abs(imu[spike.idx] + abs(rnorm(1, mean = 0, sd = 0.1)))
+    mc[spike.idx] <- abs(mc[spike.idx] + abs(rnorm(1, mean = 0.02, sd = 0.7)))
+
+    # plot(mc, type = "l")
+    # lines(imu, col = "red")
 
     value.subj <- c(value.subj, c(imu, mc))
 
@@ -577,5 +597,7 @@ frame <- rep(0:100, times = n.strides * n.devices * n.subj)
 
 data <- data.frame(device, subjectID, strideID, value, frame)
 
-saveRDS(data, file = paste0("C:/Users/Daniel/Desktop/tmp/floa/R/examples/", "data_shock.rds"))
+saveRDS(data, file = paste0("C:/Users/Daniel/Desktop/tmp/floa/R/examples/", "shock.rds"))
+
+
 

@@ -489,7 +489,7 @@ cover.cross.fraction <- crossval_coverage_fraction(data, n.boot)
 plot_cov_ver(cover.cross.fraction)
 ```
 
-#### Smooth wave data with nonlinear trend (constant variance)
+#### Curves with nonlinear trend (constant variance)
 
 a. (coverage of the entire curve)
 
@@ -513,12 +513,36 @@ cover.cross.fraction <- crossval_coverage_fraction(data, n.boot)
 plot_cov_ver(cover.cross.fraction)
 ```
 
-#### Data with non-gaussian (Weibull distributed) error (no trend)
+#### Curves with non-gaussian (Weibull distributed) error (no trend)
 
 a. (coverage of the entire curve)
 
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
 data <- example_data(dat = "non_gaussian", dir.data)
+
+cover.cross <- crossval_coverage(data, n.boot)
+# colnames(cover.cross) <- c("RCB_1", "RCB_2", "RCB_3", "Roislien_4", "Point_5")
+
+plot_cov_ver(cover.cross)
+
+# knitr::kable(cover.cross, caption = "Percentages (entire curve covered) for every leave one out fold")
+```
+
+b. (mean percentage of covered curve points)
+
+```{r echo = FALSE, warning = FALSE, message = FALSE}
+# Display cross validation coverages (fraction of the curve that is covered) across methods
+cover.cross.fraction <- crossval_coverage_fraction(data, n.boot)
+
+plot_cov_ver(cover.cross.fraction)
+```
+
+#### Curves with (missing) peaks
+
+a. (coverage of the entire curve)
+
+```{r echo = FALSE, warning = FALSE, message = FALSE}
+data <- example_data(dat = "shock", dir.data)
 
 cover.cross <- crossval_coverage(data, n.boot)
 # colnames(cover.cross) <- c("RCB_1", "RCB_2", "RCB_3", "Roislien_4", "Point_5")
