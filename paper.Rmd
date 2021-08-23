@@ -183,9 +183,9 @@ floa.point <- floa_point(data)
 
 ### Synthetic data sets
 
-To compare different methods for constructing continuous LoA, smooth curve data were simulated across a range of common biomechanical signals and error characteristics.
+To compare different methods for constructing continuous LoA, several sets of smooth curve data were simulated across a range of common biomechanical signals and error characteristics. The quality of the curves is similar, as the paper is primarily developed for a validation context in which the same movement process is analyzed using similar methods (two measurement devices or models). For the same reason, the curves do not necessarily correspond to real-world signals as we were more concerned with illustrating the respective methods and error characterstics.
 
-The curves were modeled as Fourier series from additively superimposed sine functions. Each data set contains n.strides = 10 curves from n.subj = 11 fictitious test subjects. Each curve consists of t = 101 data points. Note that the curves do not necessarily correspond to real-world signals as we were more concerned with illustrating the underlying principle.
+All curves were modeled as Fourier series from additively superimposed sine functions. Each data set contains n.strides = 10 curves from n.subj = 11 fictitious test subjects. Each curve consists of t = 101 data points. 
 
 <!-- Aus Robinson et al. (2021) -->
 <!-- Exemplar 1D eects from the biomechanics literature across a range of signal types were collated and reported (Bakke & Besier, 2020, Barrios & Willson, 2017, Bovi, Rabuetti, Mazzoleni, & Ferrarin, 2011, Phan et al., 2017, Gomes, Ackermann, Ferreira, Orselli, & Sacco, 2017, Robinson et al., 2014). -->
@@ -250,7 +250,7 @@ device.1 <- sine.1 + sine.2
 device.1 <- offset + sine.3 + sine.4 + trend
 ```
 
-* (3) Heteroscedastic error: Heteroscedasticity across the signal length. The example consists of knee moment curves calculated using two different methods (direct and inverse kinematic approach) (Robinson et al., 2014). The curves were recreated using the example code provided in Robinson et al. (2021).
+* (3) Heteroscedastic (non-gaussian, Weibull distributed) error: Heteroscedasticity across the signal length. The example consists of knee moment curves calculated using two different methods (direct and inverse kinematic approach) (Robinson et al., 2014). The curves were recreated using the example code provided in Robinson et al. (2021).
 
 <!-- Robinson et al. (2014) Impact of Knee Modeling Approach on Indicators and Classification of Anterior Cruciate Ligament Injury Risk -->
 
