@@ -77,9 +77,9 @@ source(paste0(dir.script, "/plot_cov_ver.R"))
 
 # Introduction
 
-Having a good estimate of the amount of measurement error is a basic requirement when analyzing movement data. The classic linear error model describes measurement error as the sum of systematic and random deviations from the true value. A complete characterization of the measurement error, however, is complex, as different sources of variance (within, between) and noise must be considered. The analysis of sensor data is further complicated by the fact that the output of many measurement systems in biomechanics - such as e. g. joint angles, ground reaction forces, or center of mass trajectories - is available in the form of continuous signals (curve data) within which the error can vary over time.
+<!-- Having a good estimate of the amount of measurement error is a basic requirement when analyzing movement data. The classic linear error model describes measurement error as the sum of systematic and random deviations from the true value. A complete characterization of the measurement error, however, is complex, as different sources of variance (within, between) and noise must be considered. The analysis of sensor data is further complicated by the fact that the output of many measurement systems in biomechanics - such as e. g. joint angles, ground reaction forces, or center of mass trajectories - is available in the form of continuous signals (curve data) within which the error can vary over time. -->
 
-Hier ein anderes Intro schreiben ... Ansatz: Neben der Validierung von Messgeräten spielt auch die Validierung von simulierten Modellergebnissen eine Rolle.
+Hier ein anderes Intro schreiben ... Ansatz: Neben der Validierung von Messgeräten spielt auch die Validierung von Modellergebnissen eine Rolle!
 
 Therefore, when analyzing the validity of curve data, the entire length of the curve should be accounted for. This can be accomplished e. g. by applying statistics separately to all points of the curve [Pini et al. (2019). The pointwise approach allows for an error representation over the entire domain, but ignores the fact, that the sampling points within a curve are locally correlated (Deluzio & Astephen, 2007; Pataky, 2010). From a statistical point of view, this implies that the random error component is likely underrepresented when the (nonzero) covariance term of adjacent sampling points is not accounted for (Lenhoff et al., 1999).
 
@@ -229,7 +229,7 @@ for (subject.idx in 1:n.subj) {
     # ...
 ```
 
-* (1) Homoscedastic (normal) error. Within and between subject differences between curves were modeled using random systematic offset (bias) and random variation of curve parameters. The data could be generated e. g. from simultaneous joint angle measurements with two kinematic measurement systems (e. g. a camera-based measurement systems and a goniometer).
+* (1) Homoscedastic (normal) error. Within and between subject differences between curves were modeled using random systematic offset (bias) and random variation of curve parameters. The data are representative of e. g. joint angle measurements simultaneously recorded from two kinematic measurement systems (e. g. a camera-based measurement systems and a goniometer).
 
 ```{r warning = FALSE, message = FALSE, eval = FALSE}
 # ...
@@ -239,7 +239,7 @@ device.1 <- sine.1 + sine.2
 device.2 <- offset + sine.3 + sine.4
 ```
 
-* (2) Same model as in (i), but with a nonlinear trend underlying one of the two signals. Similar errors can be observed e. g. when joint angles are calculated (numerically integrated) from gyroscope signals.
+* (2) Trend error: Same model as in (i), but with a nonlinear trend underlying one of the two signals. Similar errors can be observed e. g. when joint angles are calculated (numerically integrated) from gyroscope signals.
 
 ```{r warning = FALSE, message = FALSE, eval = FALSE}
 # ...
@@ -250,7 +250,7 @@ device.1 <- sine.1 + sine.2
 device.1 <- offset + sine.3 + sine.4 + trend
 ```
 
-* (3) Heteroscedasticity across the signal. The example consists of knee momentcurves calculated using two different methods (direct and inverse kinematic approach) (Robinson et al., 2014). The curves were generated using the example code in Robinson et al. (2021).
+* (3) Heteroscedastic error: Heteroscedasticity across the signal length. The example consists of knee moment curves calculated using two different methods (direct and inverse kinematic approach) (Robinson et al., 2014). The curves were recreated using the example code provided in Robinson et al. (2021).
 
 <!-- Robinson et al. (2014) Impact of Knee Modeling Approach on Indicators and Classification of Anterior Cruciate Ligament Injury Risk -->
 
@@ -270,11 +270,12 @@ device.1 <- sine.1 + sine.2
 device.2 <- offset + sine.3 + sine.4
 ```
 
-* (4) Smooth curves with peaks
+* (4) Data with (missing) peaks. Same model as in (i), except a couple of frames where a short, prominent peak occurs in one of the two signals. This typically happens in high-frequency signals such as accelerations or ground reaction forces, where peaks are underrepresented or entirely missing when e. g. sampling rates are too low or lowpass filter artefacts occur. Also, modelling these kind of abrupt changes in the signal (when e. g. to estimate ground reaction forces from acceleration values) is more difficult and my result in similar errors (Alcantara, 2021). 
 
-Ground reaction force data
+<!-- Alcantara et al. Modelling/estimating ground reaction forces from acceleration values, z. B. https://www.biorxiv.org/content/10.1101/2021.03.17.435901v1.full -->
+<!-- Johnson et al. (2020) Multidimensional ground reaction forces and moments from wearable sensor accelerations via deep learning -->
 
-### Smooth curves (normal error, constant variance, no trend)
+### Smooth curves (homoscedasticity, normal error, no trend)
 
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
 data <- example_data(dat = "smooth", dir.data)
@@ -296,7 +297,7 @@ PLOT <- ggplot(data = data.single.mc, aes(x = frame, y = value, group = strideID
 PLOT
 ```
 
-### Smooth curves nonlinear error trend
+### Smooth curves with nonlinear error trend
 
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
 data <- example_data(dat = "smooth_trend", dir.data)
@@ -318,7 +319,9 @@ PLOT <- ggplot(data = data.single.mc, aes(x = frame, y = value, group = strideID
 PLOT
 ```
 
-#### Smooth curves with non-gaussian (Weibull) error (no trend)
+#### Heteroscedasticity across the signal length (Robinson et al., 2014)
+
+<!-- Smooth curves with non-gaussian (Weibull) error (no trend) -->
 
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
 data <- example_data(dat = "non_gaussian", dir.data)
@@ -339,6 +342,13 @@ PLOT <- ggplot(data = data.single.mc, aes(x = frame, y = value, group = strideID
 
 PLOT
 ```
+
+#### Smooth curves with (missing) peaks
+
+```{r echo = FALSE, warning = FALSE, message = FALSE}
+
+```
+
 
 ### Cross validation
 
