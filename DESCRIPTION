@@ -7,8 +7,6 @@ Maintainer: Daniel Koska <danielkoska86@gmail.com>
 Description: FLoA are computed using a (two-stage) randomized cluster bootstrap for nested data as suggested by Davison & Hinkley (1997, pp. 100-102). The nested (hierarchical) structure may be introduced by e.g. repeated measures.
 	TODO:
 	Add DESCRIPTION details (dependencies etc.)
-	Functional mean in second stage of bootstrap!!!
-	Bias correction (quantiles) useful/necessary?
 Depends: R (>= 3.1.0)
 License: GPL-3
 Encoding: UTF-8
