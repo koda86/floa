@@ -319,7 +319,7 @@ PLOT <- ggplot(data = data.single.mc, aes(x = frame, y = value, group = strideID
 PLOT
 ```
 
-#### Heteroscedasticity across the signal length (Robinson et al., 2014)
+#### Heteroscedasticity across the signal length
 
 <!-- Smooth curves with non-gaussian (Weibull) error (no trend) -->
 
@@ -346,7 +346,23 @@ PLOT
 #### Smooth curves with (missing) peaks
 
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
+data <- example_data(dat = "shock", dir.data)
 
+data.single.mc <- subset(data, device == "MC")
+data.single.imu <- subset(data, device == "IMU")
+
+PLOT <- ggplot(data = data.single.mc, aes(x = frame, y = value, group = strideID)) + # , colour = subjectID
+  geom_line(alpha = 0.7) +
+  geom_line(data = data.single.imu, aes(x = frame, y = value, group = strideID, col = "red"), alpha = 0.3) + #, colour = subjectID
+  labs(x = "Time-normalized signal [%]", y = "Difference") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(size = 20),
+        axis.title.x = element_text(size = 22),
+        axis.text.y = element_text(size = 20),
+        axis.title.y = element_text(size = 22),
+        legend.position = "none")
+
+PLOT
 ```
 
 
@@ -394,6 +410,10 @@ floa <- floa_rcb(data, n.boot, ver = "v2")
 plot_loa(data, floa, central.tendency = "mean")
 
 data <- example_data(dat = "non_gaussian", dir.data)
+floa <- floa_rcb(data, n.boot, ver = "v2")
+plot_loa(data, floa, central.tendency = "mean")
+
+data <- example_data(dat = "shock", dir.data)
 floa <- floa_rcb(data, n.boot, ver = "v2")
 plot_loa(data, floa, central.tendency = "mean")
 ```
@@ -569,7 +589,10 @@ It might be beneficial to work with functional data as suggested by Lenhoff et a
 
 Wir empfehlen die Daten zu plotten. Am Ende ist jeder Datensatz bzw. jede Fragestellung unterschiedlich und ein pauschaler coverage value wird der Qualität des Messgeräts (in Bezug auf die jeweilige Fragestellung möglicherweise nicht gerecht).
 
+<!-- Limitations of curvewise intervals -->
 <!-- https://mjskay.github.io/ggdist/articles/lineribbon.html -->
+<!-- One challenge with curvewise intervals is that they can tend to be very conservative, especially at moderate-to-large intervals widths. -->
+<!-- Notice how noisy the curvewise intervals are. In addition, because a number of curves tend to start low and end high (or vice versa), above 50%, the bands rapidly expand to cover almost all of the curves in the sample, regardless of coverage level. -->
 <!-- In general I have found that there is no one method that consistently works well on all datasets. No matter the method, intervals often become problematic above 50%, hence the default .width for curve_interval() is 0.5 (unlike the default for point_interval(), which is 0.95). In any case, caution when using these intervals is advised. -->
 
 <!-- Welcher coverage Strategie ist besser (Entire curve (all-or-nothing) vs. percent-of-curve)? -->
