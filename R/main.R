@@ -10,6 +10,7 @@
 # (see subsection data sets)
 #
 # TODO:
+#   + Leave-one-curve out implementieren (zusätzlich zu leave one subject out)
 #   + Beispieldaten Robinson et al. (2021) hinzufuegen
 #   + Rename n.strides to n.curves()
 #   + Zeitlichen Versatz (x-Achse) in example_data() einbringen (siehe Grafiken Lenhoff)
@@ -38,8 +39,8 @@ rm(list = ls())
 
 library(ggplot2)
 
-dir.script <- "C:/Users/Daniel/Desktop/tmp/floa/R"
-dir.data <- "C:/Users/Daniel/Desktop/tmp/floa/R/examples"
+dir.script <- "~/floa/R"
+dir.data <- "~/floa/R/examples"
 
 setwd(dir.script)
 source("example_data.R")
