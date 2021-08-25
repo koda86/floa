@@ -365,6 +365,28 @@ PLOT <- ggplot(data = data.single.mc, aes(x = frame, y = value, group = strideID
 PLOT
 ```
 
+#### Curves phase shifted in x-axis direction
+
+```{r echo = FALSE, warning = FALSE, message = FALSE}
+data <- example_data(dat = "shift", dir.data)
+
+data.single.mc <- subset(data, device == "MC")
+data.single.imu <- subset(data, device == "IMU")
+
+PLOT <- ggplot(data = data.single.mc, aes(x = frame, y = value, group = strideID)) + # , colour = subjectID
+  geom_line(alpha = 0.7) +
+  geom_line(data = data.single.imu, aes(x = frame, y = value, group = strideID, col = "red"), alpha = 0.3) + #, colour = subjectID
+  labs(x = "Time-normalized signal [%]", y = "Difference") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(size = 20),
+        axis.title.x = element_text(size = 22),
+        axis.text.y = element_text(size = 20),
+        axis.title.y = element_text(size = 22),
+        legend.position = "none")
+
+PLOT
+```
+
 
 ### Cross validation
 
@@ -400,8 +422,9 @@ Prediction intervals are calculated from size.dataset = number.subjects - 1 and 
 ### Functional limits of agreement
 
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
-data <- example_data(dat = "smooth", dir.data)
 n.boot <- 400
+
+data <- example_data(dat = "smooth", dir.data)
 floa <- floa_rcb(data, n.boot, ver = "v2")
 plot_loa(data, floa, central.tendency = "mean")
 
@@ -414,6 +437,10 @@ floa <- floa_rcb(data, n.boot, ver = "v2")
 plot_loa(data, floa, central.tendency = "mean")
 
 data <- example_data(dat = "shock", dir.data)
+floa <- floa_rcb(data, n.boot, ver = "v2")
+plot_loa(data, floa, central.tendency = "mean")
+
+data <- example_data(dat = "shift", dir.data)
 floa <- floa_rcb(data, n.boot, ver = "v2")
 plot_loa(data, floa, central.tendency = "mean")
 ```
@@ -563,6 +590,30 @@ a. (coverage of the entire curve)
 
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
 data <- example_data(dat = "shock", dir.data)
+
+cover.cross <- crossval_coverage(data, n.boot)
+# colnames(cover.cross) <- c("RCB_1", "RCB_2", "RCB_3", "Roislien_4", "Point_5")
+
+plot_cov_ver(cover.cross)
+
+# knitr::kable(cover.cross, caption = "Percentages (entire curve covered) for every leave one out fold")
+```
+
+b. (mean percentage of covered curve points)
+
+```{r echo = FALSE, warning = FALSE, message = FALSE}
+# Display cross validation coverages (fraction of the curve that is covered) across methods
+cover.cross.fraction <- crossval_coverage_fraction(data, n.boot)
+
+plot_cov_ver(cover.cross.fraction)
+```
+
+#### Curves phase shifted in x-axis direction
+
+a. (coverage of the entire curve)
+
+```{r echo = FALSE, warning = FALSE, message = FALSE}
+data <- example_data(dat = "shift", dir.data)
 
 cover.cross <- crossval_coverage(data, n.boot)
 # colnames(cover.cross) <- c("RCB_1", "RCB_2", "RCB_3", "Roislien_4", "Point_5")

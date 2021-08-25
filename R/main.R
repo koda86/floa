@@ -10,15 +10,15 @@
 # (see subsection data sets)
 #
 # TODO:
+#   + Beispieldaten Robinson et al. (2021) hinzufuegen
 #   + Rename n.strides to n.curves()
-#   + Zeitlichen Versatz (x-Achse) in example_data() einbringen (siehe Grafike Lenhoff)
+#   + Zeitlichen Versatz (x-Achse) in example_data() einbringen (siehe Grafiken Lenhoff)
 #   + Check leave-one-out implementation
 #   + Programming challenge: Vectorize (or at least preallocate as much as possible)
 #   + Implementieren FDA
 #   + Preallocation in floa_rcb()
 #   + Quantile: Über die gesamte Verteilung oder die "Ausreisser-Quantile" einzelner/extremer Probanden
 #     + quantile() function: Bias correction useful/necessary?
-#   + Konvergenzanalyse --> ja, aber "nur" intern
 #   + Implement balanced data in floa_rcb.R
 #
 # TODO READ:
@@ -67,9 +67,9 @@ source("plot_cov_ver.R")
 # (* Empirical validation data: "imu_mc")
 # * Smooth, wave data (normal error, constant variance, no trend): "smooth"
 # * Smooth wave data with nonlinear trend (constant variance): "smooth_trend"
-# * Data with non-gaussian (Weibull distributed) error (no trend): "non_gaussian" # see Robinson et al. (2021)
+# * Data with non-gaussian (Weibull distributed) error (no trend): "non_gaussian"
 # * Data with shock peaks (no bias, no trend): "shock"
-data <- example_data(dat = "non_gaussian", dir.data)
+data <- example_data(dat = "shift", dir.data)
 
 # Plot data --------------------------------------------------------------------
 

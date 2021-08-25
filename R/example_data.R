@@ -1,5 +1,7 @@
 example_data <- function(dat, dir.data) {
 
+  # Simulation outsourced to script 'simulate_data'
+
   if (dat == "imu_mc") {
 
     # IMU vs. MC validation data ---------------------------------------------------
@@ -25,8 +27,11 @@ example_data <- function(dat, dir.data) {
 
   } else if (dat == "shock") {
 
-    # Simulation outsourced to script 'simulate_data'
-    data <- readRDS(paste0(dir.data, "/", "data_shock.rds"))
+    data <- readRDS(paste0(dir.data, "/", "shock.rds"))
+
+  } else if (dat == "shift") {
+
+    data <- readRDS(paste0(dir.data, "/", "shift.rds"))
   }
 
   return(data)
