@@ -228,7 +228,7 @@ saveRDS(data, file = paste0("C:/Users/Daniel/Desktop/tmp/floa/R/examples/", "non
 
 
 
-
+# test
 
 # # ------------------------------------------------------------------------------
 # # Smooth wave data with nonlinear trend (no bias, constant variance) (2) -------
