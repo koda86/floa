@@ -55,8 +55,8 @@ output:
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
 library(ggplot2)
 
-dir.script <- "C:/Users/Daniel/Desktop/tmp/floa/R"
-dir.data <- "C:/Users/Daniel/Desktop/tmp/floa/R/examples"
+dir.script <- "~/floa/R"
+dir.data <- "~/floa/R/examples"
 
 source(paste0(dir.script, "/example_data.R"))
 source(paste0(dir.script, "/pick_subwise_curves.R"))
