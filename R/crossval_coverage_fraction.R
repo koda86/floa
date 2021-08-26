@@ -20,17 +20,18 @@ crossval_coverage_fraction <- function (data, n.boot) {
 
   n.subj <- unique(data$subjectID)
 
-  cover.cross.rcb.v1   <- c()
-  cover.cross.rcb.v2   <- c()
-  cover.cross.rcb.v3   <- c()
-  cover.cross.point    <- c()
-  cover.cross.roislien <- c()
+  cover.cross.rcb.v1   <- vector(mode = "list", length = length(n.subj))
+  cover.cross.rcb.v2   <- vector(mode = "list", length = length(n.subj))
+  cover.cross.rcb.v3   <- vector(mode = "list", length = length(n.subj))
+  cover.cross.point    <- vector(mode = "list", length = length(n.subj))
+  cover.cross.roislien <- vector(mode = "list", length = length(n.subj))
 
-  for (i in n.subj) {
+  for (subj.idx in n.subj) {
 
     # Calculate FLoA with one subject left out
     # --------------------------------------------------------------------
-    data.one.out <- subset(data, subjectID != i) # Leave subject "i" out
+    # Leave subject subj.idx out
+    data.one.out <- subset(data, subjectID != subj.idx)
 
     floa.point    <- floa_point(data.one.out)
     floa.v1       <- floa_rcb(data.one.out, n.boot, ver = "v1")
@@ -40,37 +41,27 @@ crossval_coverage_fraction <- function (data, n.boot) {
 
     # Get coverage of the left out (unseen) curves of subject "i"
     # --------------------------------------------------------------------
-    data.subset <- subset(data, subjectID == i)
+    data.subset <- subset(data, subjectID == subj.idx)
 
-    cover.cross.rcb.v1 <- c(cover.cross.rcb.v1,
-                            get_coverage_fraction(data.subset, floa.v1)
-    )
+    cover.cross.rcb.v1[subj.idx] <- get_coverage_fraction(data.subset, floa.v1)
 
     # plot(floa.v1["mean", ], type = "l", col = "red", ylim = c(-1, 1))
     # lines(floa.v1["upper", ], col = "red")
     # lines(floa.v1["lower", ], col = "red")
     # lines(tmp$value)
 
-    cover.cross.rcb.v2 <- c(cover.cross.rcb.v2,
-                            get_coverage_fraction(data.subset, floa.v2)
-    )
+    cover.cross.rcb.v2[subj.idx] <- get_coverage_fraction(data.subset, floa.v2)
 
-    cover.cross.rcb.v3 <- c(cover.cross.rcb.v3,
-                            get_coverage_fraction(data.subset, floa.v3)
-    )
+    cover.cross.rcb.v3[subj.idx] <- get_coverage_fraction(data.subset, floa.v3)
 
-    cover.cross.roislien <- c(cover.cross.roislien,
-                              get_coverage_fraction(data.subset, floa.roislien)
-    )
+    cover.cross.roislien[subj.idx] <- get_coverage_fraction(data.subset, floa.roislien)
 
     # plot(floa.roislien["mean", ], type = "l", col = "red", ylim = c(-1, 1))
     # lines(floa.roislien["upper", ], col = "red")
     # lines(floa.roislien["lower", ], col = "red")
     # lines(tmp$value)
 
-    cover.cross.point <- c(cover.cross.point,
-                           get_coverage(data.subset, floa.point)
-    )
+    cover.cross.point[subj.idx] <- get_coverage(data.subset, floa.point)
   }
 
   cover.cross <- cbind(cover.cross.rcb.v1,
