@@ -30,7 +30,8 @@ crossval_coverage <- function (data, n.boot) {
 
     # Calculate FLoA with one subject left out
     # --------------------------------------------------------------------
-    data.one.out <- subset(data, subjectID != subj.idx) # Leave subject "i" out
+    # Leave subject subj.idx out
+    data.one.out <- subset(data, subjectID != subj.idx)
 
     floa.point    <- floa_point(data.one.out)
     floa.v1       <- floa_rcb(data.one.out, n.boot, ver = "v1")
@@ -40,7 +41,7 @@ crossval_coverage <- function (data, n.boot) {
 
     # Get coverage of the left out (unseen) curves of subject "i"
     # --------------------------------------------------------------------
-    data.subset <- subset(data, subjectID == i)
+    data.subset <- subset(data, subjectID == subj.idx)
 
     cover.cross.rcb.v1[subj.idx] <- get_coverage(data.subset, floa.v1)
 
