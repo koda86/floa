@@ -150,7 +150,10 @@ print(coverage)
 
 # ***************************** Cross validation *******************************
 
-# Leave-one (subject) out method to estimate the achieved coverage
+# Currently, two different methods for estimating the uncertainty in the achieved
+# coverage are implemented:
+# 1. Leave all curves of a single subject out
+# 2. Leave-one single curve out
 #
 # Currently, different versions of the sampling process in draw_clusters() (nested
 # in floa_rcb()) are implemented:
@@ -165,13 +168,21 @@ print(coverage)
 # Output:
 #   * Coverage levels [%] across n=length(subjectID) iterations
 # ------------------------------------------------------------------------------
-cover.cross <- crossval_coverage(data, n.boot)
+
+# 1. Leave-one (subject) out
+# ------------------------------------------------------------------------------
+cover.cross.subject <- crossval_coverage(data, n.boot)
 
 # Display cross validation coverages (entire curve covered) across methods
-plot_cov_ver(cover.cross)
+plot_cov_ver(cover.cross.subject)
 
 # Mean fraction of the curve that is covered) across methods
-cover.cross.fraction <- crossval_coverage_fraction(data, n.boot)
+cover.cross.fraction.subject <- crossval_coverage_fraction(data, n.boot)
 
-plot_cov_ver(cover.cross.fraction)
+plot_cov_ver(cover.cross.fraction.subject)
 
+# 2. Leave-one (curve) out
+# ------------------------------------------------------------------------------
+cover.cross.singlecurve <- singlecurve_coverage(data, n.boot)
+cover.cross.fraction.singlecurve <- singlecurve_coverage_fraction(data, n.boot)
+plot_cov_ver(cover.cross.fraction.subject)
