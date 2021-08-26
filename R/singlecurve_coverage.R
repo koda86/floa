@@ -28,11 +28,10 @@ singlecurve_coverage <- function (data, n.boot) {
 
   for (curve.idx in n.curves) {
 
-    print(curve.idx)
-
     # Calculate FLoA with one curve left out
     # --------------------------------------------------------------------
-    data.one.out <- subset(data, strideID != curve.idx) # Leave subject "i" out
+    # Leave curve at curve.idx out
+    data.one.out <- subset(data, strideID != curve.idx)
 
     floa.point    <- floa_point(data.one.out)
     floa.v1       <- floa_rcb(data.one.out, n.boot, ver = "v1")
@@ -40,7 +39,7 @@ singlecurve_coverage <- function (data, n.boot) {
     floa.v3       <- floa_rcb(data.one.out, n.boot, ver = "v3")
     floa.roislien <- floa_roislien(data.one.out, n.boot)
 
-    # Get coverage of the left out (unseen) curves of subject "i"
+    # Get coverage for the left out curve
     # --------------------------------------------------------------------
     data.subset <- subset(data, strideID == curve.idx)
 
