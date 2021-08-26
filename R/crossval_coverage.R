@@ -1,8 +1,8 @@
 crossval_coverage <- function (data, n.boot) {
 
   # ####################################################################
-  # Leave-one (subject) out method to estimate the achieved coverage
-  # See e. g. Lenhoff et al. (1999)
+  # Leave-one (curve) out method to estimate the uncertainty int the
+  # achieved coverage (see Lenhoff et al. (1999))
   # ####################################################################
   #
   # Currently, different versions of the sampling process in draw_clusters()
