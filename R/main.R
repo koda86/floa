@@ -43,6 +43,7 @@ dir.script <- "~/floa/R"
 dir.data <- "~/floa/R/examples"
 
 setwd(dir.script)
+
 source("example_data.R")
 source("fdaDelta.R")
 source("pick_subwise_curves.R")
@@ -56,8 +57,12 @@ source("floa_roislien.R")
 source("plot_loa.R")
 source("get_coverage.R")
 source("get_coverage_fraction.R")
+source("get_coverage_singlecurve.R")
+source("get_coverage_singlecurve_fraction.R")
 source("crossval_coverage.R")
 source("crossval_coverage_fraction.R")
+source("singlecurve_coverage.R")
+source("singlecurve_coverage_fraction.R")
 source("plot_cov_ver.R")
 
 
@@ -169,7 +174,7 @@ print(coverage)
 #   * Coverage levels [%] across n=length(subjectID) iterations
 # ------------------------------------------------------------------------------
 
-# 1. Leave-one (subject) out
+# 1. Leave-one subject out
 # ------------------------------------------------------------------------------
 cover.cross.subject <- crossval_coverage(data, n.boot)
 
@@ -181,8 +186,16 @@ cover.cross.fraction.subject <- crossval_coverage_fraction(data, n.boot)
 
 plot_cov_ver(cover.cross.fraction.subject)
 
-# 2. Leave-one (curve) out
+# 2. Leave-one curve out
 # ------------------------------------------------------------------------------
 cover.cross.singlecurve <- singlecurve_coverage(data, n.boot)
+
+# Calculate percent from counts
+calculate_percent <- function(data) {
+  percentage <- (sum(data) / length(data))
+  percentage <- round(percentage, digits = 2)
+}
+covered.curves.percent <- apply(cover.cross.singlecurve, 2, calculate_percent)
+
 cover.cross.fraction.singlecurve <- singlecurve_coverage_fraction(data, n.boot)
-plot_cov_ver(cover.cross.fraction.subject)
+plot_cov_ver(cover.cross.fraction.singlecurve)

@@ -1,8 +1,8 @@
-crossval_coverage_fraction <- function (data, n.boot) {
+singlecurve_coverage_fraction <- function (data, n.boot) {
 
   # ####################################################################
-  # Leave-one (subject) out method to estimate the achieved coverage
-  # See e. g. Lenhoff et al. (1999)
+  # Leave-one (curve) out method to estimate the uncertainty in the
+  # achieved coverage (see Lenhoff et al. (1999))
   # ####################################################################
   #
   # Currently, different versions of the sampling process in draw_clusters()
@@ -13,9 +13,7 @@ crossval_coverage_fraction <- function (data, n.boot) {
   # v3 : Fetch a SINGLE random stride from all strides
   # v4 : Roislien approach (Get one random stride from each subject ONCE and boot-
   #      strap the resulting sample (of length (n=length(subjects))
-  #
-  # Output:
-  #   * Coverage levels [%] across n=length(subjectID) iterations
+  # v5 : Pointwise B&A limits (SD from linear mixed effects model)
   # ####################################################################
 
   n.curves <- unique(data$strideID)
@@ -30,7 +28,6 @@ crossval_coverage_fraction <- function (data, n.boot) {
 
     # Calculate FLoA with one curve left out
     # --------------------------------------------------------------------
-    # Leave curve at curve.idx out
     data.one.out <- subset(data, strideID != curve.idx)
 
     floa.point    <- floa_point(data.one.out)
@@ -39,36 +36,35 @@ crossval_coverage_fraction <- function (data, n.boot) {
     floa.v3       <- floa_rcb(data.one.out, n.boot, ver = "v3")
     floa.roislien <- floa_roislien(data.one.out, n.boot)
 
-    # Get coverage for the left out curve
-    # --------------------------------------------------------------------
+    # Get the difference curve
+    # ----------------------------------------------------------------------------
     data.subset <- subset(data, strideID == curve.idx)
 
-    cover.cross.rcb.v1[curve.idx] <- get_coverage_fraction(data.subset, floa.v1)
+    device1 <- data.frame(subset(data.subset, device == "IMU"))
+    device2 <- data.frame(subset(data.subset, device == "MC"))
 
-    # plot(floa.v1["mean", ], type = "l", col = "red", ylim = c(-1, 1))
+    device.diff <- device1$value - device2$value
+
+    # plot(floa.v1["mean", ], type = "l", col = "red", ylim = c(-5, 5))
     # lines(floa.v1["upper", ], col = "red")
     # lines(floa.v1["lower", ], col = "red")
-    # lines(tmp$value)
+    # lines(device.diff$value)
 
-    cover.cross.rcb.v2[curve.idx] <- get_coverage_fraction(data.subset, floa.v2)
-
-    cover.cross.rcb.v3[curve.idx] <- get_coverage_fraction(data.subset, floa.v3)
-
-    cover.cross.roislien[curve.idx] <- get_coverage_fraction(data.subset, floa.roislien)
-
-    # plot(floa.roislien["mean", ], type = "l", col = "red", ylim = c(-1, 1))
-    # lines(floa.roislien["upper", ], col = "red")
-    # lines(floa.roislien["lower", ], col = "red")
-    # lines(tmp$value)
-
-    cover.cross.point[curve.idx] <- get_coverage(data.subset, floa.point)
+    # Get coverage for the left out (difference) curve
+    # --------------------------------------------------------------------
+    cover.cross.rcb.v1[curve.idx]   <- get_coverage_singlecurve_fraction(device.diff, floa.v1)
+    cover.cross.rcb.v2[curve.idx]   <- get_coverage_singlecurve_fraction(device.diff, floa.v2)
+    cover.cross.rcb.v3[curve.idx]   <- get_coverage_singlecurve_fraction(device.diff, floa.v3)
+    cover.cross.roislien[curve.idx] <- get_coverage_singlecurve_fraction(device.diff, floa.roislien)
+    cover.cross.point[curve.idx]    <- get_coverage_singlecurve_fraction(device.diff, floa.point)
   }
 
-  cover.cross <- cbind(cover.cross.rcb.v1,
-                       cover.cross.rcb.v2,
-                       cover.cross.rcb.v3,
-                       cover.cross.roislien,
-                       cover.cross.point)
+  cover.cross <- cbind(unlist(cover.cross.rcb.v1),
+                       unlist(cover.cross.rcb.v2),
+                       unlist(cover.cross.rcb.v3),
+                       unlist(cover.cross.roislien),
+                       unlist(cover.cross.point)
+                       )
 
   return(cover.cross)
 }

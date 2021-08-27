@@ -16,5 +16,4 @@ plot_cov_ver <- function (cover.cross) {
     ylab("coverage")
 
   cover.PLOT
-
   }

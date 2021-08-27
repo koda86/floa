@@ -69,9 +69,13 @@ source(paste0(dir.script, "/floa_point.R"))
 source(paste0(dir.script, "/floa_roislien.R"))
 source(paste0(dir.script, "/plot_loa.R"))
 source(paste0(dir.script, "/get_coverage.R"))
+source(paste0(dir.script, "/get_coverage_singlecurve.R"))
 source(paste0(dir.script, "/get_coverage_fraction.R"))
+source(paste0(dir.script, "/get_coverage_singlecurve_fraction.R"))
 source(paste0(dir.script, "/crossval_coverage.R"))
+source(paste0(dir.script, "/singlecurve_coverage.R"))
 source(paste0(dir.script, "/crossval_coverage_fraction.R"))
+source(paste0(dir.script, "/singlecurve_coverage_fraction.R"))
 source(paste0(dir.script, "/plot_cov_ver.R"))
 ```
 
@@ -188,9 +192,9 @@ To compare different methods for constructing continuous LoA, several sets of sm
 All curves were modeled as Fourier series from additively superimposed sine functions. Each data set contains n.strides = 10 curves from n.subj = 11 fictitious test subjects. Each curve consists of t = 101 data points. 
 
 <!-- Aus Robinson et al. (2021) -->
-<!-- Exemplar 1D eects from the biomechanics literature across a range of signal types were collated and reported (Bakke & Besier, 2020, Barrios & Willson, 2017, Bovi, Rabuetti, Mazzoleni, & Ferrarin, 2011, Phan et al., 2017, Gomes, Ackermann, Ferreira, Orselli, & Sacco, 2017, Robinson et al., 2014). -->
+<!-- Exemplar 1D effects from the biomechanics literature across a range of signal types were collated and reported (Bakke & Besier, 2020, Barrios & Willson, 2017, Bovi, Rabuetti, Mazzoleni, & Ferrarin, 2011, Phan et al., 2017, Gomes, Ackermann, Ferreira, Orselli, & Sacco, 2017, Robinson et al., 2014). -->
 
-<!-- the code to reproduce all 1D eects is provided at https://github.com/m-a-robinson/sample-size -->
+<!-- the code to reproduce all 1D effects is provided at https://github.com/m-a-robinson/sample-size -->
 
 ```{r warning = FALSE, message = FALSE, eval = FALSE}
 n.subj <- 11
@@ -445,7 +449,7 @@ floa <- floa_rcb(data, n.boot, ver = "v2")
 plot_loa(data, floa, central.tendency = "mean")
 ```
 
-### Leave-one-out cross validation
+### Leave-one (curve) out cross validation
 
 Displayed are boxes for five different methods:
 
@@ -458,11 +462,11 @@ Displayed are boxes for five different methods:
 * 4. FLoA~Roislien~ : Roislien approach (Get one random stride from each subject ONCE and boot-
        strap the resulting sample (of length (n=length(subjects))
 
-* 5. FLoA~Point~ : Pointwise B & A Limits of Agreement
+* 5. FLoA~Point~ : Pointwise B & A Limits of Agreement (SD derived from linear mixed effects model)
 
 Coverages are displayed for two different scenarios:
 
-* a: Percentage of entirely covered curves (all points within the limits): Each box consists of n~ = 11 values (one percentage for each subject).
+* a: Percentage of entirely covered curves (all points within the limits)
 
 * b: Mean percentage of curve points within the respective FLoA: The fraction of points along a curve within the limits is calculated and averaged across all curves of a subject.
 
@@ -471,69 +475,95 @@ Coverages are displayed for two different scenarios:
 a. (coverage of the entire curve)
 
 ```{r warning = FALSE, message = FALSE, eval = FALSE}
-lwr.bnd <- floa["lower", ]
-upr.bnd <- floa["upper", ]
+get_coverage_singlecurve <- function (curve, floa) {
+  # Curve is a numerical vector
+  # floa is a "matrix" "array" containing "lower" and "upper" limits
 
-# ...
+  # Calculate coverage (entire curves within the percentile boundaries)
+  # ----------------------------------------------------------------------------
+  lwr.bnd <- floa["lower", ]
+  upr.bnd <- floa["upper", ]
 
-for (stride.idx in stride.indices){
-    curve <- subset(device.diff, strideID == stride.idx)
+  outside <- 0
 
-    # Compare difference curves with upper and lower boundaries
-    below.thresh <- curve$value < lwr.bnd
-    above.thresh <- curve$value > upr.bnd
+  # Compare curves with upper and lower boundaries
+  below.thresh <- curve < lwr.bnd
+  above.thresh <- curve > upr.bnd
 
-    points.outside <- sum(above.thresh) + sum(below.thresh)
+  points.outside <- sum(above.thresh) + sum(below.thresh)
 
-    # Check if the entire curve is within the limits
-    if (points.outside > 0) {
-      outside <- outside + 1
-    }
-  }
+  coverage <- ifelse(points.outside > 0, 0, 1)
 
-coverage <- 1 - (outside / n.strides)
+  return(coverage)
+}
 ```
 
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
 data <- example_data(dat = "smooth", dir.data)
 
-cover.cross <- crossval_coverage(data, n.boot)
-# colnames(cover.cross) <- c("RCB_1", "RCB_2", "RCB_3", "Roislien_4", "Point_5")
+# Leave-one curve out approach
+# ------------------------------------------------------------------------------
+cover.cross.singlecurve <- singlecurve_coverage(data, n.boot)
 
-plot_cov_ver(cover.cross)
+# Calculate percent from counts
+calculate_percent <- function(data) {
+  percentage <- (sum(data) / length(data))
+  percentage <- round(percentage, digits = 2)
+}
 
-# knitr::kable(cover.cross, caption = "Percentages (entire curve covered) for every leave one out fold")
+covered.curves.percent <- apply(cover.cross.singlecurve, 2, calculate_percent)
+covered.curves.percent <- data.frame(t(covered.curves.percent))
+colnames(covered.curves.percent) <- c("RCB_1", "RCB_2", "RCB_3", "Roislien_4", "Point_5")
+
+knitr::kable(covered.curves.percent, caption = "Percentages of entire covered curves")
+
+# # Leave-one subject out approach
+# # ------------------------------------------------------------------------------
+# cover.cross <- crossval_coverage(data, n.boot)
+# # colnames(cover.cross) <- c("RCB_1", "RCB_2", "RCB_3", "Roislien_4", "Point_5")
+# 
+# plot_cov_ver(cover.cross)
 ```
 
 b. (mean percentage of covered curve points)
 
 ```{r warning = FALSE, message = FALSE, eval = FALSE}
-lwr.bnd <- floa["lower", ]
-upr.bnd <- floa["upper", ]
+get_coverage_singlecurve_fraction <- function (curve, floa) {
+  # Curve is a numerical vector
+  # floa is a "matrix" "array" containing "lower" and "upper" limits
 
-# ...
+  # Calculate coverage (curve points within the percentile boundaries)
+  # ----------------------------------------------------------------------------
+  lwr.bnd <- floa["lower", ]
+  upr.bnd <- floa["upper", ]
 
-for (stride.idx in stride.indices){
-
-  curve <- subset(device.diff, strideID == stride.idx)
+  outside <- 0
 
   # Compare difference curves with upper and lower boundaries
   below.thresh <- curve$value < lwr.bnd
   above.thresh <- curve$value > upr.bnd
 
-  # Mean percentage of points outside the limits
-  inside <- below.thresh == above.thresh
-  inside.thresh.perc <- c(inside.thresh.perc,
-                          mean(sum(inside[TRUE]) / length(curve$value)))
+  points.outside <- sum(above.thresh) + sum(below.thresh)
+
+  # Divide by 101 to adjust for 101 data points
+  coverage <- 1 - (points.outside / 101)
+  coverage <- round(coverage, digits = 2)
+
+  return(coverage)
 }
 ```
 
 
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
-# Display cross validation coverages (mean fraction of the curve that is covered) across methods
-cover.cross.fraction <- crossval_coverage_fraction(data, n.boot)
+# Leave-one curve out approach
+# ------------------------------------------------------------------------------
+cover.cross.fraction.singlecurve <- singlecurve_coverage_fraction(data, n.boot)
+plot_cov_ver(cover.cross.fraction.singlecurve)
 
-plot_cov_ver(cover.cross.fraction)
+# # Leave-one subject out approach
+# # ------------------------------------------------------------------------------
+# cover.cross.fraction <- crossval_coverage_fraction(data, n.boot)
+# plot_cov_ver(cover.cross.fraction)
 ```
 
 #### Curves with nonlinear trend (constant variance)
@@ -543,21 +573,42 @@ a. (coverage of the entire curve)
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
 data <- example_data(dat = "smooth_trend", dir.data)
 
-cover.cross <- crossval_coverage(data, n.boot)
-# colnames(cover.cross) <- c("RCB_1", "RCB_2", "RCB_3", "Roislien_4", "Point_5")
+# Leave-one curve out approach
+# ------------------------------------------------------------------------------
+cover.cross.singlecurve <- singlecurve_coverage(data, n.boot)
 
-plot_cov_ver(cover.cross)
+# Calculate percent from counts
+calculate_percent <- function(data) {
+  percentage <- (sum(data) / length(data))
+  percentage <- round(percentage, digits = 2)
+}
 
-# knitr::kable(cover.cross, caption = "Percentages (entire curve covered) for every leave one out fold")
+covered.curves.percent <- apply(cover.cross.singlecurve, 2, calculate_percent)
+covered.curves.percent <- data.frame(t(covered.curves.percent))
+colnames(covered.curves.percent) <- c("RCB_1", "RCB_2", "RCB_3", "Roislien_4", "Point_5")
+
+knitr::kable(covered.curves.percent, caption = "Percentages of entire covered curves")
+
+# # Leave-one subject out approach
+# # ------------------------------------------------------------------------------
+# cover.cross <- crossval_coverage(data, n.boot)
+# # colnames(cover.cross) <- c("RCB_1", "RCB_2", "RCB_3", "Roislien_4", "Point_5")
+# 
+# plot_cov_ver(cover.cross)
 ```
 
 b. (mean percentage of covered curve points)
 
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
-# Display cross validation coverages (fraction of the curve that is covered) across methods
-cover.cross.fraction <- crossval_coverage_fraction(data, n.boot)
+# Leave-one curve out approach
+# ------------------------------------------------------------------------------
+cover.cross.fraction.singlecurve <- singlecurve_coverage_fraction(data, n.boot)
+plot_cov_ver(cover.cross.fraction.singlecurve)
 
-plot_cov_ver(cover.cross.fraction)
+# # Leave-one subject out approach
+# # ------------------------------------------------------------------------------
+# cover.cross.fraction <- crossval_coverage_fraction(data, n.boot)
+# plot_cov_ver(cover.cross.fraction)
 ```
 
 #### Curves with non-gaussian (Weibull distributed) error (no trend)
@@ -567,21 +618,42 @@ a. (coverage of the entire curve)
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
 data <- example_data(dat = "non_gaussian", dir.data)
 
-cover.cross <- crossval_coverage(data, n.boot)
-# colnames(cover.cross) <- c("RCB_1", "RCB_2", "RCB_3", "Roislien_4", "Point_5")
+# Leave-one curve out approach
+# ------------------------------------------------------------------------------
+cover.cross.singlecurve <- singlecurve_coverage(data, n.boot)
 
-plot_cov_ver(cover.cross)
+# Calculate percent from counts
+calculate_percent <- function(data) {
+  percentage <- (sum(data) / length(data))
+  percentage <- round(percentage, digits = 2)
+}
 
-# knitr::kable(cover.cross, caption = "Percentages (entire curve covered) for every leave one out fold")
+covered.curves.percent <- apply(cover.cross.singlecurve, 2, calculate_percent)
+covered.curves.percent <- data.frame(t(covered.curves.percent))
+colnames(covered.curves.percent) <- c("RCB_1", "RCB_2", "RCB_3", "Roislien_4", "Point_5")
+
+knitr::kable(covered.curves.percent, caption = "Percentages of entire covered curves")
+
+# # Leave-one subject out approach
+# # ------------------------------------------------------------------------------
+# cover.cross <- crossval_coverage(data, n.boot)
+# # colnames(cover.cross) <- c("RCB_1", "RCB_2", "RCB_3", "Roislien_4", "Point_5")
+# 
+# plot_cov_ver(cover.cross)
 ```
 
 b. (mean percentage of covered curve points)
 
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
-# Display cross validation coverages (fraction of the curve that is covered) across methods
-cover.cross.fraction <- crossval_coverage_fraction(data, n.boot)
+# Leave-one curve out approach
+# ------------------------------------------------------------------------------
+cover.cross.fraction.singlecurve <- singlecurve_coverage_fraction(data, n.boot)
+plot_cov_ver(cover.cross.fraction.singlecurve)
 
-plot_cov_ver(cover.cross.fraction)
+# # Leave-one subject out approach
+# # ------------------------------------------------------------------------------
+# cover.cross.fraction <- crossval_coverage_fraction(data, n.boot)
+# plot_cov_ver(cover.cross.fraction)
 ```
 
 #### Curves with (missing) peaks
@@ -591,21 +663,42 @@ a. (coverage of the entire curve)
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
 data <- example_data(dat = "shock", dir.data)
 
-cover.cross <- crossval_coverage(data, n.boot)
-# colnames(cover.cross) <- c("RCB_1", "RCB_2", "RCB_3", "Roislien_4", "Point_5")
+# Leave-one curve out approach
+# ------------------------------------------------------------------------------
+cover.cross.singlecurve <- singlecurve_coverage(data, n.boot)
 
-plot_cov_ver(cover.cross)
+# Calculate percent from counts
+calculate_percent <- function(data) {
+  percentage <- (sum(data) / length(data))
+  percentage <- round(percentage, digits = 2)
+}
 
-# knitr::kable(cover.cross, caption = "Percentages (entire curve covered) for every leave one out fold")
+covered.curves.percent <- apply(cover.cross.singlecurve, 2, calculate_percent)
+covered.curves.percent <- data.frame(t(covered.curves.percent))
+colnames(covered.curves.percent) <- c("RCB_1", "RCB_2", "RCB_3", "Roislien_4", "Point_5")
+
+knitr::kable(covered.curves.percent, caption = "Percentages of entire covered curves")
+
+# # Leave-one subject out approach
+# # ------------------------------------------------------------------------------
+# cover.cross <- crossval_coverage(data, n.boot)
+# # colnames(cover.cross) <- c("RCB_1", "RCB_2", "RCB_3", "Roislien_4", "Point_5")
+# 
+# plot_cov_ver(cover.cross)
 ```
 
 b. (mean percentage of covered curve points)
 
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
-# Display cross validation coverages (fraction of the curve that is covered) across methods
-cover.cross.fraction <- crossval_coverage_fraction(data, n.boot)
+# Leave-one curve out approach
+# ------------------------------------------------------------------------------
+cover.cross.fraction.singlecurve <- singlecurve_coverage_fraction(data, n.boot)
+plot_cov_ver(cover.cross.fraction.singlecurve)
 
-plot_cov_ver(cover.cross.fraction)
+# # Leave-one subject out approach
+# # ------------------------------------------------------------------------------
+# cover.cross.fraction <- crossval_coverage_fraction(data, n.boot)
+# plot_cov_ver(cover.cross.fraction)
 ```
 
 #### Curves phase shifted in x-axis direction
@@ -615,21 +708,42 @@ a. (coverage of the entire curve)
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
 data <- example_data(dat = "shift", dir.data)
 
-cover.cross <- crossval_coverage(data, n.boot)
-# colnames(cover.cross) <- c("RCB_1", "RCB_2", "RCB_3", "Roislien_4", "Point_5")
+# Leave-one curve out approach
+# ------------------------------------------------------------------------------
+cover.cross.singlecurve <- singlecurve_coverage(data, n.boot)
 
-plot_cov_ver(cover.cross)
+# Calculate percent from counts
+calculate_percent <- function(data) {
+  percentage <- (sum(data) / length(data))
+  percentage <- round(percentage, digits = 2)
+}
 
-# knitr::kable(cover.cross, caption = "Percentages (entire curve covered) for every leave one out fold")
+covered.curves.percent <- apply(cover.cross.singlecurve, 2, calculate_percent)
+covered.curves.percent <- data.frame(t(covered.curves.percent))
+colnames(covered.curves.percent) <- c("RCB_1", "RCB_2", "RCB_3", "Roislien_4", "Point_5")
+
+knitr::kable(covered.curves.percent, caption = "Percentages of entire covered curves")
+
+# # Leave-one subject out approach
+# # ------------------------------------------------------------------------------
+# cover.cross <- crossval_coverage(data, n.boot)
+# # colnames(cover.cross) <- c("RCB_1", "RCB_2", "RCB_3", "Roislien_4", "Point_5")
+# 
+# plot_cov_ver(cover.cross)
 ```
 
 b. (mean percentage of covered curve points)
 
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
-# Display cross validation coverages (fraction of the curve that is covered) across methods
-cover.cross.fraction <- crossval_coverage_fraction(data, n.boot)
+# Leave-one curve out approach
+# ------------------------------------------------------------------------------
+cover.cross.fraction.singlecurve <- singlecurve_coverage_fraction(data, n.boot)
+plot_cov_ver(cover.cross.fraction.singlecurve)
 
-plot_cov_ver(cover.cross.fraction)
+# # Leave-one subject out approach
+# # ------------------------------------------------------------------------------
+# cover.cross.fraction <- crossval_coverage_fraction(data, n.boot)
+# plot_cov_ver(cover.cross.fraction)
 ```
 
 # Discussion
