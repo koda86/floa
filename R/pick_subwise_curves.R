@@ -2,12 +2,9 @@ pick_subwise_curves <- function (data) {
 
   n.subj <- length(unique(data$subjectID))
 
-  curve.idx <- vector(mode = "numeric", length = n.subj)
-
+  curve.idx <- c()
   for (subj.idx in 1:n.subj) {
-
     if (subj.idx %in% unique(data$subjectID)) {
-
       tmp <- data[data$subjectID == subj.idx, ]
 
       curve.idx.subj <- as.numeric(sample(tmp$strideID, size = 1))
@@ -16,10 +13,8 @@ pick_subwise_curves <- function (data) {
   }
 
   curve <- data[data$strideID %in% curve.idx, ]
-
   curve0 <- subset(curve, device  == "IMU")$value
   curve0 <- matrix(curve0, ncol = length(curve0) / 100)
-
   curve1 <- subset(curve, device  == "MC")$value
   curve1 <- matrix(curve1, ncol = length(curve1) / 100)
 

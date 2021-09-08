@@ -31,6 +31,7 @@ output:
 ---
 
 ### TODO
+- Alternativtitel: Comparing different methods for constructing continuous prediction bands
 - Exemplarische Paper für die jeweiligen simulierten Datensätze raussuchen
 - Weitere synthetische Daten siehe Paper Robinson et al. (2021)
 - Evtl. simulierte Datensätze um Beispiele aus https://mjskay.github.io/ggdist/articles/lineribbon.html erweitern (insbesondere das erste Beispiel mit x-versetzten Gausskurven)!
@@ -44,6 +45,7 @@ output:
 - Begründung warum Prädiktionsintervalle und nicht Konfidenzintervalle (theoretisch könnte man beides machen; Prädiktionsintervalle scheinen mir aber eher das zu sein, was man will)
 
 ### TODO read (again)
+- https://bmcmedresmethodol.biomedcentral.com/articles/10.1186/s12874-020-01022-x
 - Robinson, Vanrenterghem, Pataky (2021) Sample size estimation for biomechanical waveforms: Current practice, recommendations and a comparison to discrete power analysis
 - Olshen et al. (1989) Gait analysis and the bootstrap
 - Curvewise point and interval summaries for tidy data frames of draws from distributions https://mjskay.github.io/ggdist/reference/curve_interval.html
@@ -54,29 +56,32 @@ output:
 
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
 library(ggplot2)
+library(boot)
+# library(fda)
+# library(funData)
 
 dir.script <- "~/floa/R"
 dir.data <- "~/floa/R/examples"
 
-source(paste0(dir.script, "/example_data.R"))
-source(paste0(dir.script, "/pick_subwise_curves.R"))
-source(paste0(dir.script, "/draw_clusters.R"))
-source(paste0(dir.script, "/functional_mean.R"))
-source(paste0(dir.script, "/functional_sd.R"))
-source(paste0(dir.script, "/boot_mean_sd.R"))
-source(paste0(dir.script, "/floa_rcb.R"))
-source(paste0(dir.script, "/floa_point.R"))
-source(paste0(dir.script, "/floa_roislien.R"))
-source(paste0(dir.script, "/plot_loa.R"))
-source(paste0(dir.script, "/get_coverage.R"))
-source(paste0(dir.script, "/get_coverage_singlecurve.R"))
-source(paste0(dir.script, "/get_coverage_fraction.R"))
-source(paste0(dir.script, "/get_coverage_singlecurve_fraction.R"))
-source(paste0(dir.script, "/crossval_coverage.R"))
-source(paste0(dir.script, "/singlecurve_coverage.R"))
-source(paste0(dir.script, "/crossval_coverage_fraction.R"))
-source(paste0(dir.script, "/singlecurve_coverage_fraction.R"))
-source(paste0(dir.script, "/plot_cov_ver.R"))
+setwd(dir.script)
+
+source("example_data.R")
+# source("fdaDelta.R")
+source("pick_subwise_curves.R")
+source("draw_clusters.R")
+source("floa_rcb.R")
+source("floa_point.R")
+source("floa_roislien.R")
+source("plot_loa.R")
+source("get_coverage.R")
+source("get_coverage_fraction.R")
+source("get_coverage_singlecurve.R")
+source("get_coverage_singlecurve_fraction.R")
+source("crossval_coverage.R")
+source("crossval_coverage_fraction.R")
+source("singlecurve_coverage.R")
+source("singlecurve_coverage_fraction.R")
+source("plot_cov_ver.R")
 ```
 
 # Introduction
@@ -144,6 +149,9 @@ The principal object of this paper was to demonstrate a method for constructing 
 
 We use synthetic time series data sets containing typical curves of biomechanical measurement systems to illustrate the method and compare the resulting prediction bands to pointwise Bland & Altman parameters and LoA constructed similar to the method described in Roislien et al. (2012). For model validation, the respective LoA are cross validated using a leave-one-out approach.
 
+<!-- Aus Bland and Altman (2007): If each pair of X and Y measurements is treated as if from a different individual the structure of the data is ignored and incorrect estimates are  -->
+<!-- Ähnliche Formulierung aus https://bmcmedresmethodol.biomedcentral.com/articles/10.1186/s12874-020-01022-x : In the repeated measures case, applying the standard limits of agreement to the data will result in limits that are too narrow because they do not take into account the reduction in variability that arises when working with averages of readings.  -->
+
 # Methods
 
 ## Limits of agreement methods
@@ -175,7 +183,6 @@ FLoA derived by different methods are compared
 # * Smooth wave data with nonlinear trend (constant variance): "smooth_trend"
 # * Data with non-gaussian (Weibull distributed) error (no trend): "non_gaussian"
 # * Data with shock peaks (no bias, no trend): "shock"
-
 data <- example_data(dat = "smooth", dir.data)
 
 # Mean and SD are calculated across all strides (and subjects).

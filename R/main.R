@@ -1,4 +1,5 @@
 # Main script Functional Limits of Agreement (FLoA)
+# ------------------------------------------------------------------------------
 #
 # FLoA derived by different methods are compared
 #   * Randomized Cluster Bootstrap      (floa.rcb)
@@ -10,34 +11,33 @@
 # (see subsection data sets)
 #
 # TODO:
-#   + Leave-one-curve out implementieren (zusätzlich zu leave one subject out)
-#   + Beispieldaten Robinson et al. (2021) hinzufuegen
-#   + Rename n.strides to n.curves()
-#   + Zeitlichen Versatz (x-Achse) in example_data() einbringen (siehe Grafiken Lenhoff)
-#   + Check leave-one-out implementation
-#   + Programming challenge: Vectorize (or at least preallocate as much as possible)
-#   + Implementieren FDA
+#   + Pointwise LoA korrigieren. (ez)ANOVA Ansatz (B & A, 2007)
+#   + 95% coverage implemetieren
+#   + Reduce number of methods to 3 or 4
+#   + (Implementieren FDA)
 #   + Preallocation in floa_rcb()
-#   + Quantile: Über die gesamte Verteilung oder die "Ausreisser-Quantile" einzelner/extremer Probanden
-#     + quantile() function: Bias correction useful/necessary?
 #   + Implement balanced data in floa_rcb.R
 #
 # TODO READ:
+#   + B&A, 2007
+#   + https://bmcmedresmethodol.biomedcentral.com/articles/10.1186/s12874-020-01022-x
 #   + Ratkowsky - Handbook of nonlinear regression models
+#   + Robinson et al. (2021)
 #   + https://cran.r-project.org/web/packages/smooth/vignettes/simulate.html
 #
 # TODO STYLE:
-#   + Make variable names more universal (e.g. "device.1" instead "mc")
 #   + Add namespaces (package names ::)
+#   + Vectorize wherever possible
+#   + Make variable names more universal (e.g. "device.1" instead "mc")
+#   + Rename n.strides to n.curves()
 #   + No line between header and body in loops
 # ******************************************************************************
-
-# library(fda)
-# library(funData)
-
 rm(list = ls())
 
 library(ggplot2)
+library(boot)
+# library(fda)
+# library(funData)
 
 dir.script <- "~/floa/R"
 dir.data <- "~/floa/R/examples"
@@ -45,12 +45,9 @@ dir.data <- "~/floa/R/examples"
 setwd(dir.script)
 
 source("example_data.R")
-source("fdaDelta.R")
+# source("fdaDelta.R")
 source("pick_subwise_curves.R")
 source("draw_clusters.R")
-source("functional_mean.R")
-source("functional_sd.R")
-source("boot_mean_sd.R")
 source("floa_rcb.R")
 source("floa_point.R")
 source("floa_roislien.R")
@@ -67,7 +64,6 @@ source("plot_cov_ver.R")
 
 
 # ********************************* Data sets **********************************
-
 # Wrapper function for example data sets. Function arguments:
 #
 # (* Empirical validation data: "imu_mc")
@@ -75,13 +71,12 @@ source("plot_cov_ver.R")
 # * Smooth wave data with nonlinear trend (constant variance): "smooth_trend"
 # * Data with non-gaussian (Weibull distributed) error (no trend): "non_gaussian"
 # * Data with shock peaks (no bias, no trend): "shock"
-data <- example_data(dat = "shift", dir.data)
+# * Phase shifted data (x-axis direction): "shift"
+data <- example_data(dat = "non_gaussian", dir.data)
 
 # Plot data --------------------------------------------------------------------
-
 # uncommment when subject differences need to be plotted
 # data$subjectID <- as.factor(data$subjectID)
-
 data.single.mc <- subset(data, device == "MC")
 data.single.imu <- subset(data, device == "IMU")
 
@@ -98,7 +93,6 @@ PLOT <- ggplot(data = data.single.mc, aes(x = frame, y = value, group = strideID
 
 PLOT
 
-
 # # ****** Approximate time series (differences) using Fourier functions *********
 #
 # # Number of basic (Fourier) functions
@@ -110,8 +104,7 @@ PLOT
 
 
 # ****************************** Calculate FLoA ********************************
-
-n.boot <- 100
+n.boot <- 400
 
 # Randomized Cluster Bootstrap -------------------------------------------------
 #
@@ -127,26 +120,18 @@ n.boot <- 100
 # v3 : Fetch a SINGLE random stride from all strides
 # v4 : Roislien approach (Get one random stride from each subject ONCE and boot-
 #      strap the resulting sample (of length (n=length(subjects))
-# ------------------------------------------------------------------------------
-
 floa <- floa_rcb(data, n.boot, ver = "v2")
 
 # Pointwise LoA ----------------------------------------------------------------
-
 # Mean + SD are calculated across all strides/subjects using linear mixed models
 floa.point <- floa_point(data)
 
 
 # ********************************* Plot data **********************************
-
-# Select limits of agreement method and central tendency parameter
-plot_loa(data, floa, central.tendency = "mean")
-
-# floa.point <- data.frame(t(floa.point))
+plot_loa(data, floa = floa, central.tendency = "mean")
 
 
 # ********************************* Coverage ***********************************
-
 # Calculate coverage (entire curves within the limits of agreement)
 coverage <- get_coverage(data, floa.point) # Select floa method: floa or floa.point
 
@@ -154,7 +139,6 @@ print(coverage)
 
 
 # ***************************** Cross validation *******************************
-
 # Currently, two different methods for estimating the uncertainty in the achieved
 # coverage are implemented:
 # 1. Leave all curves of a single subject out
@@ -173,9 +157,7 @@ print(coverage)
 # Output:
 #   * Coverage levels [%] across n=length(subjectID) iterations
 # ------------------------------------------------------------------------------
-
-# 1. Leave-one subject out
-# ------------------------------------------------------------------------------
+# 1. Leave-one subject out -----------------------------------------------------
 cover.cross.subject <- crossval_coverage(data, n.boot)
 
 # Display cross validation coverages (entire curve covered) across methods
@@ -186,12 +168,11 @@ cover.cross.fraction.subject <- crossval_coverage_fraction(data, n.boot)
 
 plot_cov_ver(cover.cross.fraction.subject)
 
-# 2. Leave-one curve out
-# ------------------------------------------------------------------------------
+# 2. Leave-one curve out -------------------------------------------------------
 cover.cross.singlecurve <- singlecurve_coverage(data, n.boot)
 
-# Calculate percent from counts
 calculate_percent <- function(data) {
+  # Calculate percent from counts
   percentage <- (sum(data) / length(data))
   percentage <- round(percentage, digits = 2)
 }

@@ -1,17 +1,22 @@
-plot_loa <- function (data, method.loa, central.tendency) {
+plot_loa <- function (data, floa, central.tendency) {
+  # plot_loa() function arguments:
+  # 1. floa: Limits of agreement
+  # + a. floa (rcb method)
+  # + b. floa.point # requires: data.frame(t(floa.point))
+  # 2. central.tendency: Central tendency parameter
+  # + a. mean
+  # + b. median
 
   # floa variables need to be arranged in columns
   if (dim(floa)[1] < dim(floa)[2]) {
     floa <- t(floa)
   }
 
-  # floa need to be a data.frame
   if (!is.data.frame(floa)) {
     floa <- as.data.frame(floa)
   }
 
   # Prepare data for ggploting -------------------------------------------------
-
   device1 <- data.frame(subset(data, device == "IMU")$value)
   device2 <- data.frame(subset(data, device == "MC")$value)
 

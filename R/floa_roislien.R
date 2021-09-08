@@ -1,33 +1,28 @@
-floa_roislien <- function(data, n.boot) {
+floa_roislien <- function(data) {
 
   # ****************************************************************************
   # Functional limits of agreement according to Roislien et al. (2012)
   #
   # In Roislien et al., FLoA are calculated as 95% CI.
   # ****************************************************************************
-
-  # Get one random stride from each subject ONCE and bootstrap the resulting
-  # sample (of length (n=length(subjects))
-  # ----------------------------------------------------------------------------
-
-  # source("pick_subwise_curves.R")
-  # source("functional_mean.R")
-  # source("functional_sd.R")
-  # source("boot_mean_sd.R")
-
-  # Bootstrap to get 95% CI FLoA -----------------------------------------------
-  func.boot <- boot_mean_sd(data, n.boot) # data need to have dimension [101, x]
+  diff.curves <- pick_subwise_curves(data)
 
   # Calculate Limits of Agreement ----------------------------------------------
-  func.mean.boot <- functional_mean(func.boot) # mean of bootstrapped distribution
-  func.sd.boot <- functional_sd(func.boot)
+  func.mean <- apply(diff.curves, 1, mean)
+  func.sd <- apply(diff.curves, 1, sd)
 
   # Get the same structure as returned by the other methods (i. e. floa_rcb)
-  floa.roislien <- rbind(func.mean.boot + 1.96 * func.sd.boot,
-                         func.mean.boot,
-                         func.mean.boot - 1.96 * func.sd.boot)
+  floa.roislien <- rbind(func.mean + 1.96 * func.sd,
+                         func.mean,
+                         func.mean - 1.96 * func.sd)
 
-  row.names(floa.roislien) <- c("upper", "mean", "lower")
+  rownames(floa.roislien) <- c("upper", "mean", "lower")
+
+  # # Plausibility check
+  # plot(diff.curves[, 1], type="l", ylim = c(-5, 5))
+  # apply(diff.curves, 2, lines, type = "l")
+  # lines(floa.roislien["upper", ], col = "red", size = 3)
+  # lines(floa.roislien["lower", ], col = "red", size = 3)
 
   return(floa.roislien)
 }

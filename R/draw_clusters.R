@@ -10,9 +10,6 @@ draw_clusters <- function(data, ver) { # fd.basis
   # v2   : One stride per subject
   # v3   : Fetch a single stride only from all available strides
   # ----------------------------------------------------------------------------
-
-  # source("pick_subwise_curves.R")
-
   if (ver == "v1") {
 
     # Strides are selected from the entire set of curves (NOT! one curve per subject)
@@ -79,5 +76,5 @@ draw_clusters <- function(data, ver) { # fd.basis
     diff.curves <- curve0 - curve1
   }
 
-  return(diff.curves) # diff.curve.samp # cluster.fdata
+  return(diff.curves)
 }

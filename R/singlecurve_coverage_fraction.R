@@ -16,6 +16,14 @@ singlecurve_coverage_fraction <- function (data, n.boot) {
   # v5 : Pointwise B&A limits (SD from linear mixed effects model)
   # ####################################################################
 
+  # Convert continuous strideID to identical strideID's for repeated measures across subjects
+  # Needed for floa_point()
+  n.subj <- length(unique(data$subjectID))
+  n.devices <- length(unique(data$device))
+  strides.per.subject <- length(unique(data$strideID)) / length(unique(data$subjectID))
+  n.frames <- length(unique(data$frame))
+  data$strideID.rep <- rep(1:strides.per.subject, each = n.frames * n.devices, times = n.subj)
+
   n.curves <- unique(data$strideID)
 
   cover.cross.rcb.v1   <- vector(mode = "list", length = length(n.curves))
@@ -23,32 +31,22 @@ singlecurve_coverage_fraction <- function (data, n.boot) {
   cover.cross.rcb.v3   <- vector(mode = "list", length = length(n.curves))
   cover.cross.point    <- vector(mode = "list", length = length(n.curves))
   cover.cross.roislien <- vector(mode = "list", length = length(n.curves))
-
   for (curve.idx in n.curves) {
-
-    # Calculate FLoA with one curve left out
-    # --------------------------------------------------------------------
+    # Calculate FLoA with one curve left out -----------------------------
     data.one.out <- subset(data, strideID != curve.idx)
 
     floa.point    <- floa_point(data.one.out)
     floa.v1       <- floa_rcb(data.one.out, n.boot, ver = "v1")
     floa.v2       <- floa_rcb(data.one.out, n.boot, ver = "v2")
     floa.v3       <- floa_rcb(data.one.out, n.boot, ver = "v3")
-    floa.roislien <- floa_roislien(data.one.out, n.boot)
+    floa.roislien <- floa_roislien(data.one.out)
 
-    # Get the difference curve
-    # ----------------------------------------------------------------------------
+    # Plot left out curve vs. various FLoA methods -----------------------
     data.subset <- subset(data, strideID == curve.idx)
 
     device1 <- data.frame(subset(data.subset, device == "IMU"))
     device2 <- data.frame(subset(data.subset, device == "MC"))
-
     device.diff <- device1$value - device2$value
-
-    # plot(floa.v1["mean", ], type = "l", col = "red", ylim = c(-5, 5))
-    # lines(floa.v1["upper", ], col = "red")
-    # lines(floa.v1["lower", ], col = "red")
-    # lines(device.diff$value)
 
     # Get coverage for the left out (difference) curve
     # --------------------------------------------------------------------
