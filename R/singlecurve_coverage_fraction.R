@@ -26,7 +26,7 @@ singlecurve_coverage_fraction <- function (data, n.boot) {
 
   n.curves <- unique(data$strideID)
 
-  cover.cross.rcb.v1   <- vector(mode = "list", length = length(n.curves))
+  # cover.cross.rcb.v1   <- vector(mode = "list", length = length(n.curves))
   cover.cross.rcb.v2   <- vector(mode = "list", length = length(n.curves))
   cover.cross.rcb.v3   <- vector(mode = "list", length = length(n.curves))
   cover.cross.point    <- vector(mode = "list", length = length(n.curves))
@@ -36,7 +36,7 @@ singlecurve_coverage_fraction <- function (data, n.boot) {
     data.one.out <- subset(data, strideID != curve.idx)
 
     floa.point    <- floa_point(data.one.out)
-    floa.v1       <- floa_rcb(data.one.out, n.boot, ver = "v1")
+    # floa.v1       <- floa_rcb(data.one.out, n.boot, ver = "v1")
     floa.v2       <- floa_rcb(data.one.out, n.boot, ver = "v2")
     floa.v3       <- floa_rcb(data.one.out, n.boot, ver = "v3")
     floa.roislien <- floa_roislien(data.one.out)
@@ -50,19 +50,20 @@ singlecurve_coverage_fraction <- function (data, n.boot) {
 
     # Get coverage for the left out (difference) curve
     # --------------------------------------------------------------------
-    cover.cross.rcb.v1[curve.idx]   <- get_coverage_singlecurve_fraction(device.diff, floa.v1)
+    # cover.cross.rcb.v1[curve.idx]   <- get_coverage_singlecurve_fraction(device.diff, floa.v1)
     cover.cross.rcb.v2[curve.idx]   <- get_coverage_singlecurve_fraction(device.diff, floa.v2)
     cover.cross.rcb.v3[curve.idx]   <- get_coverage_singlecurve_fraction(device.diff, floa.v3)
     cover.cross.roislien[curve.idx] <- get_coverage_singlecurve_fraction(device.diff, floa.roislien)
     cover.cross.point[curve.idx]    <- get_coverage_singlecurve_fraction(device.diff, floa.point)
   }
 
-  cover.cross <- cbind(unlist(cover.cross.rcb.v1),
-                       unlist(cover.cross.rcb.v2),
-                       unlist(cover.cross.rcb.v3),
-                       unlist(cover.cross.roislien),
-                       unlist(cover.cross.point)
-                       )
+  cover.cross <- cbind(
+                      # unlist(cover.cross.rcb.v1),
+                      unlist(cover.cross.rcb.v2),
+                      unlist(cover.cross.rcb.v3),
+                      unlist(cover.cross.roislien),
+                      unlist(cover.cross.point)
+                      )
 
   return(cover.cross)
 }

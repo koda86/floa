@@ -16,7 +16,7 @@ singlecurve_coverage <- function (data, n.boot) {
   # ####################################################################
   n.curves <- unique(data$strideID)
 
-  cover.cross.rcb.v1   <- vector(mode = "list", length = length(n.curves))
+  # cover.cross.rcb.v1   <- vector(mode = "list", length = length(n.curves))
   cover.cross.rcb.v2   <- vector(mode = "list", length = length(n.curves))
   cover.cross.rcb.v3   <- vector(mode = "list", length = length(n.curves))
   cover.cross.point    <- vector(mode = "list", length = length(n.curves))
@@ -26,7 +26,7 @@ singlecurve_coverage <- function (data, n.boot) {
     data.one.out <- subset(data, strideID != curve.idx)
 
     floa.point    <- floa_point(data.one.out)
-    floa.v1       <- floa_rcb(data.one.out, n.boot, ver = "v1")
+    # floa.v1       <- floa_rcb(data.one.out, n.boot, ver = "v1")
     floa.v2       <- floa_rcb(data.one.out, n.boot, ver = "v2")
     floa.v3       <- floa_rcb(data.one.out, n.boot, ver = "v3")
     floa.roislien <- floa_roislien(data.one.out)
@@ -40,8 +40,8 @@ singlecurve_coverage <- function (data, n.boot) {
 
     floa.all <- data.frame(device.diff)
     floa.all$frame <- seq(0, 100)
-    floa.all$floa.v1.upper <- floa.v1["upper", ]
-    floa.all$floa.v1.lower <- floa.v1["lower", ]
+    # floa.all$floa.v1.upper <- floa.v1["upper", ]
+    # floa.all$floa.v1.lower <- floa.v1["lower", ]
     floa.all$floa.v2.upper <- floa.v2["upper", ]
     floa.all$floa.v2.lower <- floa.v2["lower", ]
     floa.all$floa.v3.upper <- floa.v3["upper", ]
@@ -56,12 +56,12 @@ singlecurve_coverage <- function (data, n.boot) {
     # # When more variables are used and multiple lines are drawn, the grouping for lines is usually done by variable.
     # PLOT.DIFF <- ggplot(data = floa.all, aes(x = frame, y = device.diff)) +
     #   geom_line() +
-    #   geom_line(aes(x = seq(0, 100), y = floa.v1.upper, col = "red", group = 1),
-    #             linetype = "solid",
-    #             colour = "red") +
-    #   geom_line(aes(x = seq(0, 100), y = floa.v1.lower, col = "red", group = 1),
-    #             linetype = "solid",
-    #             colour = "red") +
+    #   # geom_line(aes(x = seq(0, 100), y = floa.v1.upper, col = "red", group = 1),
+    #   #           linetype = "solid",
+    #   #           colour = "red") +
+    #   # geom_line(aes(x = seq(0, 100), y = floa.v1.lower, col = "red", group = 1),
+    #   #           linetype = "solid",
+    #   #           colour = "red") +
     #   geom_line(aes(x = seq(0, 100), y = floa.roislien.upper, col = "red", group = 1),
     #             linetype = "twodash",
     #             colour = "red") +
@@ -83,22 +83,23 @@ singlecurve_coverage <- function (data, n.boot) {
     #         axis.title.y = element_text(size = 17),
     #         legend.position = "none")
     #
-    # ggsave(paste0("~/Desktop/tmp/floa_swap/non_gaussian_new/curve", curve.idx, ".png"))
+    # ggsave(paste0("~/Desktop/tmp/floa_swap/shift/curve", curve.idx, ".png"))
 
     # Get coverage for the left out (difference) curve -------------------
-    cover.cross.rcb.v1[curve.idx]   <- get_coverage_singlecurve(device.diff, floa.v1)
+    # cover.cross.rcb.v1[curve.idx]   <- get_coverage_singlecurve(device.diff, floa.v1)
     cover.cross.rcb.v2[curve.idx]   <- get_coverage_singlecurve(device.diff, floa.v2)
     cover.cross.rcb.v3[curve.idx]   <- get_coverage_singlecurve(device.diff, floa.v3)
     cover.cross.roislien[curve.idx] <- get_coverage_singlecurve(device.diff, floa.roislien)
     cover.cross.point[curve.idx]    <- get_coverage_singlecurve(device.diff, floa.point)
   }
 
-  cover.cross <- cbind(unlist(cover.cross.rcb.v1),
-                       unlist(cover.cross.rcb.v2),
-                       unlist(cover.cross.rcb.v3),
-                       unlist(cover.cross.roislien),
-                       unlist(cover.cross.point)
-  )
+  cover.cross <- cbind(
+                      # unlist(cover.cross.rcb.v1),
+                      unlist(cover.cross.rcb.v2),
+                      unlist(cover.cross.rcb.v3),
+                      unlist(cover.cross.roislien),
+                      unlist(cover.cross.point)
+                      )
 
   return(cover.cross)
 }

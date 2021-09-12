@@ -11,9 +11,10 @@
 # (see subsection data sets)
 #
 # TODO:
-#   + Pointwise LoA korrigieren. (ez)ANOVA Ansatz (B & A, 2007)
-#   + 95% coverage implemetieren
-#   + Reduce number of methods to 3 or 4
+#   + - Punktweise LoA wasserdicht machen (Parker et al., 2020) (ez)ANOVA Ansatz (B & A, 2007)
+#   + Wie lassen sich (potenziell) zu weite LoA quantifizieren (Roislien!?)? Estimation uncertainty in Roislien is probably a lot higher
+#   + mean or median for floa.rcb?
+#   + 95% coverage implementieren
 #   + (Implementieren FDA)
 #   + Preallocation in floa_rcb()
 #   + Implement balanced data in floa_rcb.R
@@ -61,7 +62,7 @@ source("crossval_coverage_fraction.R")
 source("singlecurve_coverage.R")
 source("singlecurve_coverage_fraction.R")
 source("plot_cov_ver.R")
-
+source("estimate_uncertainty_loa.R")
 
 # ********************************* Data sets **********************************
 # Wrapper function for example data sets. Function arguments:
@@ -72,7 +73,7 @@ source("plot_cov_ver.R")
 # * Data with non-gaussian (Weibull distributed) error (no trend): "non_gaussian"
 # * Data with shock peaks (no bias, no trend): "shock"
 # * Phase shifted data (x-axis direction): "shift"
-data <- example_data(dat = "non_gaussian", dir.data)
+data <- example_data(dat = "shift", dir.data)
 
 # Plot data --------------------------------------------------------------------
 # uncommment when subject differences need to be plotted
@@ -134,7 +135,6 @@ plot_loa(data, floa = floa, central.tendency = "mean")
 # ********************************* Coverage ***********************************
 # Calculate coverage (entire curves within the limits of agreement)
 coverage <- get_coverage(data, floa.point) # Select floa method: floa or floa.point
-
 print(coverage)
 
 
