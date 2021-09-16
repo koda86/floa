@@ -11,7 +11,7 @@
 # (see subsection data sets)
 #
 # TODO:
-#   + - Punktweise LoA wasserdicht machen (Parker et al., 2020) (ez)ANOVA Ansatz (B & A, 2007)
+#   + Punktweise LoA wasserdicht machen (Parker et al., 2020) (ez)ANOVA Ansatz (B & A, 2007)
 #   + Wie lassen sich (potenziell) zu weite LoA quantifizieren (Roislien!?)? Estimation uncertainty in Roislien is probably a lot higher
 #   + mean or median for floa.rcb?
 #   + 95% coverage implementieren
@@ -73,7 +73,7 @@ source("estimate_uncertainty_loa.R")
 # * Data with non-gaussian (Weibull distributed) error (no trend): "non_gaussian"
 # * Data with shock peaks (no bias, no trend): "shock"
 # * Phase shifted data (x-axis direction): "shift"
-data <- example_data(dat = "shift", dir.data)
+data <- example_data(dat = "smooth", dir.data)
 
 # Plot data --------------------------------------------------------------------
 # uncommment when subject differences need to be plotted
