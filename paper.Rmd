@@ -298,15 +298,16 @@ data <- example_data(dat = "smooth", dir.data)
 data.single.mc <- subset(data, device == "MC")
 data.single.imu <- subset(data, device == "IMU")
 
-PLOT <- ggplot(data = data.single.mc, aes(x = frame, y = value, group = strideID)) + # , colour = subjectID
-  geom_line(alpha = 0.7) +
-  geom_line(data = data.single.imu, aes(x = frame, y = value, group = strideID, col = "red"), alpha = 0.3) + #, colour = subjectID
-  labs(x = "Time-normalized signal [%]", y = "Difference") +
+PLOT <- ggplot(data = data.single.mc, aes(x = frame, y = value, group = strideID)) +
+  geom_line() +
+  scale_color_grey(start = 0.6, end = 0.9) +
+  geom_line(data = data.single.imu, aes(x = frame, y = value, group = strideID, colour = as.factor(subjectID)), alpha = 0.3) +
+  labs(x = "Time-normalized signal [%]", y = "Signal value") +
   theme_minimal() +
   theme(axis.text.x = element_text(size = 20),
-        axis.title.x = element_text(size = 22),
+        axis.title.x = element_text(size = 18),
         axis.text.y = element_text(size = 20),
-        axis.title.y = element_text(size = 22),
+        axis.title.y = element_text(size = 18),
         legend.position = "none")
 
 PLOT
@@ -320,15 +321,16 @@ data <- example_data(dat = "smooth_trend", dir.data)
 data.single.mc <- subset(data, device == "MC")
 data.single.imu <- subset(data, device == "IMU")
 
-PLOT <- ggplot(data = data.single.mc, aes(x = frame, y = value, group = strideID)) + # , colour = subjectID
-  geom_line(alpha = 0.7) +
-  geom_line(data = data.single.imu, aes(x = frame, y = value, group = strideID, col = "red"), alpha = 0.3) + #, colour = subjectID
-  labs(x = "Time-normalized signal [%]", y = "Difference") +
+PLOT <- ggplot(data = data.single.mc, aes(x = frame, y = value, group = strideID)) +
+  geom_line() +
+  scale_color_grey(start = 0.6, end = 0.9) +
+  geom_line(data = data.single.imu, aes(x = frame, y = value, group = strideID, colour = as.factor(subjectID)), alpha = 0.3) +
+  labs(x = "Time-normalized signal [%]", y = "Signal value") +
   theme_minimal() +
   theme(axis.text.x = element_text(size = 20),
-        axis.title.x = element_text(size = 22),
+        axis.title.x = element_text(size = 18),
         axis.text.y = element_text(size = 20),
-        axis.title.y = element_text(size = 22),
+        axis.title.y = element_text(size = 18),
         legend.position = "none")
 
 PLOT
@@ -344,15 +346,16 @@ data <- example_data(dat = "non_gaussian", dir.data)
 data.single.mc <- subset(data, device == "MC")
 data.single.imu <- subset(data, device == "IMU")
 
-PLOT <- ggplot(data = data.single.mc, aes(x = frame, y = value, group = strideID)) + # , colour = subjectID
-  geom_line(alpha = 0.7) +
-  geom_line(data = data.single.imu, aes(x = frame, y = value, group = strideID, col = "red"), alpha = 0.3) + #, colour = subjectID
-  labs(x = "Time-normalized signal [%]", y = "Difference") +
+PLOT <- ggplot(data = data.single.mc, aes(x = frame, y = value, group = strideID)) +
+  geom_line() +
+  scale_color_grey(start = 0.6, end = 0.9) +
+  geom_line(data = data.single.imu, aes(x = frame, y = value, group = strideID, colour = as.factor(subjectID)), alpha = 0.3) +
+  labs(x = "Time-normalized signal [%]", y = "Signal value") +
   theme_minimal() +
   theme(axis.text.x = element_text(size = 20),
-        axis.title.x = element_text(size = 22),
+        axis.title.x = element_text(size = 18),
         axis.text.y = element_text(size = 20),
-        axis.title.y = element_text(size = 22),
+        axis.title.y = element_text(size = 18),
         legend.position = "none")
 
 PLOT
@@ -366,15 +369,16 @@ data <- example_data(dat = "shift", dir.data)
 data.single.mc <- subset(data, device == "MC")
 data.single.imu <- subset(data, device == "IMU")
 
-PLOT <- ggplot(data = data.single.mc, aes(x = frame, y = value, group = strideID)) + # , colour = subjectID
-  geom_line(alpha = 0.7) +
-  geom_line(data = data.single.imu, aes(x = frame, y = value, group = strideID, col = "red"), alpha = 0.3) + #, colour = subjectID
-  labs(x = "Time-normalized signal [%]", y = "Difference") +
+PLOT <- ggplot(data = data.single.mc, aes(x = frame, y = value, group = strideID)) +
+  geom_line() +
+  scale_color_grey(start = 0.6, end = 0.9) +
+  geom_line(data = data.single.imu, aes(x = frame, y = value, group = strideID, colour = as.factor(subjectID)), alpha = 0.3) +
+  labs(x = "Time-normalized signal [%]", y = "Signal value") +
   theme_minimal() +
   theme(axis.text.x = element_text(size = 20),
-        axis.title.x = element_text(size = 22),
+        axis.title.x = element_text(size = 18),
         axis.text.y = element_text(size = 20),
-        axis.title.y = element_text(size = 22),
+        axis.title.y = element_text(size = 18),
         legend.position = "none")
 
 PLOT
