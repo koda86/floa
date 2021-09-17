@@ -32,6 +32,8 @@ plot_loa <- function (data, floa, central.tendency) {
   device.diff$strideID <- as.factor(rep(1:n.strides, each = 101)) # as.factor(seq(0, n.strides, by = n.frames)) # as.factor(rep(seq(1, strides.per.subject), each = 101))
   device.diff$subjectID <- as.factor(rep(1:n.subjects, each = strides.per.subject * n.frames))
 
+  floa.point <- data.frame(t(floa_point(data)))
+
 
   # Actually plot the prepared data --------------------------------------------
   if (central.tendency == "median") {
@@ -76,7 +78,7 @@ plot_loa <- function (data, floa, central.tendency) {
     # For line graphs, the data points must be grouped so that it knows which points to connect.
     # In this case, it is simple -- all points should be connected, so group=1.
     # When more variables are used and multiple lines are drawn, the grouping for lines is usually done by variable.
-    PLOT.DIFF <- ggplot(data = device.diff, aes(x = frame, y = value, color = subjectID, group = strideID)) +
+    PLOT.DIFF <- ggplot(data = device.diff, aes(x = frame, y = value)) + # , color = subjectID, group = strideID
       geom_line() +
       scale_color_grey(start = 0.8, end = 0.2) +
       # Plot lower limit of agreement
@@ -97,6 +99,8 @@ plot_loa <- function (data, floa, central.tendency) {
                 linetype = "solid",
                 size = 3,
                 colour = "red") +
+      geom_line(data = floa.point, aes(x = seq(0, 100), y = upper)) +
+      geom_line(data = floa.point, aes(x = seq(0, 100), y = lower)) +
       scale_y_continuous(limits = c(min(device.diff$value), max(device.diff$value))) +
       labs(x = "Time-normalized signal [%]", y = "Difference") +
       theme_minimal() +

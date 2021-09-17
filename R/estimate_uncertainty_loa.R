@@ -18,11 +18,11 @@ estimate_uncertainty_loa <- function (data, n.boot) {
     floa.v3.lower[[i]] <- floa.v3["lower", ]
     floa.roislien.upper[[i]] <- floa.roislien["upper", ]
     floa.roislien.lower[[i]] <- floa.roislien["lower", ]
-
-    # Collect the differences for every bootstrap iteration
-    # (Need for plotting)
-    # ...
   }
+
+  # Pointwise LoA return the same estimate every time (all curves are included)
+  # (They are outside the loop for this reason)
+  floa.point <- data.frame(t(floa_point(data)))
 
   floa.v2.upper.unlist <- matrix(unlist(floa.v2.upper), 101)
   floa.v2.lower.unlist <- matrix(unlist(floa.v2.lower), 101)
@@ -131,6 +131,8 @@ estimate_uncertainty_loa <- function (data, n.boot) {
                     ymax = floa.v2.lower.97.5),
                     fill = "red",
                     alpha = 0.3) +
+    geom_line(data = floa.point, mapping = aes(x = seq(0, 100), y = upper)) +
+    geom_line(data = floa.point, mapping = aes(x = seq(0, 100), y = lower)) +
     theme_minimal() +
     theme(axis.text.x = element_text(size = 20),
           axis.title.x = element_text(size = 22),

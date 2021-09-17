@@ -10,15 +10,19 @@ draw_clusters <- function(data, ver) { # fd.basis
   # v2   : One stride per subject
   # v3   : Fetch a single stride only from all available strides
   # ----------------------------------------------------------------------------
-  if (ver == "v1") {
 
-    # Strides are selected from the entire set of curves (NOT! one curve per subject)
+  if (ver == "v2") {
+
+    # One stride per subject
     # ----------------------------------------------------------------------------
-    # Pick n=length(subjects) random strides
-    curve.idx <- as.numeric(sample(data$strideID,
-                                   length(unique(data$subjectID)),
-                                   replace = TRUE))
+    diff.curves <- pick_subwise_curves(data)
+  }
 
+  if (ver == "v3") {
+
+    # Fetch a single stride only (from the entire set of curves)
+    # ----------------------------------------------------------------------------
+    curve.idx <- sample(unique(data$strideID), size = 1)
     curve <- data[data$strideID %in% curve.idx, ]
 
     curve0 <- subset(curve, device  == "IMU")$value
@@ -29,6 +33,10 @@ draw_clusters <- function(data, ver) { # fd.basis
 
     diff.curves <- curve0 - curve1
   }
+
+  return(diff.curves)
+}
+
 
   # if (ver == "v1.1") {
 
@@ -52,29 +60,3 @@ draw_clusters <- function(data, ver) { # fd.basis
   # # cluster.fdata <- fdata(diff_curve.fd)
   # }
 
-  if (ver == "v2") {
-
-    # One stride per subject
-    # ----------------------------------------------------------------------------
-    diff.curves <- pick_subwise_curves(data)
-  }
-
-  if (ver == "v3") {
-
-    # Fetch a single stride only (from the entire set of curves)
-    # ----------------------------------------------------------------------------
-    curve.idx <- sample(unique(data$strideID), size = 1)
-
-    curve <- data[data$strideID %in% curve.idx, ]
-
-    curve0 <- subset(curve, device  == "IMU")$value
-    curve0 <- matrix(curve0, ncol = length(curve0) / 100)
-
-    curve1 <- subset(curve, device  == "MC")$value
-    curve1 <- matrix(curve1, ncol = length(curve1) / 100)
-
-    diff.curves <- curve0 - curve1
-  }
-
-  return(diff.curves)
-}

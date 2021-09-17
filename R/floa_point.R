@@ -1,8 +1,9 @@
 floa_point <- function(data) {
 
-  # ----------------------------------------------------------------------------
+  # ****************************************************************************
   #  Pointwise FLoA (FLoA_Point) calculated using linear mixed effects models
   # ----------------------------------------------------------------------------
+  #
   # Implemetation inspired by Parker et al. (2020) Using multiple agreement methods for
   # continuous repeated measures data: a tutorial for practitioners
   # https://bmcmedresmethodol.biomedcentral.com/articles/10.1186/s12874-020-01022-x
@@ -14,8 +15,7 @@ floa_point <- function(data) {
   # reasons outlined in Brown (2015). In particular, (i) missing or unbalanced
   # data poses fewer problems for analysis, and (ii) inference can be made based
   # on a wider population of patients
-  library(lme4)
-
+  # ****************************************************************************
   n.frames <- length(unique(data$frame))
 
   mean.diff <- vector(mode = "list", length = n.frames)
@@ -23,24 +23,19 @@ floa_point <- function(data) {
   for (frame.idx in 0:100){
     data.by.frame <- subset(data, frame == frame.idx)
 
-    # Get within and between subject standard deviation from framewise linear
-    # mixed effects models
-    LMEM <- lmer(value ~ device + (1|subjectID), #  (1 + subjectID|strideID.rep)
-                 data = data.by.frame)
+    # Get variance from ANOVA (see Bland & Altman, 2007)
+    # Prepare data for ANOVA
+    data.by.frame.wide <- reshape2::dcast(data = data.by.frame, subjectID + strideID ~ device, value.var = "value")
+    data.by.frame.wide$device.diff <- data.by.frame.wide$IMU - data.by.frame.wide$MC
+    data.by.frame.wide$subjectID <- as.factor(data.by.frame.wide$subjectID)
 
-    mean.diff[[frame.idx + 1]] <- mean(data.by.frame$value[data.by.frame$device == "IMU"] - data.by.frame$value[data.by.frame$device == "MC"])
+    LMEM.2 <- aov(device.diff ~ subjectID, data = data.by.frame.wide)
+    S <- summary(LMEM.2)
+    # Example from Bland & Altman (2007): total.sd <- sqrt((S[[1]]$`Mean Sq`[1] - S[[1]]$`Mean Sq`[2]) / ((60^2 - 312)/(11*60)) + S[[1]]$`Mean Sq`[2] )
+    # ((60^2 - 312)/(11*60)) reduces to m (here: 10) because all subjects have the same number of observations
+    total.sd[[frame.idx + 1]] <- sqrt((S[[1]]$`Mean Sq`[1] - S[[1]]$`Mean Sq`[2]) / 10 + S[[1]]$`Mean Sq`[2])
 
-    # Code from Parker et al. (2020)
-    # https://static-content.springer.com/esm/art%3A10.1186%2Fs12874-020-01022-x/MediaObjects/12874_2020_1022_MOESM1_ESM.pdf
-    # lmer(d ~ (1|subject) + (1|activity))
-    # total.sd <- sqrt(as.numeric(summary(LMEM)$varcor[1]) + # Comment DK: (1| subjectID)
-    #                  as.numeric(summary(LMEM)$varcor[2]) + # Comment DK: (1|activity)
-    #                  as.numeric(summary(LMEM)$sigma^2) # Comment DK: Residual Standard Deviation
-    #                  )
-
-    total.sd[[frame.idx + 1]] <- sqrt(data.frame(VarCorr(LMEM))[1, 4] + # Estimated random-effects variance (subjectID)
-                                      data.frame(VarCorr(LMEM))[2, 4]   # Residual Standard Deviation
-                                      )
+    mean.diff[[frame.idx + 1]] <- mean(data.by.frame.wide$device.diff)
   }
 
   floa.point <- data.frame(unlist(mean.diff), unlist(total.sd))

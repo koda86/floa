@@ -11,7 +11,9 @@
 # (see subsection data sets)
 #
 # TODO:
-#   + Punktweise LoA wasserdicht machen (Parker et al., 2020) (ez)ANOVA Ansatz (B & A, 2007)
+#   + Wie lassen sich zu weite LoA effektiv beschreiben / in einen Parameter giessen? Abstand zur aeussersten Kurve (als MSE)?
+#   + Weitere edge case Datensaetze a la shift
+#   + range-Angabe unertainty intervals!
 #   + Wie lassen sich (potenziell) zu weite LoA quantifizieren (Roislien!?)? Estimation uncertainty in Roislien is probably a lot higher
 #   + mean or median for floa.rcb?
 #   + 95% coverage implementieren
@@ -36,7 +38,6 @@
 rm(list = ls())
 
 library(ggplot2)
-library(boot)
 # library(fda)
 # library(funData)
 
@@ -156,8 +157,8 @@ print(coverage)
 #
 # Output:
 #   * Coverage levels [%] across n=length(subjectID) iterations
-# ------------------------------------------------------------------------------
-# 1. Leave-one subject out -----------------------------------------------------
+# ******************************************************************************
+# 1. Leave-one subject out
 cover.cross.subject <- crossval_coverage(data, n.boot)
 
 # Display cross validation coverages (entire curve covered) across methods
@@ -168,7 +169,7 @@ cover.cross.fraction.subject <- crossval_coverage_fraction(data, n.boot)
 
 plot_cov_ver(cover.cross.fraction.subject)
 
-# 2. Leave-one curve out -------------------------------------------------------
+# 2. Leave-one curve out
 cover.cross.singlecurve <- singlecurve_coverage(data, n.boot)
 
 calculate_percent <- function(data) {
@@ -180,3 +181,9 @@ covered.curves.percent <- apply(cover.cross.singlecurve, 2, calculate_percent)
 
 cover.cross.fraction.singlecurve <- singlecurve_coverage_fraction(data, n.boot)
 plot_cov_ver(cover.cross.fraction.singlecurve)
+
+
+
+
+
+estimate_uncertainty_loa(data, n.boot)

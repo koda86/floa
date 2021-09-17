@@ -34,13 +34,13 @@ example_data <- function(dat, dir.data) {
     data <- readRDS(paste0(dir.data, "/", "shift.rds"))
   }
 
-  # Convert continuous strideID to identical strideID's for repeated measures across subjects
-  # Needed for floa_point()
-  n.subj <- length(unique(data$subjectID))
-  n.devices <- length(unique(data$device))
-  strides.per.subject <- length(unique(data$strideID)) / length(unique(data$subjectID))
-  n.frames <- length(unique(data$frame))
-  data$strideID.rep <- rep(1:strides.per.subject, each = n.frames * n.devices, times = n.subj)
+  # # Convert continuous strideID to identical strideID's for repeated measures across subjects
+  # # Needed for floa_point()
+  # n.subj <- length(unique(data$subjectID))
+  # n.devices <- length(unique(data$device))
+  # strides.per.subject <- length(unique(data$strideID)) / length(unique(data$subjectID))
+  # n.frames <- length(unique(data$frame))
+  # data$strideID.rep <- rep(1:strides.per.subject, each = n.frames * n.devices, times = n.subj)
 
   return(data)
 
