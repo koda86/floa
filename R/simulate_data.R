@@ -8,6 +8,7 @@
 #
 # Simulated data sets:
 #
+# 0. Real-world validation data: "imu_mc"
 # 1. Smooth, wave data (normal error, constant variance, no trend): "smooth"
 # 2. Non-stationary data (trend, no bias) data:"non_stationary"
 # 3. Non-gaussian (Weibull distributed) error (no trend)
@@ -15,46 +16,128 @@
 # 5. Shift data (data phase shifted (x-axis direction))
 ################################################################################
 
+# Real-world validation data: "imu_mc" -----------------------------------------
+# Prepare (balance) data for the main script
+imu.mc <- readRDS(paste0(dir.data, "/", "data.rds"))
+
+# Pick 10 random strides from each of the 11 subjects
+stride.idx <- imu.mc %>% dplyr:::group_by(subjectID)  %>% dplyr::summarize(sample_n(data.frame(strideID), 10, replace = FALSE)) # sample(strideID, size = 10, replace = FALSE)
+stride.idx <- stride.idx$strideID
+stride.idx <- as.numeric(stride.idx)
+
+double.idx <- which(duplicated(stride.idx))
+stride.idx[double.idx] <- double.idx + 1
+imu.mc.balanced <- imu.mc[imu.mc$strideID %in% stride.idx, ]
+
+if (sum(duplicated(stride.idx))) {
+  saveRDS(imu.mc.balanced, file = paste0("~/floa/R/examples/", "imu_mc.rds"))
+}
+
+
+
 n.subj <- 11
 n.strides <- 10
 n.devices <- 2
 n.frames <- 101
 
-# Smooth wave data (constant variance, no trend) -------------------------------
+# Realistic smooth wave data (constant variance, no trend) ---------------------
 device <- c()
 value <- c()
 subjectID <- c()
 
 for (subj.idx in 1:n.subj) {
-
   value.subj <- c()
   device.subj <- c()
   subjectID.subj <- c()
 
   t <- seq(0, 100)
 
-  # Subjectwise wave parameters
+  # Subjectwise parameters
   offset.mean <- runif(1, min = -0.5, max = 0.5)
 
-  a.sd <- runif(1, min = 0.05, max = 0.15) # .1
-  b.sd <- runif(1, min = 0.0001, max = 0.002) # .001
+  a.sd <- runif(1, min = 0.05, max = 0.15)
+  b.sd <- runif(1, min = 0.0001, max = 0.002)
 
   for (stride.idx in 1:(n.strides)) {
-
-    a1.1 <- rnorm(1, mean = 3, sd = a.sd) # .1
-    a1.2 <- rnorm(1, mean = 3, sd = a.sd) # .1
+    a1.1 <- rnorm(1, mean = 3, sd = a.sd)
+    a1.2 <- rnorm(1, mean = 3, sd = b.sd)
     a2.1 <- 0.08
     a2.2 <- 0.08
-    b1.1 <- rnorm(1, mean = 0.06, sd = b.sd) # 0.001
-    b1.2 <- rnorm(1, mean = 0.06, sd = b.sd) # 0.001
-    b2.1 <- rnorm(1, mean = 0.58, sd = b.sd) # 0.001
-    b2.2 <- rnorm(1, mean = 0.58, sd = b.sd) # 0.001
+    b1.1 <- rnorm(1, mean = 0.06, sd = b.sd)
+    b1.2 <- rnorm(1, mean = 0.06, sd = b.sd)
+    b2.1 <- rnorm(1, mean = 0.58, sd = b.sd)
+    b2.2 <- rnorm(1, mean = 0.58, sd = b.sd)
     c <- 2
 
     sine.1 <- a1.1 * sin(b1.1 * t) ^ (c + 3)
     sine.2 <- a2.1 * sin(b2.1 * t)
     sine.3 <- a1.2 * sin(b1.2 * t) ^ (c + 3)
     sine.4 <- a2.2 * sin(b2.1 * t)
+
+    mc <- rnorm(1, offset.mean, 0.05) + sine.1 + sine.2
+    imu <- rnorm(1, offset.mean, 0.05) + sine.3 + sine.4
+
+    # plot(mc, type = "l")
+    # lines(imu, col = "red")
+
+    value.subj <- c(value.subj, c(imu, mc))
+
+    device.imu <- rep("IMU", n.frames)
+    device.mc <- rep("MC", n.frames)
+    device.subj <- c(device.subj, c(device.imu, device.mc))
+
+    subjectID.subj <- c(subjectID.subj, rep(subj.idx, 2 * n.frames))
+  }
+
+  # Data is stored for long format output
+  device <- c(device, device.subj)
+  value <- c(value, value.subj)
+  subjectID <- c(subjectID, subjectID.subj)
+}
+
+strideID <- rep(1:(n.strides * n.subj), each = n.devices * n.frames)
+frame <- rep(0:100, times = n.strides * n.devices * n.subj)
+
+data <- data.frame(device, subjectID, strideID, value, frame)
+
+saveRDS(data, file = paste0("~/floa/R/examples/", "smooth_realistic.rds"))
+
+
+
+# Smooth wave data (constant variance, no trend) with subjectwise bias ---------
+device <- c()
+value <- c()
+subjectID <- c()
+
+for (subj.idx in 1:n.subj) {
+  value.subj <- c()
+  device.subj <- c()
+  subjectID.subj <- c()
+
+  t <- seq(0, 100)
+
+  # Subjectwise parameters
+  offset.mean <- runif(1, min = -0.5, max = 0.5)
+
+  a.sd <- runif(1, min = 0.05, max = 0.15)
+  b.sd <- runif(1, min = 0.0001, max = 0.002)
+  b.sd.1 <- runif(1, min = 0.005, max = 0.01)
+
+  for (stride.idx in 1:(n.strides)) {
+    a1.1 <- rnorm(1, mean = 3, sd = a.sd)
+    a1.2 <- rnorm(1, mean = 3, sd = a.sd)
+    a2.1 <- 0.08
+    a2.2 <- 0.08
+    b1.1 <- rnorm(1, mean = 0.06, sd = b.sd)
+    b1.2 <- rnorm(1, mean = 0.06, sd = b.sd)
+    b2.1 <- rnorm(1, mean = 0.58, sd = b.sd)
+    b2.2 <- rnorm(1, mean = 0.58, sd = b.sd)
+    c <- 2
+
+    sine.1 <- a1.1 * sin(b1.1 * t) ^ (c + 3)
+    sine.2 <- a2.1 * sin(b2.1 * t)
+    sine.3 <- a1.2 * sin(b1.2 * t) ^ (c + 3)
+    sine.4 <- a2.2 * sin(b2.2 * t)
 
     offset <- rnorm(1, offset.mean, 0.05)
 
@@ -84,7 +167,147 @@ frame <- rep(0:100, times = n.strides * n.devices * n.subj)
 
 data <- data.frame(device, subjectID, strideID, value, frame)
 
-saveRDS(data, file = paste0("C:/Users/Daniel/Desktop/tmp/floa/R/examples/", "smooth.rds"))
+saveRDS(data, file = paste0("~/floa/R/examples/", "smooth.rds"))
+
+
+
+# Smooth wave data (constant variance, no trend) -------------------------------
+device <- c()
+value <- c()
+subjectID <- c()
+
+for (subj.idx in 1:n.subj) {
+  value.subj <- c()
+  device.subj <- c()
+  subjectID.subj <- c()
+
+  t <- seq(0, 100)
+
+  # Subjectwise parameters
+  offset.mean <- runif(1, min = -0.5, max = 0.5)
+
+  a.sd <- runif(1, min = 0.05, max = 0.15)
+  b.sd <- runif(1, min = 0.0001, max = 0.002)
+
+  for (stride.idx in 1:(n.strides)) {
+    a1.1 <- rnorm(1, mean = 3, sd = a.sd)
+    a1.2 <- rnorm(1, mean = 3, sd = b.sd)
+    # a1.1 <- rnorm(n = 1,
+    #               mean = rweibull(1, shape = 1.5, scale=1) - factorial(1/1.5), # factorial() used to center around 0
+    #               sd = b.sd)
+    # a1.2 <- rnorm(n = 1,
+    #               mean = rweibull(1, shape = 1.5, scale=1) - factorial(1/1.5), # factorial() used to center around 0
+    #               sd = a.sd)
+    a2.1 <- 0.08
+    a2.2 <- 0.08
+    b1.1 <- rnorm(1, mean = 0.06, sd = b.sd)
+    b1.2 <- rnorm(1, mean = 0.06, sd = b.sd)
+    b2.1 <- rnorm(1, mean = 0.58, sd = b.sd)
+    b2.2 <- rnorm(1, mean = 0.58, sd = b.sd)
+    c <- 2
+
+    sine.1 <- a1.1 * sin(b1.1 * t) ^ (c + 3)
+    sine.2 <- a2.1 * sin(b2.1 * t)
+    sine.3 <- a1.2 * sin(b1.2 * t) ^ (c + 3)
+    sine.4 <- a2.2 * sin(b2.1 * t)
+
+    # offset <- rnorm(1, offset.mean, 0.05)
+
+    mc <- rnorm(1, offset.mean, 0.05) + sine.1 + sine.2
+    imu <- rnorm(1, offset.mean, 0.05) + sine.3 + sine.4
+
+    # plot(mc, type = "l")
+    # lines(imu, col = "red")
+
+    value.subj <- c(value.subj, c(imu, mc))
+
+    device.imu <- rep("IMU", n.frames)
+    device.mc <- rep("MC", n.frames)
+    device.subj <- c(device.subj, c(device.imu, device.mc))
+
+    subjectID.subj <- c(subjectID.subj, rep(subj.idx, 2 * n.frames))
+  }
+
+  # Data is stored for long format output
+  device <- c(device, device.subj)
+  value <- c(value, value.subj)
+  subjectID <- c(subjectID, subjectID.subj)
+}
+
+strideID <- rep(1:(n.strides * n.subj), each = n.devices * n.frames)
+frame <- rep(0:100, times = n.strides * n.devices * n.subj)
+
+data <- data.frame(device, subjectID, strideID, value, frame)
+
+saveRDS(data, file = paste0("~/floa/R/examples/", "homoscedastic"))
+
+
+
+# Heteroscedasticity (no trend) ------------------------------------------------
+device <- c()
+value <- c()
+subjectID <- c()
+
+for (subj.idx in 1:n.subj) {
+  value.subj <- c()
+  device.subj <- c()
+  subjectID.subj <- c()
+
+  t <- seq(0, 100)
+
+  # Subjectwise parameters
+  offset.mean <- runif(1, min = -0.5, max = 0.5)
+
+  a.sd <- runif(1, min = 0.05, max = 0.15)
+  b.sd <- runif(1, min = 0.0001, max = 0.002)
+  b.sd.1 <- runif(1, min = 0.005, max = 0.01)
+
+  for (stride.idx in 1:(n.strides)) {
+    a1.1 <- rnorm(1, mean = 3, sd = a.sd)
+    a1.2 <- rnorm(1, mean = 3, sd = a.sd)
+    a2.1 <- 0.08
+    a2.2 <- 0.08
+    b1.1 <- rnorm(1, mean = 0.06, sd = b.sd)
+    b1.2 <- rnorm(1, mean = 0.06, sd = b.sd.1)
+    b2.1 <- rnorm(1, mean = 0.58, sd = b.sd)
+    b2.2 <- rnorm(1, mean = 0.58, sd = b.sd.1)
+    c <- 2
+
+    sine.1 <- a1.1 * sin(b1.1 * t) ^ (c + 3)
+    sine.2 <- a2.1 * sin(b2.1 * t)
+    sine.3 <- a1.2 * sin(b1.2 * t) ^ (c + 3)
+    sine.4 <- a2.2 * sin(b2.2 * t)
+
+    offset <- rnorm(1, offset.mean, 0.05)
+
+    mc <- sine.1 + sine.2
+    imu <- offset + sine.3 + sine.4
+
+    # plot(mc, type = "l")
+    # lines(imu, col = "red")
+
+    value.subj <- c(value.subj, c(imu, mc))
+
+    device.imu <- rep("IMU", n.frames)
+    device.mc <- rep("MC", n.frames)
+    device.subj <- c(device.subj, c(device.imu, device.mc))
+
+    subjectID.subj <- c(subjectID.subj, rep(subj.idx, 2 * n.frames))
+  }
+
+  # Data is stored for long format output
+  device <- c(device, device.subj)
+  value <- c(value, value.subj)
+  subjectID <- c(subjectID, subjectID.subj)
+}
+
+strideID <- rep(1:(n.strides * n.subj), each = n.devices * n.frames)
+frame <- rep(0:100, times = n.strides * n.devices * n.subj)
+
+data <- data.frame(device, subjectID, strideID, value, frame)
+
+saveRDS(data, file = paste0("~/floa/R/examples/", "heteroscedastic.rds"))
+
 
 
 # Smooth wave data with nonlinear trend ----------------------------------------
@@ -100,14 +323,13 @@ for (subj.idx in 1:n.subj) {
 
   t <- seq(0, 100)
 
-  # Subjectwise wave parameters
+  # Subjectwise parameters
   # offset.mean <- runif(1, min = -0.5, max = 0.5)
 
   a.sd <- runif(1, min = 0.05, max = 0.15) # .1
   b.sd <- runif(1, min = 0.0001, max = 0.002) # .001
 
   for (stride.idx in 1:(n.strides)) {
-
     a1.1 <- rnorm(1, mean = 3, sd = a.sd)
     a1.2 <- rnorm(1, mean = 3, sd = a.sd)
     a2.1 <- 0.08
@@ -115,7 +337,7 @@ for (subj.idx in 1:n.subj) {
     b1.1 <- rnorm(1, mean = 0.06, sd = b.sd)
     b1.2 <- rnorm(1, mean = 0.06, sd = b.sd)
     b2.1 <- rnorm(1, mean = 0.58, sd = b.sd)
-    b2.2 <- rnorm(1, mean = 0.58, sd =b.sd)
+    b2.2 <- rnorm(1, mean = 0.58, sd = b.sd)
     c <- 2
 
     # offset <- rnorm(1, offset.mean, 0.05)
@@ -154,7 +376,8 @@ frame <- rep(0:100, times = n.strides * n.devices * n.subj)
 
 data <- data.frame(device, subjectID, strideID, value, frame)
 
-saveRDS(data, file = paste0("C:/Users/Daniel/Desktop/tmp/floa/R/examples/", "smooth_trend.rds"))
+saveRDS(data, file = paste0("~/floa/R/examples/", "smooth_trend.rds"))
+
 
 
 # Non-gaussian (Weibull distributed) error (no trend) --------------------------
@@ -163,22 +386,19 @@ value <- c()
 subjectID <- c()
 
 for (subj.idx in 1:n.subj) {
-
   value.subj <- c()
   device.subj <- c()
   subjectID.subj <- c()
 
   t <- seq(0, 100)
 
-  # Subjectwise wave parameters
+  # Subjectwise parameters
   offset.mean <- runif(1, min = -0.5, max = 0.5)
 
-  a.sd <- runif(1, min = 0.05, max = 0.15) # .1
-
+  a.sd <- runif(1, min = 0.05, max = 0.15)
   b.sd <- runif(1, min = 0.0001, max = 0.002)
 
   for (stride.idx in 1:(n.strides)) {
-
     a1.1 <- rnorm(1, mean = 3, sd = a.sd)
     a1.2 <- rnorm(n = 1,
                   mean = rweibull(1, shape = 1.5, scale=1) - factorial(1/1.5), # factorial() used to center around 0
@@ -224,7 +444,8 @@ frame <- rep(0:100, times = n.strides * n.devices * n.subj)
 
 data <- data.frame(device, subjectID, strideID, value, frame)
 
-saveRDS(data, file = paste0("C:/Users/Daniel/Desktop/tmp/floa/R/examples/", "non_gaussian.rds"))
+saveRDS(data, file = paste0("~/floa/R/examples/", "non_gaussian.rds"))
+
 
 
 # Shock (spike) data -----------------------------------------------------------
@@ -233,21 +454,19 @@ value <- c()
 subjectID <- c()
 
 for (subj.idx in 1:n.subj) {
-
   value.subj <- c()
   device.subj <- c()
   subjectID.subj <- c()
 
   t <- seq(0, 100)
 
-  # Subjectwise wave parameters
+  # Subjectwise parameters
   offset.mean <- runif(1, min = -0.005, max = 0.005)
 
   a.sd <- runif(1, min = 0.05, max = 0.15) # .1
   b.sd <- runif(1, min = 0.0001, max = 0.002) # .001
 
   for (stride.idx in 1:(n.strides)) {
-
     a1.1 <- rnorm(1, mean = 3, sd = a.sd) # .1
     a1.2 <- rnorm(1, mean = 3, sd = a.sd) # .1
     a2.1 <- 0.08
@@ -298,7 +517,8 @@ frame <- rep(0:100, times = n.strides * n.devices * n.subj)
 
 data <- data.frame(device, subjectID, strideID, value, frame)
 
-saveRDS(data, file = paste0("C:/Users/Daniel/Desktop/tmp/floa/R/examples/", "shock.rds"))
+saveRDS(data, file = paste0("~/floa/R/examples/", "shock.rds"))
+
 
 
 # Shift data -------------------------------------------------------------------
@@ -308,21 +528,19 @@ value <- c()
 subjectID <- c()
 
 for (subj.idx in 1:n.subj) {
-
   value.subj <- c()
   device.subj <- c()
   subjectID.subj <- c()
 
   t <- seq(0, 100)
 
-  # Subjectwise wave parameters
+  # Subjectwise parameters
   offset.mean <- runif(1, min = -0.5, max = 0.5)
 
   a.sd <- runif(1, min = 0.05, max = 0.15) # .1
   b.sd <- runif(1, min = 0.0001, max = 0.002) # .001
 
   for (stride.idx in 1:(n.strides)) {
-
     a1.1 <- rnorm(1, mean = 3, sd = a.sd) # .1
     a1.2 <- rnorm(1, mean = 3, sd = a.sd) # .1
     a2.1 <- 0.08
@@ -366,7 +584,7 @@ frame <- rep(0:100, times = n.strides * n.devices * n.subj)
 
 data <- data.frame(device, subjectID, strideID, value, frame)
 
-saveRDS(data, file = paste0("C:/Users/Daniel/Desktop/tmp/floa/R/examples/", "shift.rds"))
+saveRDS(data, file = paste0("~/floa/R/examples/", "shift.rds"))
 
 
 # # Toy example from https://mjskay.github.io/ggdist/articles/lineribbon.html
@@ -412,7 +630,6 @@ saveRDS(data, file = paste0("C:/Users/Daniel/Desktop/tmp/floa/R/examples/", "shi
 # subjectID <- c()
 #
 # for (subj.idx in 1:n.subj) {
-#
 #   t <- seq(n.strides * n.frames)
 #
 #   # Subjectwise wave parameters
@@ -493,7 +710,7 @@ saveRDS(data, file = paste0("C:/Users/Daniel/Desktop/tmp/floa/R/examples/", "shi
 #
 # data <- data.frame(device, subjectID, strideID, value, frame)
 #
-# saveRDS(data, file = paste0("C:/Users/Daniel/Desktop/tmp/floa/R/examples/", "smooth_trend.rds"))
+# saveRDS(data, file = paste0("~/floa/R/examples/", "smooth_trend.rds"))
 
 
 # # ------------------------------------------------------------------------------
@@ -505,7 +722,6 @@ saveRDS(data, file = paste0("C:/Users/Daniel/Desktop/tmp/floa/R/examples/", "shi
 # subjectID <- c()
 #
 # for (subj.idx in 1:n.subj) {
-#
 #   value.subj <- c()
 #   device.subj <- c()
 #   subjectID.subj <- c()
@@ -520,7 +736,6 @@ saveRDS(data, file = paste0("C:/Users/Daniel/Desktop/tmp/floa/R/examples/", "shi
 #   subj.sd.2 <- runif(1, min = 0.1, max = 0.2)
 #
 #   for (stride.idx in 1:(n.strides)) {
-#
 #     a1.1 <- rnorm(1, 3, .1)
 #     a1.2 <- rnorm(1, 3, .1)
 #     a2.1 <- 0.08
@@ -563,7 +778,7 @@ saveRDS(data, file = paste0("C:/Users/Daniel/Desktop/tmp/floa/R/examples/", "shi
 #
 # data <- data.frame(device, subjectID, strideID, value, frame)
 #
-# saveRDS(data, file = paste0("C:/Users/Daniel/Desktop/tmp/floa/R/examples/", "smooth_noise.rds"))
+# saveRDS(data, file = paste0("~/floa/R/examples/", "smooth_noise.rds"))
 
 
 # # ------------------------------------------------------------------------------
@@ -575,7 +790,6 @@ saveRDS(data, file = paste0("C:/Users/Daniel/Desktop/tmp/floa/R/examples/", "shi
 # subjectID <- c()
 #
 # for (subj.idx in 1:n.subj) {
-#
 #   value.subj <- c()
 #   device.subj <- c()
 #   subjectID.subj <- c()
@@ -588,7 +802,6 @@ saveRDS(data, file = paste0("C:/Users/Daniel/Desktop/tmp/floa/R/examples/", "shi
 #   trend.2 <- 0
 #
 #   for (stride.idx in 1:(n.strides)) {
-#
 #     # AR coefficients
 #     phi.1 <- c(0.80, 0.15)
 #     phi.2 <- runif(1, 0.2, 0.3)
@@ -638,7 +851,7 @@ saveRDS(data, file = paste0("C:/Users/Daniel/Desktop/tmp/floa/R/examples/", "shi
 #
 # data <- data.frame(device, subjectID, strideID, value, frame)
 #
-# saveRDS(data, file = paste0("C:/Users/Daniel/Desktop/tmp/floa/R/examples/", "data_nonstat.rds"))
+# saveRDS(data, file = paste0("~/floa/R/examples/", "data_nonstat.rds"))
 
 
 # # ------------------------------------------------------------------------------
@@ -661,13 +874,11 @@ saveRDS(data, file = paste0("C:/Users/Daniel/Desktop/tmp/floa/R/examples/", "shi
 # subjectID <- c()
 #
 # for (subj.idx in 1:n.subj) {
-#
 #   value.subj <- c()
 #   device.subj <- c()
 #   subjectID.subj <- c()
 #
 #   for (stride.idx in 1:(n.strides)) {
-#
 #     mc <- as.numeric(simulate(model, nsim = 101))
 #
 #     value.subj <- as.numeric(simulate(model, nsim = 202))
@@ -692,7 +903,7 @@ saveRDS(data, file = paste0("C:/Users/Daniel/Desktop/tmp/floa/R/examples/", "shi
 #
 # data <- data.frame(device, subjectID, strideID, value, frame)
 #
-# saveRDS(data, file = paste0("C:/Users/Daniel/Desktop/tmp/floa/R/examples/", "data_nonstat.rds"))
+# saveRDS(data, file = paste0("~/floa/R/examples/", "data_nonstat.rds"))
 
 
 

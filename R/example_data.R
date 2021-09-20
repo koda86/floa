@@ -5,13 +5,17 @@ example_data <- function(dat, dir.data) {
   if (dat == "imu_mc") {
 
     # IMU vs. MC validation data ---------------------------------------------------
-    data <- readRDS(paste0(dir.data, "/", "data.rds"))
+    data <- readRDS(paste0(dir.data, "/", "imu_mc.rds")) # data.rds contains the unbalanced data
 
     # # Intermediate step: Fit functions to discrete time series data ----------------
     # # Thus far, a transformation of time series data to functional data (Fourier,
     # # Splines etc.) is not implemented.
     # fd.basis <- create.fourier.basis(nbasis=50) # Plateau around 50 basis vectors
     # fda.delta <- fdaDelta(data, fd.basis) # Fit Fourier, returns delta curves (mean, sd)
+
+  } else if (dat == "smooth_realistic") {
+
+    data <- readRDS(paste0(dir.data, "/", "smooth_realistic.rds"))
 
   } else if (dat == "smooth") {
 
@@ -20,6 +24,10 @@ example_data <- function(dat, dir.data) {
   } else if (dat == "smooth_trend") {
 
     data <- readRDS(paste0(dir.data, "/", "smooth_trend.rds"))
+
+  } else if (dat == "smooth_biased") {
+
+    data <- readRDS(paste0(dir.data, "/", "smooth_biased.rds"))
 
   } else if (dat == "non_gaussian") {
 

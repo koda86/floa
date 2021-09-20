@@ -196,8 +196,7 @@ floa.point <- floa_point(data)
 
 ## Validation
 
-### Synthetic data sets
-
+### Data generating process
 To compare different methods for constructing continuous LoA, several sets of smooth curve data were simulated across a range of common biomechanical signals and error characteristics. The quality of the curves is similar, as the paper is primarily developed for a validation context in which the same movement process is analyzed using similar methods (two measurement devices or models). For the same reason, the curves do not necessarily correspond to real-world signals as we were more concerned with illustrating the respective methods and error characterstics.
 
 All curves were modeled as Fourier series from additively superimposed sine functions. Each data set contains n.strides = 10 curves from n.subj = 11 fictitious test subjects. Each curve consists of t = 101 data points. 
@@ -290,8 +289,29 @@ device.2 <- offset + sine.3 + sine.4
 <!-- Alcantara et al. Modelling/estimating ground reaction forces from acceleration values, z. B. https://www.biorxiv.org/content/10.1101/2021.03.17.435901v1.full -->
 <!-- Johnson et al. (2020) Multidimensional ground reaction forces and moments from wearable sensor accelerations via deep learning -->
 
-### Smooth curves (homoscedasticity, normal error, no trend)
+### Realistic smooth wave data (constant variance, no trend)
+```{r echo = FALSE, warning = FALSE, message = FALSE}
+data <- example_data(dat = "smooth_realistic", dir.data)
 
+data.single.mc <- subset(data, device == "MC")
+data.single.imu <- subset(data, device == "IMU")
+
+PLOT <- ggplot(data = data.single.mc, aes(x = frame, y = value, group = strideID)) +
+  geom_line() +
+  scale_color_grey(start = 0.6, end = 0.9) +
+  geom_line(data = data.single.imu, aes(x = frame, y = value, group = strideID, colour = as.factor(subjectID)), alpha = 0.3) +
+  labs(x = "Time-normalized signal [%]", y = "Signal value") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(size = 20),
+        axis.title.x = element_text(size = 18),
+        axis.text.y = element_text(size = 20),
+        axis.title.y = element_text(size = 18),
+        legend.position = "none")
+
+PLOT
+```
+
+### Smooth curves (homoscedasticity, normal error, no trend)
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
 data <- example_data(dat = "smooth", dir.data)
 
@@ -313,33 +333,30 @@ PLOT <- ggplot(data = data.single.mc, aes(x = frame, y = value, group = strideID
 PLOT
 ```
 
-### Smooth curves with nonlinear error trend
+<!-- ### Smooth curves with nonlinear error trend -->
+<!-- ```{r echo = FALSE, warning = FALSE, message = FALSE} -->
+<!-- data <- example_data(dat = "smooth_trend", dir.data) -->
 
-```{r echo = FALSE, warning = FALSE, message = FALSE}
-data <- example_data(dat = "smooth_trend", dir.data)
+<!-- data.single.mc <- subset(data, device == "MC") -->
+<!-- data.single.imu <- subset(data, device == "IMU") -->
 
-data.single.mc <- subset(data, device == "MC")
-data.single.imu <- subset(data, device == "IMU")
+<!-- PLOT <- ggplot(data = data.single.mc, aes(x = frame, y = value, group = strideID)) + -->
+<!--   geom_line() + -->
+<!--   scale_color_grey(start = 0.6, end = 0.9) + -->
+<!--   geom_line(data = data.single.imu, aes(x = frame, y = value, group = strideID, colour = as.factor(subjectID)), alpha = 0.3) + -->
+<!--   labs(x = "Time-normalized signal [%]", y = "Signal value") + -->
+<!--   theme_minimal() + -->
+<!--   theme(axis.text.x = element_text(size = 20), -->
+<!--         axis.title.x = element_text(size = 18), -->
+<!--         axis.text.y = element_text(size = 20), -->
+<!--         axis.title.y = element_text(size = 18), -->
+<!--         legend.position = "none") -->
 
-PLOT <- ggplot(data = data.single.mc, aes(x = frame, y = value, group = strideID)) +
-  geom_line() +
-  scale_color_grey(start = 0.6, end = 0.9) +
-  geom_line(data = data.single.imu, aes(x = frame, y = value, group = strideID, colour = as.factor(subjectID)), alpha = 0.3) +
-  labs(x = "Time-normalized signal [%]", y = "Signal value") +
-  theme_minimal() +
-  theme(axis.text.x = element_text(size = 20),
-        axis.title.x = element_text(size = 18),
-        axis.text.y = element_text(size = 20),
-        axis.title.y = element_text(size = 18),
-        legend.position = "none")
-
-PLOT
-```
+<!-- PLOT -->
+<!-- ``` -->
 
 #### Heteroscedasticity across the signal length
-
 <!-- Smooth curves with non-gaussian (Weibull) error (no trend) -->
-
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
 data <- example_data(dat = "non_gaussian", dir.data)
 
@@ -362,7 +379,6 @@ PLOT
 ```
 
 #### Curves phase shifted in x-axis direction
-
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
 data <- example_data(dat = "shift", dir.data)
 
@@ -384,9 +400,29 @@ PLOT <- ggplot(data = data.single.mc, aes(x = frame, y = value, group = strideID
 PLOT
 ```
 
+#### Real-world validation data
+```{r echo = FALSE, warning = FALSE, message = FALSE}
+data <- example_data(dat = "imu_mc", dir.data)
 
-### Cross validation
+data.single.mc <- subset(data, device == "MC")
+data.single.imu <- subset(data, device == "IMU")
 
+PLOT <- ggplot(data = data.single.mc, aes(x = frame, y = value, group = strideID)) +
+  geom_line() +
+  scale_color_grey(start = 0.6, end = 0.9) +
+  geom_line(data = data.single.imu, aes(x = frame, y = value, group = strideID, colour = as.factor(subjectID)), alpha = 0.3) +
+  labs(x = "Time-normalized signal [%]", y = "Signal value") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(size = 20),
+        axis.title.x = element_text(size = 18),
+        axis.text.y = element_text(size = 20),
+        axis.title.y = element_text(size = 18),
+        legend.position = "none")
+
+PLOT
+```
+
+### Leave-one (curve) out cross validation
 Leave-one (curve) out method to estimate the achieved coverage
 
 Prediction intervals are calculated from size.dataset = number.subjects - 1 and then validated against the left out curve for four different methods:
@@ -399,12 +435,21 @@ Prediction intervals are calculated from size.dataset = number.subjects - 1 and 
        
 * FLoA~Point~ : Pointwise B & A Limits of Agreement
 
+#### Coverages
+Coverages are displayed for two different scenarios:
+
+* a: Percentage of entirely covered curves (all points within the limits)
+
+* b: Mean (SD) of curve points within the respective FLoA: The fraction of points along a curve within the limits is calculated and averaged across all curves of a subject.
+
+### LoA uncertainty
+In order to quantify the uncertainty of the calculated LoA across different methods, LoA were calculated n.boot times and compared using uncertainty bands.
+
 # Results
 
 ### Functional limits of agreement
-
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
-n.boot <- 400
+n.boot <- 1000
 
 # data <- example_data(dat = "smooth", dir.data)
 # floa <- floa_rcb(data, n.boot, ver = "v2")
@@ -424,30 +469,59 @@ n.boot <- 400
 ```
 
 ### Leave-one (curve) out cross validation
+Displayed are boxes for different calculation methods (FLoA~RCB_v2~, FLoA~RCB_v3~, FLoA~Roislien~, FLoA~Point~)
 
-Displayed are boxes for five different methods:
+#### Realistic smooth wave data (constant variance, no trend)
+a. Coverage of the entire curve
+```{r echo = FALSE, warning = FALSE, message = FALSE}
+data <- example_data(dat = "smooth_realistic", dir.data)
 
-* 1. FLoA~RCB_v2~ : One random stride per subject
+# Leave-one curve out approach
+# ------------------------------------------------------------------------------
+cover.cross.singlecurve <- singlecurve_coverage(data, n.boot)
 
-* 2. FLoA~RCB_v3~ : Fetch a SINGLE random stride from all strides
+# Calculate percent from counts
+calculate_percent <- function(data) {
+  percentage <- (sum(data) / length(data))
+  percentage <- round(percentage, digits = 2)
+}
 
-* 3. FLoA~Roislien~ : Roislien approach (Get one random stride from each subject ONCE and boot-
-       strap the resulting sample (of length (n=length(subjects))
+covered.curves.percent <- apply(cover.cross.singlecurve, 2, calculate_percent)
+covered.curves.percent <- data.frame(t(covered.curves.percent))
+colnames(covered.curves.percent) <- c("RCB_2", "RCB_3", "Roislien_4", "Point_5")
 
-* 4. FLoA~Point~ : Pointwise B & A Limits of Agreement (SD derived from linear mixed effects model)
+knitr::kable(covered.curves.percent, caption = "Percentages of entirely covered curves")
 
-Coverages are displayed for two different scenarios:
+# # Leave-one subject out approach
+# # ------------------------------------------------------------------------------
+# cover.cross <- crossval_coverage(data, n.boot)
+# # colnames(cover.cross) <- c("RCB_1", "RCB_2", "RCB_3", "Roislien_4", "Point_5")
+# 
+# plot_cov_ver(cover.cross)
+```
 
-* a: Percentage of entirely covered curves (all points within the limits)
+b. Mean (SD) of covered curve points
+```{r echo = FALSE, warning = FALSE, message = FALSE}
+# Leave-one curve out approach
+# ------------------------------------------------------------------------------
+cover.cross.fraction.singlecurve <- singlecurve_coverage_fraction(data, n.boot)
 
-* b: Mean (SD) of curve points within the respective FLoA: The fraction of points along a curve within the limits is calculated and averaged across all curves of a subject.
+cover.cross.mean.sd <- rbind(round(colMeans(cover.cross.fraction.singlecurve), 2),
+             round(apply(cover.cross.fraction.singlecurve, 2, sd), 2)
+)
+knitr::kable(cover.cross.mean.sd, caption = "Mean (top) and SD of covered points across the curve")
 
-* c: Uncertainty in LoA (95% percentile intervals)
+# # Display as boxplots across methods
+# plot_cov_ver(cover.cross.fraction.singlecurve)
+```
+
+c. Uncertainty in LoA (95% percentile intervals)
+```{r echo = FALSE, warning = FALSE, message = FALSE}
+estimate_uncertainty_loa(data, n.boot)
+```
 
 #### Smooth, wave data (normal error, constant variance, no trend)
-
 a. Coverage of the entire curve
-
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
 data <- example_data(dat = "smooth", dir.data)
 
@@ -476,7 +550,6 @@ knitr::kable(covered.curves.percent, caption = "Percentages of entirely covered 
 ```
 
 b. Mean (SD) of covered curve points
-
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
 # Leave-one curve out approach
 # ------------------------------------------------------------------------------
@@ -492,53 +565,52 @@ knitr::kable(cover.cross.mean.sd, caption = "Mean (top) and SD of covered points
 ```
 
 c. Uncertainty in LoA (95% percentile intervals)
-
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
 estimate_uncertainty_loa(data, n.boot)
 ```
 
-#### Curves with nonlinear trend (constant variance)
+<!-- #### Curves with nonlinear trend (constant variance) -->
 
-a. Coverage of the entire curve
+<!-- a. Coverage of the entire curve -->
 
-```{r echo = FALSE, warning = FALSE, message = FALSE}
-data <- example_data(dat = "smooth_trend", dir.data)
+<!-- ```{r echo = FALSE, warning = FALSE, message = FALSE} -->
+<!-- data <- example_data(dat = "smooth_trend", dir.data) -->
 
-# Leave-one curve out approach
-# ------------------------------------------------------------------------------
-cover.cross.singlecurve <- singlecurve_coverage(data, n.boot)
+<!-- # Leave-one curve out approach -->
+<!-- # ------------------------------------------------------------------------------ -->
+<!-- cover.cross.singlecurve <- singlecurve_coverage(data, n.boot) -->
 
-# Calculate percent from counts
-calculate_percent <- function(data) {
-  percentage <- (sum(data) / length(data))
-  percentage <- round(percentage, digits = 2)
-}
+<!-- # Calculate percent from counts -->
+<!-- calculate_percent <- function(data) { -->
+<!--   percentage <- (sum(data) / length(data)) -->
+<!--   percentage <- round(percentage, digits = 2) -->
+<!-- } -->
 
-covered.curves.percent <- apply(cover.cross.singlecurve, 2, calculate_percent)
-covered.curves.percent <- data.frame(t(covered.curves.percent))
-colnames(covered.curves.percent) <- c("RCB_2", "RCB_3", "Roislien_4", "Point_5")
+<!-- covered.curves.percent <- apply(cover.cross.singlecurve, 2, calculate_percent) -->
+<!-- covered.curves.percent <- data.frame(t(covered.curves.percent)) -->
+<!-- colnames(covered.curves.percent) <- c("RCB_2", "RCB_3", "Roislien_4", "Point_5") -->
 
-knitr::kable(covered.curves.percent, caption = "Percentages of entire covered curves")
-```
+<!-- knitr::kable(covered.curves.percent, caption = "Percentages of entire covered curves") -->
+<!-- ``` -->
 
-b. Mean (SD) of covered curve points
+<!-- b. Mean (SD) of covered curve points -->
 
-```{r echo = FALSE, warning = FALSE, message = FALSE}
-# Leave-one curve out approach
-# ------------------------------------------------------------------------------
-cover.cross.fraction.singlecurve <- singlecurve_coverage_fraction(data, n.boot)
+<!-- ```{r echo = FALSE, warning = FALSE, message = FALSE} -->
+<!-- # Leave-one curve out approach -->
+<!-- # ------------------------------------------------------------------------------ -->
+<!-- cover.cross.fraction.singlecurve <- singlecurve_coverage_fraction(data, n.boot) -->
 
-cover.cross.mean.sd <- rbind(round(colMeans(cover.cross.fraction.singlecurve), 2),
-             round(apply(cover.cross.fraction.singlecurve, 2, sd), 2)
-)
-knitr::kable(cover.cross.mean.sd, caption = "Mean (top) and SD of covered points across the curve")
-```
+<!-- cover.cross.mean.sd <- rbind(round(colMeans(cover.cross.fraction.singlecurve), 2), -->
+<!--              round(apply(cover.cross.fraction.singlecurve, 2, sd), 2) -->
+<!-- ) -->
+<!-- knitr::kable(cover.cross.mean.sd, caption = "Mean (top) and SD of covered points across the curve") -->
+<!-- ``` -->
 
-c. Uncertainty in LoA (95% percentile intervals)
+<!-- c. Uncertainty in LoA (95% percentile intervals) -->
 
-```{r echo = FALSE, warning = FALSE, message = FALSE}
-estimate_uncertainty_loa(data, n.boot)
-```
+<!-- ```{r echo = FALSE, warning = FALSE, message = FALSE} -->
+<!-- estimate_uncertainty_loa(data, n.boot) -->
+<!-- ``` -->
 
 #### Curves with non-gaussian (Weibull distributed) error (no trend)
 
@@ -599,7 +671,6 @@ estimate_uncertainty_loa(data, n.boot)
 ```
 
 #### Curves phase shifted in x-axis direction
-
 a. Coverage of the entire curve
 
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
@@ -655,6 +726,65 @@ c. Uncertainty in LoA (95% percentile intervals)
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
 estimate_uncertainty_loa(data, n.boot)
 ```
+
+#### Real-world validation data
+a. Coverage of the entire curve
+
+```{r echo = FALSE, warning = FALSE, message = FALSE}
+data <- example_data(dat = "imu_mc", dir.data)
+
+# Leave-one curve out approach
+# ------------------------------------------------------------------------------
+cover.cross.singlecurve <- singlecurve_coverage(data, n.boot)
+
+# Calculate percent from counts
+calculate_percent <- function(data) {
+  percentage <- (sum(data) / length(data))
+  percentage <- round(percentage, digits = 2)
+}
+
+covered.curves.percent <- apply(cover.cross.singlecurve, 2, calculate_percent)
+covered.curves.percent <- data.frame(t(covered.curves.percent))
+colnames(covered.curves.percent) <- c("RCB_2", "RCB_3", "Roislien_4", "Point_5")
+
+knitr::kable(covered.curves.percent, caption = "Percentages of entire covered curves")
+
+# # Leave-one subject out approach
+# # ------------------------------------------------------------------------------
+# cover.cross <- crossval_coverage(data, n.boot)
+# # colnames(cover.cross) <- c("RCB_1", "RCB_2", "RCB_3", "Roislien_4", "Point_5")
+# 
+# plot_cov_ver(cover.cross)
+```
+
+b. Mean (SD) of covered curve points
+
+```{r echo = FALSE, warning = FALSE, message = FALSE}
+# Leave-one curve out approach
+# ------------------------------------------------------------------------------
+cover.cross.fraction.singlecurve <- singlecurve_coverage_fraction(data, n.boot)
+
+cover.cross.mean.sd <- rbind(round(colMeans(cover.cross.fraction.singlecurve), 2),
+             round(apply(cover.cross.fraction.singlecurve, 2, sd), 2)
+)
+knitr::kable(cover.cross.mean.sd, caption = "Mean (top) and SD of covered points")
+
+# # Display as boxplots acroos methods
+# plot_cov_ver(cover.cross.fraction.singlecurve)
+
+# # Leave-one subject out approach
+# # ------------------------------------------------------------------------------
+# cover.cross.fraction <- crossval_coverage_fraction(data, n.boot)
+# plot_cov_ver(cover.cross.fraction)
+```
+
+c. Uncertainty in LoA (95% percentile intervals)
+
+```{r echo = FALSE, warning = FALSE, message = FALSE}
+estimate_uncertainty_loa(data, n.boot)
+```
+
+
 
 # Discussion
 
