@@ -9,14 +9,17 @@
 # Simulated data sets:
 #
 # 0. Real-world validation data: "imu_mc"
-# 1. Smooth, wave data (normal error, constant variance, no trend): "smooth"
-# 2. Non-stationary data (trend, no bias) data:"non_stationary"
-# 3. Non-gaussian (Weibull distributed) error (no trend)
-# 4. Data with shock peaks (no bias, no trend): "shock"
-# 5. Shift data (data phase shifted (x-axis direction))
+# 1. Realistic smooth wave data (constant variance, no trend)
+# 2. Smooth, wave data (normal error, constant variance, no trend): "smooth"
+# 3. Homoscedastic error
+# 4. Heteroscedastic error
+# 5. Non-stationary data (trend, no bias) data:"non_stationary"
+# 6. Non-gaussian (Weibull distributed) error (no trend)
+# 7. Data with shock peaks (no bias, no trend): "shock"
+# 8. Shift data (data phase shifted (x-axis direction))
 ################################################################################
 
-# Real-world validation data: "imu_mc" -----------------------------------------
+# 0. Real-world validation data: "imu_mc" --------------------------------------
 # Prepare (balance) data for the main script
 imu.mc <- readRDS(paste0(dir.data, "/", "data.rds"))
 
@@ -40,7 +43,7 @@ n.strides <- 10
 n.devices <- 2
 n.frames <- 101
 
-# Realistic smooth wave data (constant variance, no trend) ---------------------
+# 1. Realistic smooth wave data (constant variance, no trend) ------------------
 device <- c()
 value <- c()
 subjectID <- c()
@@ -104,7 +107,7 @@ saveRDS(data, file = paste0("~/floa/R/examples/", "smooth_realistic.rds"))
 
 
 
-# Smooth wave data (constant variance, no trend) with subjectwise bias ---------
+# 2. Smooth wave data (constant variance, no trend) with subjectwise bias ------
 device <- c()
 value <- c()
 subjectID <- c()
@@ -171,7 +174,7 @@ saveRDS(data, file = paste0("~/floa/R/examples/", "smooth.rds"))
 
 
 
-# Smooth wave data (constant variance, no trend) -------------------------------
+# 3. Smooth wave data (constant variance, no trend) ----------------------------
 device <- c()
 value <- c()
 subjectID <- c()
@@ -243,7 +246,7 @@ saveRDS(data, file = paste0("~/floa/R/examples/", "homoscedastic"))
 
 
 
-# Heteroscedasticity (no trend) ------------------------------------------------
+# 4. Heteroscedasticity (no trend) ---------------------------------------------
 device <- c()
 value <- c()
 subjectID <- c()
@@ -310,7 +313,7 @@ saveRDS(data, file = paste0("~/floa/R/examples/", "heteroscedastic.rds"))
 
 
 
-# Smooth wave data with nonlinear trend ----------------------------------------
+# 5. Smooth wave data with nonlinear trend --------------------------------------
 device <- c()
 value <- c()
 subjectID <- c()
@@ -380,7 +383,7 @@ saveRDS(data, file = paste0("~/floa/R/examples/", "smooth_trend.rds"))
 
 
 
-# Non-gaussian (Weibull distributed) error (no trend) --------------------------
+# 6. Non-gaussian (Weibull distributed) error (no trend) -----------------------
 device <- c()
 value <- c()
 subjectID <- c()
@@ -448,7 +451,7 @@ saveRDS(data, file = paste0("~/floa/R/examples/", "non_gaussian.rds"))
 
 
 
-# Shock (spike) data -----------------------------------------------------------
+# 7. Shock (spike) data --------------------------------------------------------
 device <- c()
 value <- c()
 subjectID <- c()
@@ -521,7 +524,7 @@ saveRDS(data, file = paste0("~/floa/R/examples/", "shock.rds"))
 
 
 
-# Shift data -------------------------------------------------------------------
+# 8. Shift data ----------------------------------------------------------------
 # Inspired by the toy example from https://mjskay.github.io/ggdist/articles/lineribbon.html
 device <- c()
 value <- c()
