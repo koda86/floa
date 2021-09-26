@@ -17,18 +17,31 @@ floa_rcb <- function(data, n.boot, ver) { # , fd.basis
                             byrow = TRUE)
 
   # Calculate percentiles ------------------------------------------------------
+  alpha <- 0.5
+
+  # Alpha correction (Bonferroni)
+  m <- length(unique(data$frame))
+  alpha <- alpha/m
+  # Round is necessary because quantile() can only take two decimal places in the "probs" argument
+  upr <- round(1 - alpha/2)
+  lwr <- round(alpha/2, 2)
+
   floa.boot.percentiles <- c()
   for (i in 1:ncol(clust.agg.intrp)) {
     floa.boot.percentiles <- c(floa.boot.percentiles,
                                quantile(clust.agg.intrp[, i],
-                                        probs = c(0.025, 0.5, 0.975)
+                                        probs = c(lwr, 0.5, upr)
                                         )
                                )
   }
 
-  perc2.5 <- floa.boot.percentiles[which(names(floa.boot.percentiles) == "2.5%")]
-  perc50 <- floa.boot.percentiles[which(names(floa.boot.percentiles) == "50%")]
-  perc97.5 <- floa.boot.percentiles[which(names(floa.boot.percentiles) == "97.5%")]
+  name.lower.percentile <- unique(names(floa.boot.percentiles))[1]
+  name.mid.percentile <- unique(names(floa.boot.percentiles))[2]
+  name.upper.percentile <- unique(names(floa.boot.percentiles))[3]
+
+  perc2.5 <- floa.boot.percentiles[which(names(floa.boot.percentiles) == name.lower.percentile)]
+  perc50 <- floa.boot.percentiles[which(names(floa.boot.percentiles) == name.mid.percentile)]
+  perc97.5 <- floa.boot.percentiles[which(names(floa.boot.percentiles) == name.upper.percentile)]
 
   # Split the long percentile vector into 101 data points each -----------------
   floa.boot.percentiles.split <- rbind(approx(perc2.5, n = 101)$y,

@@ -1,33 +1,31 @@
 fdaDelta <- function(data, fd.basis){
 
-  # Approximates time series using Fourier functions ---------------------------
-
-  library(fda)
+  # Approximates time series using Fourier functions
+  # ----------------------------------------------------------------------------
 
   # First device
-  # --------------------------
+  # -------------------------------------------------------
   dev1 <- subset(data, device  == "IMU")$value
-
   dev1.wide <- matrix(dev1, ncol = length(dev1) / 101)
 
   # Create functional data object
   dev1.wide.fd <- fda::Data2fd(argvals = dev1.wide, basisobj = fd.basis)
 
   # Second device
-  # --------------------------
+  # -------------------------------------------------------
   dev2 <- subset(data, device == "MC")$value
-
   dev2.wide <- matrix(dev2, ncol = length(dev2) / 101)
 
-  dev2.wide.fd <- Data2fd(argvals = dev2.wide, basisobj = fd.basis)
+  dev2.wide.fd <- fda::Data2fd(argvals = dev2.wide, basisobj = fd.basis)
 
   # Differences
-  # --------------------------
+  # -------------------------------------------------------
   fd.diff <- dev1.wide.fd - dev2.wide.fd
 
-  # point-wise statistics
-  mean.diff.fd <- mean.fd(fd.diff)
-  sd.diff.fd <- std.fd(fd.diff)
+  # Point-wise statistics
+  # -------------------------------------------------------
+  mean.diff.fd <- fda::mean.fd(fd.diff)
+  sd.diff.fd <- fda::std.fd(fd.diff)
 
   fda <- list()
 

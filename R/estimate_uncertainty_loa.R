@@ -100,13 +100,13 @@ estimate_uncertainty_loa <- function (data, n.boot) {
   device.diff$floa.roislien.lower.2.5 <- rep(pi95$floa.roislien.lower.2.5, length.out = nrow(device.diff))
   device.diff$floa.roislien.lower.97.5 <- rep(pi95$floa.roislien.lower.97.5, length.out = nrow(device.diff))
 
-  # For line graphs, the data points must be grouped so that it knows which points to connect.
+  # For line graphs, the data points must be grouped so that it knows whic h points to connect.
   # In this case, it is simple -- all points should be connected, so group=1.
   # When more variables are used and multiple lines are drawn, the grouping for lines is usually done by variable.
   PLOT.DIFF <- ggplot(data = device.diff, aes(x = frame, y = value)) +
-    geom_line(data = device.diff,
-              aes(group = strideID),
-              alpha = 0.25) +
+    # geom_line(data = device.diff,
+    #           aes(group = strideID),
+    #           alpha = 0.25) +
     geom_ribbon(aes(ymin = floa.roislien.upper.2.5,
                     ymax = floa.roislien.upper.97.5),
                 fill = "burlywood",

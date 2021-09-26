@@ -9,14 +9,13 @@
 # Simulated data sets:
 #
 # 0. Real-world validation data: "imu_mc"
-# 1. Realistic smooth wave data (constant variance, no trend)
-# 2. Smooth, wave data (normal error, constant variance, no trend): "smooth"
-# 3. Homoscedastic error
-# 4. Heteroscedastic error
-# 5. Non-stationary data (trend, no bias) data:"non_stationary"
-# 6. Non-gaussian (Weibull distributed) error (no trend)
-# 7. Data with shock peaks (no bias, no trend): "shock"
-# 8. Shift data (data phase shifted (x-axis direction))
+# 1. Realistic smooth wave data (normal error, constant variance, no trend)
+# 2. Same model as in (1), but almost no variation in one of the devices: "smooth"
+# 3. Heteroscedastic error
+# 4. Non-stationary data (trend, no bias) data:"non_stationary"
+# 5. Non-gaussian (Weibull distributed) error (no trend)
+# 6. Data with shock peaks (no bias, no trend): "shock"
+# 7. Shift data (data phase shifted (x-axis direction))
 ################################################################################
 
 # 0. Real-world validation data: "imu_mc" --------------------------------------
@@ -44,6 +43,8 @@ n.devices <- 2
 n.frames <- 101
 
 # 1. Realistic smooth wave data (constant variance, no trend) ------------------
+set.seed(3)
+
 device <- c()
 value <- c()
 subjectID <- c()
@@ -108,6 +109,9 @@ saveRDS(data, file = paste0("~/floa/R/examples/", "smooth_realistic.rds"))
 
 
 # 2. Smooth wave data (constant variance, no trend) with subjectwise bias ------
+# Same model as in (1), but almost no variation in one of the devices
+set.seed(3)
+
 device <- c()
 value <- c()
 subjectID <- c()
@@ -174,79 +178,9 @@ saveRDS(data, file = paste0("~/floa/R/examples/", "smooth.rds"))
 
 
 
-# 3. Smooth wave data (constant variance, no trend) ----------------------------
-device <- c()
-value <- c()
-subjectID <- c()
+# 3. Heteroscedasticity (no trend) ---------------------------------------------
+set.seed(2)
 
-for (subj.idx in 1:n.subj) {
-  value.subj <- c()
-  device.subj <- c()
-  subjectID.subj <- c()
-
-  t <- seq(0, 100)
-
-  # Subjectwise parameters
-  offset.mean <- runif(1, min = -0.5, max = 0.5)
-
-  a.sd <- runif(1, min = 0.05, max = 0.15)
-  b.sd <- runif(1, min = 0.0001, max = 0.002)
-
-  for (stride.idx in 1:(n.strides)) {
-    a1.1 <- rnorm(1, mean = 3, sd = a.sd)
-    a1.2 <- rnorm(1, mean = 3, sd = b.sd)
-    # a1.1 <- rnorm(n = 1,
-    #               mean = rweibull(1, shape = 1.5, scale=1) - factorial(1/1.5), # factorial() used to center around 0
-    #               sd = b.sd)
-    # a1.2 <- rnorm(n = 1,
-    #               mean = rweibull(1, shape = 1.5, scale=1) - factorial(1/1.5), # factorial() used to center around 0
-    #               sd = a.sd)
-    a2.1 <- 0.08
-    a2.2 <- 0.08
-    b1.1 <- rnorm(1, mean = 0.06, sd = b.sd)
-    b1.2 <- rnorm(1, mean = 0.06, sd = b.sd)
-    b2.1 <- rnorm(1, mean = 0.58, sd = b.sd)
-    b2.2 <- rnorm(1, mean = 0.58, sd = b.sd)
-    c <- 2
-
-    sine.1 <- a1.1 * sin(b1.1 * t) ^ (c + 3)
-    sine.2 <- a2.1 * sin(b2.1 * t)
-    sine.3 <- a1.2 * sin(b1.2 * t) ^ (c + 3)
-    sine.4 <- a2.2 * sin(b2.1 * t)
-
-    # offset <- rnorm(1, offset.mean, 0.05)
-
-    mc <- rnorm(1, offset.mean, 0.05) + sine.1 + sine.2
-    imu <- rnorm(1, offset.mean, 0.05) + sine.3 + sine.4
-
-    # plot(mc, type = "l")
-    # lines(imu, col = "red")
-
-    value.subj <- c(value.subj, c(imu, mc))
-
-    device.imu <- rep("IMU", n.frames)
-    device.mc <- rep("MC", n.frames)
-    device.subj <- c(device.subj, c(device.imu, device.mc))
-
-    subjectID.subj <- c(subjectID.subj, rep(subj.idx, 2 * n.frames))
-  }
-
-  # Data is stored for long format output
-  device <- c(device, device.subj)
-  value <- c(value, value.subj)
-  subjectID <- c(subjectID, subjectID.subj)
-}
-
-strideID <- rep(1:(n.strides * n.subj), each = n.devices * n.frames)
-frame <- rep(0:100, times = n.strides * n.devices * n.subj)
-
-data <- data.frame(device, subjectID, strideID, value, frame)
-
-saveRDS(data, file = paste0("~/floa/R/examples/", "homoscedastic"))
-
-
-
-# 4. Heteroscedasticity (no trend) ---------------------------------------------
 device <- c()
 value <- c()
 subjectID <- c()
@@ -313,13 +247,14 @@ saveRDS(data, file = paste0("~/floa/R/examples/", "heteroscedastic.rds"))
 
 
 
-# 5. Smooth wave data with nonlinear trend --------------------------------------
+# 4. Smooth wave data with nonlinear trend --------------------------------------
+set.seed(3)
+
 device <- c()
 value <- c()
 subjectID <- c()
 
 for (subj.idx in 1:n.subj) {
-
   value.subj <- c()
   device.subj <- c()
   subjectID.subj <- c()
@@ -327,10 +262,10 @@ for (subj.idx in 1:n.subj) {
   t <- seq(0, 100)
 
   # Subjectwise parameters
-  # offset.mean <- runif(1, min = -0.5, max = 0.5)
+  offset.mean <- runif(1, min = -0.5, max = 0.5)
 
-  a.sd <- runif(1, min = 0.05, max = 0.15) # .1
-  b.sd <- runif(1, min = 0.0001, max = 0.002) # .001
+  a.sd <- runif(1, min = 0.05, max = 0.15)
+  b.sd <- runif(1, min = 0.0001, max = 0.002)
 
   for (stride.idx in 1:(n.strides)) {
     a1.1 <- rnorm(1, mean = 3, sd = a.sd)
@@ -343,18 +278,16 @@ for (subj.idx in 1:n.subj) {
     b2.2 <- rnorm(1, mean = 0.58, sd = b.sd)
     c <- 2
 
-    # offset <- rnorm(1, offset.mean, 0.05)
-
     sine.1 <- a1.1 * sin(b1.1 * t) ^ (c + 3)
     sine.2 <- a2.1 * sin(b2.1 * t)
     sine.3 <- a1.2 * sin(b1.2 * t) ^ (c + 3)
     sine.4 <- a2.2 * sin(b2.1 * t)
 
     # Create nonlinear trend
-    trend <- (1 / 100000) * seq(0.5, 50.5, 0.5)^3
+    trend <- (1/100000) * seq(0.5, 50.5, 0.5) ^ 3
 
-    mc <- sine.1 + sine.2
-    imu <- sine.3 + sine.4 + trend # offset +
+    mc <- rnorm(1, offset.mean, 0.05) + sine.1 + sine.2
+    imu <- rnorm(1, offset.mean, 0.05) + sine.3 + sine.4 + trend
 
     # plot(mc, type = "l")
     # lines(imu, col = "red")
@@ -383,7 +316,9 @@ saveRDS(data, file = paste0("~/floa/R/examples/", "smooth_trend.rds"))
 
 
 
-# 6. Non-gaussian (Weibull distributed) error (no trend) -----------------------
+# 5. Non-gaussian (Weibull distributed) error (no trend) -----------------------
+set.seed(3)
+
 device <- c()
 value <- c()
 subjectID <- c()
@@ -404,7 +339,8 @@ for (subj.idx in 1:n.subj) {
   for (stride.idx in 1:(n.strides)) {
     a1.1 <- rnorm(1, mean = 3, sd = a.sd)
     a1.2 <- rnorm(n = 1,
-                  mean = rweibull(1, shape = 1.5, scale=1) - factorial(1/1.5), # factorial() used to center around 0
+                  # factorial() used to center around 0
+                  mean = rweibull(1, shape = 1.5, scale=1) - factorial(1/1.5),
                   sd = a.sd)
     a2.1 <- 0.08
     a2.2 <- 0.08
@@ -421,8 +357,8 @@ for (subj.idx in 1:n.subj) {
 
     offset <- rnorm(1, offset.mean, 0.05)
 
-    mc <- sine.1 + sine.2
-    imu <- offset + sine.3 + sine.4
+    mc <- rnorm(1, offset.mean, 0.05) + sine.1 + sine.2
+    imu <- rnorm(1, offset.mean, 0.05) + sine.3 + sine.4
 
     # plot(mc, type = "l")
     # lines(imu, col = "red")
@@ -451,7 +387,9 @@ saveRDS(data, file = paste0("~/floa/R/examples/", "non_gaussian.rds"))
 
 
 
-# 7. Shock (spike) data --------------------------------------------------------
+# 6. Shock (spike) data --------------------------------------------------------
+set.seed(6)
+
 device <- c()
 value <- c()
 subjectID <- c()
@@ -470,14 +408,14 @@ for (subj.idx in 1:n.subj) {
   b.sd <- runif(1, min = 0.0001, max = 0.002) # .001
 
   for (stride.idx in 1:(n.strides)) {
-    a1.1 <- rnorm(1, mean = 3, sd = a.sd) # .1
-    a1.2 <- rnorm(1, mean = 3, sd = a.sd) # .1
+    a1.1 <- rnorm(1, mean = 3, sd = a.sd)
+    a1.2 <- rnorm(1, mean = 3, sd = a.sd)
     a2.1 <- 0.08
     a2.2 <- 0.08
-    b1.1 <- rnorm(1, mean = 0.06, sd = b.sd) # 0.001
-    b1.2 <- rnorm(1, mean = 0.06, sd = b.sd) # 0.001
-    b2.1 <- rnorm(1, mean = 0.58, sd = b.sd) # 0.001
-    b2.2 <- rnorm(1, mean = 0.58, sd = b.sd) # 0.001
+    b1.1 <- rnorm(1, mean = 0.06, sd = b.sd)
+    b1.2 <- rnorm(1, mean = 0.06, sd = b.sd)
+    b2.1 <- rnorm(1, mean = 0.58, sd = b.sd)
+    b2.2 <- rnorm(1, mean = 0.58, sd = b.sd)
     c <- 2
 
     sine.1 <- a1.1 * sin(b1.1 * t) ^ (c + 3)
@@ -524,8 +462,10 @@ saveRDS(data, file = paste0("~/floa/R/examples/", "shock.rds"))
 
 
 
-# 8. Shift data ----------------------------------------------------------------
+# 7. Shift data ----------------------------------------------------------------
 # Inspired by the toy example from https://mjskay.github.io/ggdist/articles/lineribbon.html
+set.seed(3)
+
 device <- c()
 value <- c()
 subjectID <- c()
@@ -540,18 +480,18 @@ for (subj.idx in 1:n.subj) {
   # Subjectwise parameters
   offset.mean <- runif(1, min = -0.5, max = 0.5)
 
-  a.sd <- runif(1, min = 0.05, max = 0.15) # .1
-  b.sd <- runif(1, min = 0.0001, max = 0.002) # .001
+  a.sd <- runif(1, min = 0.05, max = 0.15)
+  b.sd <- runif(1, min = 0.0001, max = 0.002)
 
   for (stride.idx in 1:(n.strides)) {
-    a1.1 <- rnorm(1, mean = 3, sd = a.sd) # .1
-    a1.2 <- rnorm(1, mean = 3, sd = a.sd) # .1
+    a1.1 <- rnorm(1, mean = 3, sd = a.sd)
+    a1.2 <- rnorm(1, mean = 3, sd = a.sd)
     a2.1 <- 0.08
     a2.2 <- 0.08
-    b1.1 <- rnorm(1, mean = 0.06, sd = b.sd) # 0.001
-    b1.2 <- rnorm(1, mean = 0.06, sd = b.sd) # 0.001
-    b2.1 <- rnorm(1, mean = 0.58, sd = b.sd) # 0.001
-    b2.2 <- rnorm(1, mean = 0.58, sd = b.sd) # 0.001
+    b1.1 <- rnorm(1, mean = 0.06, sd = b.sd)
+    b1.2 <- rnorm(1, mean = 0.06, sd = b.sd)
+    b2.1 <- rnorm(1, mean = 0.58, sd = b.sd)
+    b2.2 <- rnorm(1, mean = 0.58, sd = b.sd)
     c <- 2
 
     x.offset <- rnorm(1, offset.mean, 0.05)
@@ -561,8 +501,8 @@ for (subj.idx in 1:n.subj) {
     sine.3 <- a1.2 * sin(b1.2 * t + x.offset) ^ (c + 3)
     sine.4 <- a2.2 * sin(b2.1 * t)
 
-    mc <- sine.1 + sine.2
-    imu <- sine.3 + sine.4
+    mc <- x.offset + sine.1 + sine.2
+    imu <- x.offset + sine.3 + sine.4
 
     # plot(mc, type = "l")
     # lines(imu, col = "red")
@@ -607,6 +547,12 @@ saveRDS(data, file = paste0("~/floa/R/examples/", "shift.rds"))
 # df %>%
 #   ggplot(aes(x = x, y = y)) +
 #   geom_line(aes(group = .draw), alpha=0.2)
+
+
+
+
+
+
 
 
 

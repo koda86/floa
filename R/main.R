@@ -38,8 +38,6 @@
 rm(list = ls())
 
 library(ggplot2)
-# library(fda)
-# library(funData)
 
 dir.script <- "~/floa/R"
 dir.data <- "~/floa/R/examples"
@@ -47,7 +45,7 @@ dir.data <- "~/floa/R/examples"
 setwd(dir.script)
 
 source("example_data.R")
-# source("fdaDelta.R")
+source("fdaDelta.R")
 source("pick_subwise_curves.R")
 source("draw_clusters.R")
 source("floa_rcb.R")
@@ -63,6 +61,7 @@ source("crossval_coverage_fraction.R")
 source("singlecurve_coverage.R")
 source("singlecurve_coverage_fraction.R")
 source("plot_cov_ver.R")
+source("distance_2_floa.R")
 source("estimate_uncertainty_loa.R")
 
 # ********************************* Data sets **********************************
@@ -76,7 +75,7 @@ source("estimate_uncertainty_loa.R")
 # * Data with non-gaussian (Weibull distributed) error (no trend): "non_gaussian"
 # * Data with shock peaks (no bias, no trend): "shock"
 # * Phase shifted data (x-axis direction): "shift"
-data <- example_data(dat = "imu_mc", dir.data)
+data <- example_data(dat = "smooth_realistic", dir.data)
 
 # Plot data --------------------------------------------------------------------
 # uncommment when subject differences need to be plotted
@@ -96,15 +95,6 @@ PLOT <- ggplot(data = data.single.mc, aes(x = frame, y = value, group = strideID
         legend.position = "none")
 
 PLOT
-
-# # ****** Approximate time series (differences) using Fourier functions *********
-#
-# # Number of basic (Fourier) functions
-# # ... appears to plateau around 50 basis vectors
-# fd.basis <- fda::create.fourier.basis(nbasis = 50)
-#
-# # Returns functional data representation of difference curves
-# data.diff.fd <- fdaDelta(data, fd.basis)
 
 
 # ****************************** Calculate FLoA ********************************
@@ -186,6 +176,21 @@ plot_cov_ver(cover.cross.fraction.singlecurve)
 
 
 
-
-
+# Estimate the uncertainty across several iterations
+# Returns results for all implemented methods
 estimate_uncertainty_loa(data, n.boot)
+
+
+# Average distance to the outer point of the curve set
+dist.all <- data.frame(distance_2_floa(data, floa)$upr.dist,
+                       distance_2_floa(data, floa)$lwr.dist,
+                       distance_2_floa(data, floa.point)$upr.dist,
+                       distance_2_floa(data, floa.point)$lwr.dist,
+                       distance_2_floa(data, floa.roislien)$upr.dist,
+                       distance_2_floa(data, floa.roislien)$lwr.dist
+                       )
+
+colnames(dist.all) <- c("floa.up", "floa.lw", "point.up", "point.lw", "roislien.up", "roislien.lw")
+
+boxplot(dist.all, ylab = "floa boundary - curve maximum")
+

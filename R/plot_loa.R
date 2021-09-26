@@ -29,7 +29,7 @@ plot_loa <- function (data, floa, central.tendency) {
   n.strides <- length(unique(data$strideID))
   n.subjects <- length(unique(data$subjectID))
   strides.per.subject <- length(unique(data$strideID)) / n.subjects
-  device.diff$strideID <- as.factor(rep(1:n.strides, each = 101)) # as.factor(seq(0, n.strides, by = n.frames)) # as.factor(rep(seq(1, strides.per.subject), each = 101))
+  device.diff$strideID <- as.factor(rep(1:n.strides, each = 101))
   device.diff$subjectID <- as.factor(rep(1:n.subjects, each = strides.per.subject * n.frames))
 
   floa.point <- data.frame(t(floa_point(data)))
@@ -78,30 +78,41 @@ plot_loa <- function (data, floa, central.tendency) {
     # For line graphs, the data points must be grouped so that it knows which points to connect.
     # In this case, it is simple -- all points should be connected, so group=1.
     # When more variables are used and multiple lines are drawn, the grouping for lines is usually done by variable.
-    PLOT.DIFF <- ggplot(data = device.diff, aes(x = frame, y = value)) + # , color = subjectID, group = strideID
-      geom_line() +
+    PLOT.DIFF <- ggplot(data = device.diff, aes(x = frame, y = value)) +
+      geom_line(data = device.diff,
+                aes(group = strideID),
+                alpha = 0.25) +
       scale_color_grey(start = 0.8, end = 0.2) +
       # Plot lower limit of agreement
       geom_line(data = floa,
                 aes(x = seq(0, 100), y = upper, col = "red", group = 1),
                 linetype = "solid",
-                size = 3,
+                size = 2,
                 colour = "red") +
-      # Plot mean difference
-      geom_line(data = floa,
-                aes(x = seq(0, 100), y = mean, col = "red", group = 1),
-                linetype = "dotted",
-                size = 3,
-                colour = "red") +
+      # # Plot mean difference
+      # geom_line(data = floa,
+      #           aes(x = seq(0, 100), y = mean, col = "red", group = 1),
+      #           linetype = "dotted",
+      #           size = 2,
+      #           colour = "red") +
       # Plot upper limits of agreement
       geom_line(data = floa,
                 aes(x = seq(0, 100), y = lower, col = "red", group = 1),
                 linetype = "solid",
-                size = 3,
+                size = 2,
                 colour = "red") +
-      geom_line(data = floa.point, aes(x = seq(0, 100), y = upper)) +
-      geom_line(data = floa.point, aes(x = seq(0, 100), y = lower)) +
-      scale_y_continuous(limits = c(min(device.diff$value), max(device.diff$value))) +
+      geom_line(data = floa.point,
+                aes(x = seq(0, 100), y = upper),
+                linetype = "dotted",
+                size = 2,
+                colour = "red") +
+      geom_line(data = floa.point,
+                aes(x = seq(0, 100), y = lower),
+                linetype = "dotted",
+                size = 2,
+                colour = "red") +
+      scale_y_continuous(limits = c(min(device.diff$value),
+                                    max(device.diff$value))) +
       labs(x = "Time-normalized signal [%]", y = "Difference") +
       theme_minimal() +
       theme(axis.text.x = element_text(size = 20),
