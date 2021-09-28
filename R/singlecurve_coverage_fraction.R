@@ -27,19 +27,22 @@ singlecurve_coverage_fraction <- function (data, n.boot) {
   n.curves <- unique(data$strideID)
 
   # cover.cross.rcb.v1   <- vector(mode = "list", length = length(n.curves))
-  cover.cross.rcb.v2   <- vector(mode = "list", length = length(n.curves))
-  cover.cross.rcb.v3   <- vector(mode = "list", length = length(n.curves))
+  # cover.cross.rcb.v2   <- vector(mode = "list", length = length(n.curves))
+  # cover.cross.rcb.v3   <- vector(mode = "list", length = length(n.curves))
   cover.cross.point    <- vector(mode = "list", length = length(n.curves))
   cover.cross.roislien <- vector(mode = "list", length = length(n.curves))
+  cover.cross.lenhoff <- vector(mode = "list", length = length(n.curves))
+
   for (curve.idx in n.curves) {
     # Calculate FLoA with one curve left out -----------------------------
     data.one.out <- subset(data, strideID != curve.idx)
 
     floa.point    <- floa_point(data.one.out)
     # floa.v1       <- floa_rcb(data.one.out, n.boot, ver = "v1")
-    floa.v2       <- floa_rcb(data.one.out, n.boot, ver = "v2")
-    floa.v3       <- floa_rcb(data.one.out, n.boot, ver = "v3")
+    # floa.v2       <- floa_rcb(data.one.out, n.boot, ver = "v2")
+    # floa.v3       <- floa_rcb(data.one.out, n.boot, ver = "v3")
     floa.roislien <- floa_roislien(data.one.out)
+    floa.lenhoff <- floa_lenhoff(data.one.out, k_reihe = 30, n.boot = n.boot, cp.begin = 0, alpha = 0.05)
 
     # Plot left out curve vs. various FLoA methods -----------------------
     data.subset <- subset(data, strideID == curve.idx)
@@ -51,18 +54,20 @@ singlecurve_coverage_fraction <- function (data, n.boot) {
     # Get coverage for the left out (difference) curve
     # --------------------------------------------------------------------
     # cover.cross.rcb.v1[curve.idx]   <- get_coverage_singlecurve_fraction(device.diff, floa.v1)
-    cover.cross.rcb.v2[curve.idx]   <- get_coverage_singlecurve_fraction(device.diff, floa.v2)
-    cover.cross.rcb.v3[curve.idx]   <- get_coverage_singlecurve_fraction(device.diff, floa.v3)
-    cover.cross.roislien[curve.idx] <- get_coverage_singlecurve_fraction(device.diff, floa.roislien)
-    cover.cross.point[curve.idx]    <- get_coverage_singlecurve_fraction(device.diff, floa.point)
+    # cover.cross.rcb.v2[curve.idx]   <- get_coverage_singlecurve_fraction(device.diff, floa.v2)
+    # cover.cross.rcb.v3[curve.idx]   <- get_coverage_singlecurve_fraction(device.diff, floa.v3)
+    cover.cross.point[curve.idx]      <- get_coverage_singlecurve_fraction(device.diff, floa.point)
+    cover.cross.roislien[curve.idx]   <- get_coverage_singlecurve_fraction(device.diff, floa.roislien)
+    cover.cross.lenhoff[curve.idx]    <- get_coverage_singlecurve_fraction(device.diff, floa.lenhoff)
   }
 
   cover.cross <- cbind(
                       # unlist(cover.cross.rcb.v1),
-                      unlist(cover.cross.rcb.v2),
-                      unlist(cover.cross.rcb.v3),
+                      # unlist(cover.cross.rcb.v2),
+                      # unlist(cover.cross.rcb.v3),
+                      unlist(cover.cross.point),
                       unlist(cover.cross.roislien),
-                      unlist(cover.cross.point)
+                      unlist(cover.cross.lenhoff)
                       )
 
   return(cover.cross)

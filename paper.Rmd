@@ -56,8 +56,6 @@ output:
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
 library(ggplot2)
 library(boot)
-# library(fda)
-# library(funData)
 
 dir.script <- "~/floa/R"
 dir.data <- "~/floa/R/examples"
@@ -65,10 +63,10 @@ dir.data <- "~/floa/R/examples"
 setwd(dir.script)
 
 source("example_data.R")
-# source("fdaDelta.R")
 source("pick_subwise_curves.R")
 source("draw_clusters.R")
 source("floa_rcb.R")
+source("lenhoff_doris.R")
 source("floa_point.R")
 source("floa_roislien.R")
 source("plot_loa.R")
@@ -81,7 +79,7 @@ source("crossval_coverage_fraction.R")
 source("singlecurve_coverage.R")
 source("singlecurve_coverage_fraction.R")
 source("plot_cov_ver.R")
-source("distance_2_floa.R")
+# source("distance_2_floa.R")
 source("estimate_uncertainty_loa.R")
 ```
 
@@ -407,48 +405,72 @@ n.boot <- 100
 
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
 data <- example_data(dat = "smooth_realistic", dir.data)
-floa <- floa_rcb(data, n.boot, ver = "v2")
-plot_loa(data, floa, central.tendency = "mean")
+
+floa.point <- floa_point(data)
+floa.roislien <- floa_roislien(data)
+floa.lenhoff <- floa_lenhoff(data, k_reihe = 50, n.boot = n.boot, cp.begin = 0, alpha = 0.05)
+
+plot_loa(data, floa.point, floa.roislien, floa.lenhoff)
 ```
 
 #### Smooth curves (homoscedasticity, normal error, no trend)
 
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
 data <- example_data(dat = "smooth", dir.data)
-floa <- floa_rcb(data, n.boot, ver = "v2")
-plot_loa(data, floa, central.tendency = "mean")
+
+floa.point <- floa_point(data)
+floa.roislien <- floa_roislien(data)
+floa.lenhoff <- floa_lenhoff(data, k_reihe = 50, n.boot = n.boot, cp.begin = 0, alpha = 0.05)
+
+plot_loa(data, floa.point, floa.roislien, floa.lenhoff)
 ```
 
 #### Smooth curves with nonlinear error trend
 
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
 data <- example_data(dat = "smooth_trend", dir.data)
-floa <- floa_rcb(data, n.boot, ver = "v2")
-plot_loa(data, floa, central.tendency = "mean")
+
+floa.point <- floa_point(data)
+floa.roislien <- floa_roislien(data)
+floa.lenhoff <- floa_lenhoff(data, k_reihe = 50, n.boot = n.boot, cp.begin = 0, alpha = 0.05)
+
+plot_loa(data, floa.point, floa.roislien, floa.lenhoff)
 ```
 
 #### Heteroscedastic measurement error (no trend)
 
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
 data <- example_data(dat = "non_gaussian", dir.data)
-floa <- floa_rcb(data, n.boot, ver = "v2")
-plot_loa(data, floa, central.tendency = "mean")
+
+floa.point <- floa_point(data)
+floa.roislien <- floa_roislien(data)
+floa.lenhoff <- floa_lenhoff(data, k_reihe = 50, n.boot = n.boot, cp.begin = 0, alpha = 0.05)
+
+plot_loa(data, floa.point, floa.roislien, floa.lenhoff)
 ```
 
 #### Curves phase shifted in x-axis direction
 
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
 data <- example_data(dat = "shift", dir.data)
-floa <- floa_rcb(data, n.boot, ver = "v2")
-plot_loa(data, floa, central.tendency = "mean")
+
+floa.point <- floa_point(data)
+floa.roislien <- floa_roislien(data)
+floa.lenhoff <- floa_lenhoff(data, k_reihe = 50, n.boot = n.boot, cp.begin = 0, alpha = 0.05)
+
+plot_loa(data, floa.point, floa.roislien, floa.lenhoff)
 ```
 
 #### Real-world validation data
 
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
 data <- example_data(dat = "imu_mc", dir.data)
-floa <- floa_rcb(data, n.boot, ver = "v2")
-plot_loa(data, floa, central.tendency = "mean")
+
+floa.point <- floa_point(data)
+floa.roislien <- floa_roislien(data)
+floa.lenhoff <- floa_lenhoff(data, k_reihe = 50, n.boot = n.boot, cp.begin = 0, alpha = 0.05)
+
+plot_loa(data, floa.point, floa.roislien, floa.lenhoff)
 ```
 
 ### Leave-one (curve) out cross validation
@@ -471,7 +493,7 @@ calculate_percent <- function(data) {
 
 covered.curves.percent <- apply(cover.cross.singlecurve, 2, calculate_percent)
 covered.curves.percent <- data.frame(t(covered.curves.percent))
-colnames(covered.curves.percent) <- c("RCB_2", "RCB_3", "Roislien_4", "Point_5")
+colnames(covered.curves.percent) <- c("Point", "Roislien", "Lenhoff")
 
 knitr::kable(covered.curves.percent, caption = "Percentages of entirely covered curves")
 
@@ -492,34 +514,36 @@ cover.cross.fraction.singlecurve <- singlecurve_coverage_fraction(data, n.boot)
 cover.cross.mean.sd <- rbind(round(colMeans(cover.cross.fraction.singlecurve), 2),
              round(apply(cover.cross.fraction.singlecurve, 2, sd), 2)
 )
+colnames(cover.cross.mean.sd) <- c("Point", "Roislien", "Lenhoff")
+
 knitr::kable(cover.cross.mean.sd, caption = "Mean (top) and SD of covered points across the curve")
 
 # # Display as boxplots across methods
 # plot_cov_ver(cover.cross.fraction.singlecurve)
 ```
 
-c. Average distance to the outer point of the curve set
+<!-- c. Average distance to the outer point of the curve set -->
+<!-- ```{r echo = FALSE, warning = FALSE, message = FALSE} -->
+<!-- floa <- floa_rcb(data, n.boot, ver = "v2") -->
+<!-- floa.point <- floa_point(data) -->
+<!-- floa.roislien <- floa_roislien(data) -->
+
+<!-- dist.all <- data.frame(distance_2_floa(data, floa)$upr.dist, -->
+<!--                        distance_2_floa(data, floa)$lwr.dist, -->
+<!--                        distance_2_floa(data, floa.point)$upr.dist, -->
+<!--                        distance_2_floa(data, floa.point)$lwr.dist, -->
+<!--                        distance_2_floa(data, floa.roislien)$upr.dist, -->
+<!--                        distance_2_floa(data, floa.roislien)$lwr.dist -->
+<!--                        ) -->
+
+<!-- colnames(dist.all) <- c("floa.up", "floa.lw", "point.up", "point.lw", "roislien.up", "roislien.lw") -->
+
+<!-- boxplot(dist.all, ylab = "floa boundary - curve maximum") -->
+<!-- ``` -->
+
+c. Uncertainty in LoA (95% percentile intervals)
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
-floa <- floa_rcb(data, n.boot, ver = "v2")
-floa.point <- floa_point(data)
-floa.roislien <- floa_roislien(data)
-
-dist.all <- data.frame(distance_2_floa(data, floa)$upr.dist,
-                       distance_2_floa(data, floa)$lwr.dist,
-                       distance_2_floa(data, floa.point)$upr.dist,
-                       distance_2_floa(data, floa.point)$lwr.dist,
-                       distance_2_floa(data, floa.roislien)$upr.dist,
-                       distance_2_floa(data, floa.roislien)$lwr.dist
-                       )
-
-colnames(dist.all) <- c("floa.up", "floa.lw", "point.up", "point.lw", "roislien.up", "roislien.lw")
-
-boxplot(dist.all, ylab = "floa boundary - curve maximum")
-```
-
-d. Uncertainty in LoA (95% percentile intervals)
-```{r echo = FALSE, warning = FALSE, message = FALSE}
-estimate_uncertainty_loa(data, n.boot)
+# estimate_uncertainty_loa(data, n.boot)
 ```
 
 #### Smooth, wave data (normal error, constant variance, no trend)
@@ -539,7 +563,7 @@ calculate_percent <- function(data) {
 
 covered.curves.percent <- apply(cover.cross.singlecurve, 2, calculate_percent)
 covered.curves.percent <- data.frame(t(covered.curves.percent))
-colnames(covered.curves.percent) <- c("RCB_2", "RCB_3", "Roislien_4", "Point_5")
+colnames(covered.curves.percent) <- c("Point", "Roislien", "Lenhoff")
 
 knitr::kable(covered.curves.percent, caption = "Percentages of entirely covered curves")
 
@@ -560,32 +584,34 @@ cover.cross.fraction.singlecurve <- singlecurve_coverage_fraction(data, n.boot)
 cover.cross.mean.sd <- rbind(round(colMeans(cover.cross.fraction.singlecurve), 2),
              round(apply(cover.cross.fraction.singlecurve, 2, sd), 2)
 )
+colnames(cover.cross.mean.sd) <- c("Point", "Roislien", "Lenhoff")
+
 knitr::kable(cover.cross.mean.sd, caption = "Mean (top) and SD of covered points across the curve")
 
 # # Display as boxplots across methods
 # plot_cov_ver(cover.cross.fraction.singlecurve)
 ```
 
-c. Average distance to the outer point of the curve set
-```{r echo = FALSE, warning = FALSE, message = FALSE}
-floa <- floa_rcb(data, n.boot, ver = "v2")
-floa.point <- floa_point(data)
-floa.roislien <- floa_roislien(data)
+<!-- c. Average distance to the outer point of the curve set -->
+<!-- ```{r echo = FALSE, warning = FALSE, message = FALSE} -->
+<!-- floa <- floa_rcb(data, n.boot, ver = "v2") -->
+<!-- floa.point <- floa_point(data) -->
+<!-- floa.roislien <- floa_roislien(data) -->
 
-dist.all <- data.frame(distance_2_floa(data, floa)$upr.dist,
-                       distance_2_floa(data, floa)$lwr.dist,
-                       distance_2_floa(data, floa.point)$upr.dist,
-                       distance_2_floa(data, floa.point)$lwr.dist,
-                       distance_2_floa(data, floa.roislien)$upr.dist,
-                       distance_2_floa(data, floa.roislien)$lwr.dist
-                       )
+<!-- dist.all <- data.frame(distance_2_floa(data, floa)$upr.dist, -->
+<!--                        distance_2_floa(data, floa)$lwr.dist, -->
+<!--                        distance_2_floa(data, floa.point)$upr.dist, -->
+<!--                        distance_2_floa(data, floa.point)$lwr.dist, -->
+<!--                        distance_2_floa(data, floa.roislien)$upr.dist, -->
+<!--                        distance_2_floa(data, floa.roislien)$lwr.dist -->
+<!--                        ) -->
 
-colnames(dist.all) <- c("floa.up", "floa.lw", "point.up", "point.lw", "roislien.up", "roislien.lw")
+<!-- colnames(dist.all) <- c("floa.up", "floa.lw", "point.up", "point.lw", "roislien.up", "roislien.lw") -->
 
-boxplot(dist.all, ylab = "floa boundary - curve maximum")
-```
+<!-- boxplot(dist.all, ylab = "floa boundary - curve maximum") -->
+<!-- ``` -->
 
-d. Uncertainty in LoA (95% percentile intervals)
+c. Uncertainty in LoA (95% percentile intervals)
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
 # estimate_uncertainty_loa(data, n.boot)
 ```
@@ -608,7 +634,7 @@ calculate_percent <- function(data) {
 
 covered.curves.percent <- apply(cover.cross.singlecurve, 2, calculate_percent)
 covered.curves.percent <- data.frame(t(covered.curves.percent))
-colnames(covered.curves.percent) <- c("RCB_2", "RCB_3", "Roislien_4", "Point_5")
+colnames(covered.curves.percent) <- c("Point", "Roislien", "Lenhoff")
 
 knitr::kable(covered.curves.percent, caption = "Percentages of entire covered curves")
 ```
@@ -622,29 +648,31 @@ cover.cross.fraction.singlecurve <- singlecurve_coverage_fraction(data, n.boot)
 cover.cross.mean.sd <- rbind(round(colMeans(cover.cross.fraction.singlecurve), 2),
              round(apply(cover.cross.fraction.singlecurve, 2, sd), 2)
 )
+colnames(cover.cross.mean.sd) <- c("Point", "Roislien", "Lenhoff")
+
 knitr::kable(cover.cross.mean.sd, caption = "Mean (top) and SD of covered points across the curve")
 ```
 
-c. Average distance to the outer point of the curve set
-```{r echo = FALSE, warning = FALSE, message = FALSE}
-floa <- floa_rcb(data, n.boot, ver = "v2")
-floa.point <- floa_point(data)
-floa.roislien <- floa_roislien(data)
+<!-- c. Average distance to the outer point of the curve set -->
+<!-- ```{r echo = FALSE, warning = FALSE, message = FALSE} -->
+<!-- floa <- floa_rcb(data, n.boot, ver = "v2") -->
+<!-- floa.point <- floa_point(data) -->
+<!-- floa.roislien <- floa_roislien(data) -->
 
-dist.all <- data.frame(distance_2_floa(data, floa)$upr.dist,
-                       distance_2_floa(data, floa)$lwr.dist,
-                       distance_2_floa(data, floa.point)$upr.dist,
-                       distance_2_floa(data, floa.point)$lwr.dist,
-                       distance_2_floa(data, floa.roislien)$upr.dist,
-                       distance_2_floa(data, floa.roislien)$lwr.dist
-                       )
+<!-- dist.all <- data.frame(distance_2_floa(data, floa)$upr.dist, -->
+<!--                        distance_2_floa(data, floa)$lwr.dist, -->
+<!--                        distance_2_floa(data, floa.point)$upr.dist, -->
+<!--                        distance_2_floa(data, floa.point)$lwr.dist, -->
+<!--                        distance_2_floa(data, floa.roislien)$upr.dist, -->
+<!--                        distance_2_floa(data, floa.roislien)$lwr.dist -->
+<!--                        ) -->
 
-colnames(dist.all) <- c("floa.up", "floa.lw", "point.up", "point.lw", "roislien.up", "roislien.lw")
+<!-- colnames(dist.all) <- c("floa.up", "floa.lw", "point.up", "point.lw", "roislien.up", "roislien.lw") -->
 
-boxplot(dist.all, ylab = "floa boundary - curve maximum")
-```
+<!-- boxplot(dist.all, ylab = "floa boundary - curve maximum") -->
+<!-- ``` -->
 
-d. Uncertainty in LoA (95% percentile intervals)
+c. Uncertainty in LoA (95% percentile intervals)
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
 # estimate_uncertainty_loa(data, n.boot)
 ```
@@ -666,7 +694,7 @@ calculate_percent <- function(data) {
 
 covered.curves.percent <- apply(cover.cross.singlecurve, 2, calculate_percent)
 covered.curves.percent <- data.frame(t(covered.curves.percent))
-colnames(covered.curves.percent) <- c("RCB_2", "RCB_3", "Roislien_4", "Point_5")
+colnames(covered.curves.percent) <- c("Point", "Roislien", "Lenhoff")
 
 knitr::kable(covered.curves.percent, caption = "Percentages of entire covered curves")
 
@@ -687,7 +715,9 @@ cover.cross.fraction.singlecurve <- singlecurve_coverage_fraction(data, n.boot)
 cover.cross.mean.sd <- rbind(round(colMeans(cover.cross.fraction.singlecurve), 2),
              round(apply(cover.cross.fraction.singlecurve, 2, sd), 2)
 )
-knitr::kable(cover.cross.mean.sd, caption = "Mean (top) and SD of covered points")
+colnames(cover.cross.mean.sd) <- c("Point", "Roislien", "Lenhoff")
+
+knitr::kable(cover.cross.mean.sd, caption = "Mean (top) and SD of covered points across the curve")
 
 # # Display as boxplots acroos methods
 # plot_cov_ver(cover.cross.fraction.singlecurve)
@@ -698,26 +728,26 @@ knitr::kable(cover.cross.mean.sd, caption = "Mean (top) and SD of covered points
 # plot_cov_ver(cover.cross.fraction)
 ```
 
-c. Average distance to the outer point of the curve set
-```{r echo = FALSE, warning = FALSE, message = FALSE}
-floa <- floa_rcb(data, n.boot, ver = "v2")
-floa.point <- floa_point(data)
-floa.roislien <- floa_roislien(data)
+<!-- c. Average distance to the outer point of the curve set -->
+<!-- ```{r echo = FALSE, warning = FALSE, message = FALSE} -->
+<!-- floa <- floa_rcb(data, n.boot, ver = "v2") -->
+<!-- floa.point <- floa_point(data) -->
+<!-- floa.roislien <- floa_roislien(data) -->
 
-dist.all <- data.frame(distance_2_floa(data, floa)$upr.dist,
-                       distance_2_floa(data, floa)$lwr.dist,
-                       distance_2_floa(data, floa.point)$upr.dist,
-                       distance_2_floa(data, floa.point)$lwr.dist,
-                       distance_2_floa(data, floa.roislien)$upr.dist,
-                       distance_2_floa(data, floa.roislien)$lwr.dist
-                       )
+<!-- dist.all <- data.frame(distance_2_floa(data, floa)$upr.dist, -->
+<!--                        distance_2_floa(data, floa)$lwr.dist, -->
+<!--                        distance_2_floa(data, floa.point)$upr.dist, -->
+<!--                        distance_2_floa(data, floa.point)$lwr.dist, -->
+<!--                        distance_2_floa(data, floa.roislien)$upr.dist, -->
+<!--                        distance_2_floa(data, floa.roislien)$lwr.dist -->
+<!--                        ) -->
 
-colnames(dist.all) <- c("floa.up", "floa.lw", "point.up", "point.lw", "roislien.up", "roislien.lw")
+<!-- colnames(dist.all) <- c("floa.up", "floa.lw", "point.up", "point.lw", "roislien.up", "roislien.lw") -->
 
-boxplot(dist.all, ylab = "floa boundary - curve maximum")
-```
+<!-- boxplot(dist.all, ylab = "floa boundary - curve maximum") -->
+<!-- ``` -->
 
-d. Uncertainty in LoA (95% percentile intervals)
+c. Uncertainty in LoA (95% percentile intervals)
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
 # estimate_uncertainty_loa(data, n.boot)
 ```
@@ -739,7 +769,7 @@ calculate_percent <- function(data) {
 
 covered.curves.percent <- apply(cover.cross.singlecurve, 2, calculate_percent)
 covered.curves.percent <- data.frame(t(covered.curves.percent))
-colnames(covered.curves.percent) <- c("RCB_2", "RCB_3", "Roislien_4", "Point_5")
+colnames(covered.curves.percent) <- c("Point", "Roislien", "Lenhoff")
 
 knitr::kable(covered.curves.percent, caption = "Percentages of entire covered curves")
 
@@ -760,7 +790,9 @@ cover.cross.fraction.singlecurve <- singlecurve_coverage_fraction(data, n.boot)
 cover.cross.mean.sd <- rbind(round(colMeans(cover.cross.fraction.singlecurve), 2),
              round(apply(cover.cross.fraction.singlecurve, 2, sd), 2)
 )
-knitr::kable(cover.cross.mean.sd, caption = "Mean (top) and SD of covered points")
+colnames(cover.cross.mean.sd) <- c("Point", "Roislien", "Lenhoff")
+
+knitr::kable(cover.cross.mean.sd, caption = "Mean (top) and SD of covered points across the curve")
 
 # # Display as boxplots acroos methods
 # plot_cov_ver(cover.cross.fraction.singlecurve)
@@ -771,26 +803,26 @@ knitr::kable(cover.cross.mean.sd, caption = "Mean (top) and SD of covered points
 # plot_cov_ver(cover.cross.fraction)
 ```
 
-c. Average distance to the outer point of the curve set
-```{r echo = FALSE, warning = FALSE, message = FALSE}
-floa <- floa_rcb(data, n.boot, ver = "v2")
-floa.point <- floa_point(data)
-floa.roislien <- floa_roislien(data)
+<!-- c. Average distance to the outer point of the curve set -->
+<!-- ```{r echo = FALSE, warning = FALSE, message = FALSE} -->
+<!-- floa <- floa_rcb(data, n.boot, ver = "v2") -->
+<!-- floa.point <- floa_point(data) -->
+<!-- floa.roislien <- floa_roislien(data) -->
 
-dist.all <- data.frame(distance_2_floa(data, floa)$upr.dist,
-                       distance_2_floa(data, floa)$lwr.dist,
-                       distance_2_floa(data, floa.point)$upr.dist,
-                       distance_2_floa(data, floa.point)$lwr.dist,
-                       distance_2_floa(data, floa.roislien)$upr.dist,
-                       distance_2_floa(data, floa.roislien)$lwr.dist
-                       )
+<!-- dist.all <- data.frame(distance_2_floa(data, floa)$upr.dist, -->
+<!--                        distance_2_floa(data, floa)$lwr.dist, -->
+<!--                        distance_2_floa(data, floa.point)$upr.dist, -->
+<!--                        distance_2_floa(data, floa.point)$lwr.dist, -->
+<!--                        distance_2_floa(data, floa.roislien)$upr.dist, -->
+<!--                        distance_2_floa(data, floa.roislien)$lwr.dist -->
+<!--                        ) -->
 
-colnames(dist.all) <- c("floa.up", "floa.lw", "point.up", "point.lw", "roislien.up", "roislien.lw")
+<!-- colnames(dist.all) <- c("floa.up", "floa.lw", "point.up", "point.lw", "roislien.up", "roislien.lw") -->
 
-boxplot(dist.all, ylab = "floa boundary - curve maximum")
-```
+<!-- boxplot(dist.all, ylab = "floa boundary - curve maximum") -->
+<!-- ``` -->
 
-d. Uncertainty in LoA (95% percentile intervals)
+c. Uncertainty in LoA (95% percentile intervals)
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
 # estimate_uncertainty_loa(data, n.boot)
 ```
@@ -812,7 +844,7 @@ calculate_percent <- function(data) {
 
 covered.curves.percent <- apply(cover.cross.singlecurve, 2, calculate_percent)
 covered.curves.percent <- data.frame(t(covered.curves.percent))
-colnames(covered.curves.percent) <- c("RCB_2", "RCB_3", "Roislien_4", "Point_5")
+colnames(covered.curves.percent) <- c("Point", "Roislien", "Lenhoff")
 
 knitr::kable(covered.curves.percent, caption = "Percentages of entire covered curves")
 
@@ -833,7 +865,9 @@ cover.cross.fraction.singlecurve <- singlecurve_coverage_fraction(data, n.boot)
 cover.cross.mean.sd <- rbind(round(colMeans(cover.cross.fraction.singlecurve), 2),
              round(apply(cover.cross.fraction.singlecurve, 2, sd), 2)
 )
-knitr::kable(cover.cross.mean.sd, caption = "Mean (top) and SD of covered points")
+colnames(cover.cross.mean.sd) <- c("Point", "Roislien", "Lenhoff")
+
+knitr::kable(cover.cross.mean.sd, caption = "Mean (top) and SD of covered points across the curve")
 
 # # Display as boxplots acroos methods
 # plot_cov_ver(cover.cross.fraction.singlecurve)
@@ -844,26 +878,26 @@ knitr::kable(cover.cross.mean.sd, caption = "Mean (top) and SD of covered points
 # plot_cov_ver(cover.cross.fraction)
 ```
 
-c. Average distance to the outer point of the curve set
-```{r echo = FALSE, warning = FALSE, message = FALSE}
-floa <- floa_rcb(data, n.boot, ver = "v2")
-floa.point <- floa_point(data)
-floa.roislien <- floa_roislien(data)
+<!-- c. Average distance to the outer point of the curve set -->
+<!-- ```{r echo = FALSE, warning = FALSE, message = FALSE} -->
+<!-- floa <- floa_rcb(data, n.boot, ver = "v2") -->
+<!-- floa.point <- floa_point(data) -->
+<!-- floa.roislien <- floa_roislien(data) -->
 
-dist.all <- data.frame(distance_2_floa(data, floa)$upr.dist,
-                       distance_2_floa(data, floa)$lwr.dist,
-                       distance_2_floa(data, floa.point)$upr.dist,
-                       distance_2_floa(data, floa.point)$lwr.dist,
-                       distance_2_floa(data, floa.roislien)$upr.dist,
-                       distance_2_floa(data, floa.roislien)$lwr.dist
-                       )
+<!-- dist.all <- data.frame(distance_2_floa(data, floa)$upr.dist, -->
+<!--                        distance_2_floa(data, floa)$lwr.dist, -->
+<!--                        distance_2_floa(data, floa.point)$upr.dist, -->
+<!--                        distance_2_floa(data, floa.point)$lwr.dist, -->
+<!--                        distance_2_floa(data, floa.roislien)$upr.dist, -->
+<!--                        distance_2_floa(data, floa.roislien)$lwr.dist -->
+<!--                        ) -->
 
-colnames(dist.all) <- c("floa.up", "floa.lw", "point.up", "point.lw", "roislien.up", "roislien.lw")
+<!-- colnames(dist.all) <- c("floa.up", "floa.lw", "point.up", "point.lw", "roislien.up", "roislien.lw") -->
 
-boxplot(dist.all, ylab = "floa boundary - curve maximum")
-```
+<!-- boxplot(dist.all, ylab = "floa boundary - curve maximum") -->
+<!-- ``` -->
 
-d. Uncertainty in LoA (95% percentile intervals)
+c. Uncertainty in LoA (95% percentile intervals)
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
 # estimate_uncertainty_loa(data, n.boot)
 ```

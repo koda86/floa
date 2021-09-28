@@ -49,6 +49,7 @@ source("fdaDelta.R")
 source("pick_subwise_curves.R")
 source("draw_clusters.R")
 source("floa_rcb.R")
+source("lenhoff_doris.R")
 source("floa_point.R")
 source("floa_roislien.R")
 source("plot_loa.R")
@@ -114,20 +115,18 @@ n.boot <- 400
 # v3 : Fetch a SINGLE random stride from all strides
 # v4 : Roislien approach (Get one random stride from each subject ONCE and boot-
 #      strap the resulting sample (of length (n=length(subjects))
-floa <- floa_rcb(data, n.boot, ver = "v2")
+# floa <- floa_rcb(data, n.boot, ver = "v2")
 
-# Pointwise LoA ----------------------------------------------------------------
-# Mean + SD are calculated across all strides/subjects using linear mixed models
 floa.point <- floa_point(data)
+floa.roislien <- floa_roislien(data)
+floa.lenhoff <- floa_lenhoff(data, k_reihe = 50, n.boot = n.boot, cp.begin = 0, alpha = 0.05)
 
-
-# ********************************* Plot data **********************************
-plot_loa(data, floa = floa, central.tendency = "mean")
+plot_loa(data, floa.point, floa.roislien, floa.lenhoff)
 
 
 # ********************************* Coverage ***********************************
 # Calculate coverage (entire curves within the limits of agreement)
-coverage <- get_coverage(data, floa.point) # Select floa method: floa or floa.point
+coverage <- get_coverage(data, floa.roislien) # Select floa method: floa or floa.point
 print(coverage)
 
 
