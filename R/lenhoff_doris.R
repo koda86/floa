@@ -1,11 +1,12 @@
-floa_lenhoff <- function(data, k_reihe, n.boot, cp.begin, alpha) {
+floa_lenhoff <- function(data, k_reihe, n.boot, band, cp.begin, alpha) {
 
   # Limit of Agreement calculation adapted from Lenhoff et al. (1999)
   # ----------------------------------------------------------------------------
   #
   # Function arguments:
-  # n.boot   : Number of bootstrap iterations
   # k_reihe  : number of coefficients
+  # n.boot   : Number of bootstrap iterations
+  # band     : Type of interval (prediction or confidence)
   # cp.begin : Anfangswert Quantil
   # alpha    : Irrtumswahrscheinlichkeit
   # ----------------------------------------------------------------------------
@@ -44,7 +45,7 @@ floa_lenhoff <- function(data, k_reihe, n.boot, cp.begin, alpha) {
   fourier.std       = matlab::zeros(n_time, 1)
 
   # Fourierreihe aufstellen
-  # allgemein: f(t) = mu + sum(alpha cos(2pi*k*t/T) + beta sin(2pi*k*t/T))
+  # General: f(t) = mu + sum(alpha cos(2pi*k*t/T) + beta sin(2pi*k*t/T))
   fourier.s = rep(1, times = n_time) # ones(n_time, 1)
   for (k in seq(1, k_reihe*2, 2)) {
     fourier.s <- cbind(fourier.s, cos(2*pi*(k/2)*time/(n_time-1)))
@@ -53,39 +54,29 @@ floa_lenhoff <- function(data, k_reihe, n.boot, cp.begin, alpha) {
 
   for (i in 1:n_time) {
     # Least squares Regression
-    # pracma::mldivide emulates the Matlab backslash operator “\” (Matrix left division)
     fourier.koeffi[, i] = pracma::mldivide(fourier.s, data.diff[, i]) # fourier.s\daten[, i]
-    # Fourierkurve
+    # Fourier curve
     fourier.real[, i] = fourier.s %*% fourier.koeffi[, i]
   }
 
-  # mittlere Fourierkurve
+  # Mean Fourier curve
   fourier.mean[, 1] = rowMeans(fourier.koeffi)
   fourier.real_mw[, 1] = fourier.s %*% fourier.mean[, 1]
 
-  # Standardabweichung der Fourierkurve
+  # Standard deviation of the Fourier curve
   for (i in 1:n_kurven) {
-    # Lenhoff, Appendix A, Eq. (0.5)
+    # variance-covariance matrix
     fourier.std1[, , i] <- (fourier.koeffi[, i] - fourier.mean[, 1]) %*% t(fourier.koeffi[, i] - fourier.mean[, 1])
   }
 
   fourier.kovarianz <- apply(fourier.std1, c(1, 2), mean) # nanmean(fourier.std1, 3)
+  # Lenhoff, Appendix A, Eq. (0.5)
   fourier.std_all <- sqrt(fourier.s %*% fourier.kovarianz %*% t(fourier.s))
 
   for (i in 1:n_time) {
     # Werte liegen auf der Diagonalen der quadratischen Matrix fourier.std_all
     fourier.std[i, 1] = fourier.std_all[i, i]
   }
-
-  # # Als Plausbilitätscheck: Alternativ nur Berechnung der SD (ohne Kovarianzen)
-  # fourier.std <- apply(fourier.real, 1, sd)
-  # # plot(fourier.std)
-
-  # Interessant fuer spaeter sind die tatsaechlichen Kurven und die mittlere
-  # Kurve sowie dazugehoerige Standardabweichung
-  fourier_out.real    <- fourier.real
-  fourier_out.real_mw <- fourier.real_mw
-  fourier_out.std     <- fourier.std
 
 
   # ----------------------------------------------------------------------------
@@ -111,32 +102,32 @@ floa_lenhoff <- function(data, k_reihe, n.boot, cp.begin, alpha) {
       bootstrap.real[, k, i] = fourier.s %*% bootstrap.pseudo_koeffi[, k, i]
     }
 
-  # mittlere Bootstrap-Kurve und Standardabweichung
-  bootstrap.mean[, i] <- rowMeans(bootstrap.pseudo_koeffi[, , 1])  # nanmean(bootstrap.pseudo_koeffi[, , i], 2)
-  bootstrap.real_mw[, i] <- fourier.s %*% bootstrap.mean[, i]
+    # mittlere Bootstrap-Kurve und Standardabweichung
+    bootstrap.mean[, i] <- rowMeans(bootstrap.pseudo_koeffi[, , 1])  # nanmean(bootstrap.pseudo_koeffi[, , i], 2)
+    bootstrap.real_mw[, i] <- fourier.s %*% bootstrap.mean[, i]
 
-  for (k in 1:n_kurven) {
-    bootstrap.std1[, , k] <- (bootstrap.pseudo_koeffi[, k, i] - bootstrap.mean[, i]) %*% t(bootstrap.pseudo_koeffi[, k, i] - bootstrap.mean[, i])
+    for (k in 1:n_kurven) {
+      bootstrap.std1[, , k] <- (bootstrap.pseudo_koeffi[, k, i] - bootstrap.mean[, i]) %*% t(bootstrap.pseudo_koeffi[, k, i] - bootstrap.mean[, i])
+    }
+
+    bootstrap.kovarianz[, , i] <- apply(bootstrap.std1, c(1, 2), mean) # nanmean(bootstrap.std1, 3)
+    bootstrap.std_all[, , i] = sqrt(fourier.s %*% bootstrap.kovarianz[, , i] %*% t(fourier.s))
+
+    for (k in 1:n_time) {
+      bootstrap.std[k, i] <- bootstrap.std_all[k, k, i]
+    }
+
   }
-
-  bootstrap.kovarianz[, , i] <- apply(bootstrap.std1, c(1, 2), mean) # nanmean(bootstrap.std1, 3)
-  bootstrap.std_all[, , i] = sqrt(fourier.s %*% bootstrap.kovarianz[, , i] %*% t(fourier.s))
-
-  for (k in 1:n_time) {
-    bootstrap.std[k, i] <- bootstrap.std_all[k, k, i]
-  }
-
-}
 
 
   # ----------------------------------------------------------------------------
-  # Quantilbestimmung für zugehörige Irrtumswahrscheinlichkeit
+  # Prediction band
   # ----------------------------------------------------------------------------
 
   cp.data   <- matlab::zeros(n_kurven, n.boot)
   cp.data_i <- matlab::zeros(n_kurven, n.boot)
 
-  # Bestimmung des Quantils fuer Irrtumswahrscheinlichkeit
+  # Bestimmung des Quantils fuer alpha
   cp.mean <- 0
   cp.grenze <- cp.begin
   n <- 1
@@ -144,9 +135,9 @@ floa_lenhoff <- function(data, k_reihe, n.boot, cp.begin, alpha) {
   while (cp.mean < (1 - alpha)) {
     for (i in 1:n.boot) {
       for (k in 1:n_kurven) {
+        # Lenhoff, Appendix A, Eq. (0.6)
         cp.data[k, i] <- max(abs(fourier.real[, k] - bootstrap.real_mw[, i]) / bootstrap.std[, i])
         cp.data_i[k, i] <- cp.data[k, i] < cp.grenze
-        # cp.data_i(k,i) = cp.data(k,i)< cp.grenze;
       }
     }
     cp.mean <- mean(cp.data_i) # nanmean(mean(cp.data_i))
@@ -158,26 +149,58 @@ floa_lenhoff <- function(data, k_reihe, n.boot, cp.begin, alpha) {
 
 
   # ----------------------------------------------------------------------------
-  # Praediktionsband
+  # Confidence band
   # ----------------------------------------------------------------------------
 
-  # bootstrap_sample[, 1] <- rowMeans(bootstrap.real_mw) # mean(bootstrap.real_mw, 2)
-  # bootstrap_sample[, 2] <- rowMeans(bootstrap.std) # mean(bootstrap.std,2)
-  # bootstrap_sample[, 3] <- bootstrap_sample[, 1] + cp.grenze * bootstrap_sample[, 2]
-  # bootstrap_sample[, 4] <- bootstrap_sample[, 1] - cp.grenze * bootstrap_sample[, 2]
+  cc.data   <- matlab::zeros(n_kurven, n.boot)
+  cc.data_i <- matlab::zeros(n_kurven, n.boot)
+
+  # Bestimmung des Quantils fuer alpha
+  cc.mean <- 0
+  cc.grenze <- cp.begin
+  n <- 1
+
+  while (cc.mean < (1 - alpha)) {
+    for (i in 1:n.boot) {
+      for (k in 1:n_kurven) {
+        # Lenhoff, Appendix A, Eq. (0.7)
+        cc.data[k, i] <- max(abs(bootstrap.real_mw[, i] - fourier.real_mw) / bootstrap.std[, i])
+        # max_sd<-c(max_sd,max(abs(curve_list[[c]][,1]-curve_list[[which(names(curve_list)=="mean_curve")]][,a])/curve_list[[which(names(curve_list)=="sd_curve")]][,a]))
+        cc.data_i[k, i] <- cc.data[k, i] < cc.grenze
+      }
+    }
+    cc.mean <- mean(cc.data_i) # nanmean(mean(cp.data_i))
+    cc.grenze <- cc.grenze + 0.05
+    n <- n + 1
+  }
+
+  cc_out <- cc.grenze
+
+
+  # ----------------------------------------------------------------------------
+  # Construct bands
+  # ----------------------------------------------------------------------------
 
   floa.lenhoff.mean <- rowMeans(bootstrap.real_mw)
-  floa.lenhoff.sd <- rowMeans(bootstrap.std)
-  floa.lenhoff <- rbind(floa.lenhoff.mean,
-                        floa.lenhoff.mean + cp.grenze * floa.lenhoff.sd,
-                        floa.lenhoff.mean - cp.grenze * floa.lenhoff.sd
-                        )
+  floa.lenhoff.sd   <- rowMeans(bootstrap.std)
+
+  if (band == "prediction") {
+    floa.lenhoff <- rbind(floa.lenhoff.mean,
+                          floa.lenhoff.mean + cp.grenze * floa.lenhoff.sd,
+                          floa.lenhoff.mean - cp.grenze * floa.lenhoff.sd
+                          )
+  } else {
+    floa.lenhoff <- rbind(floa.lenhoff.mean,
+                          floa.lenhoff.mean + cc.grenze * floa.lenhoff.sd,
+                          floa.lenhoff.mean - cc.grenze * floa.lenhoff.sd
+                          )
+  }
 
   row.names(floa.lenhoff) <- c("mean", "upper", "lower")
 
-  # plot(floa.lenhoff["mean", ], type = "l", ylim = c(-0.5, 0.5))
-  # lines(floa.lenhoff["upper", ])
-  # lines(floa.lenhoff["lower", ])
+  plot(floa.lenhoff["mean", ], type = "l", ylim = c(-5, 5))
+  lines(floa.lenhoff["upper", ])
+  lines(floa.lenhoff["lower", ])
 
   return(floa.lenhoff)
 
