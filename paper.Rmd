@@ -410,7 +410,7 @@ floa.point <- floa_point(data)
 floa.roislien <- floa_roislien(data)
 floa.lenhoff <- floa_lenhoff(data, k_reihe = 50, n.boot = n.boot, cp.begin = 0, alpha = 0.05)
 
-plot_loa(data, floa.point, floa.roislien, floa.lenhoff)
+plot_loa(data, floa.point, floa.roislien, floa.lenhoff, ylim = c(-5, 5))
 ```
 
 #### Smooth curves (homoscedasticity, normal error, no trend)
@@ -422,7 +422,7 @@ floa.point <- floa_point(data)
 floa.roislien <- floa_roislien(data)
 floa.lenhoff <- floa_lenhoff(data, k_reihe = 50, n.boot = n.boot, cp.begin = 0, alpha = 0.05)
 
-plot_loa(data, floa.point, floa.roislien, floa.lenhoff)
+plot_loa(data, floa.point, floa.roislien, floa.lenhoff, ylim = c(-5, 5))
 ```
 
 #### Smooth curves with nonlinear error trend
@@ -434,7 +434,7 @@ floa.point <- floa_point(data)
 floa.roislien <- floa_roislien(data)
 floa.lenhoff <- floa_lenhoff(data, k_reihe = 50, n.boot = n.boot, cp.begin = 0, alpha = 0.05)
 
-plot_loa(data, floa.point, floa.roislien, floa.lenhoff)
+plot_loa(data, floa.point, floa.roislien, floa.lenhoff, ylim = c(-5, 5))
 ```
 
 #### Heteroscedastic measurement error (no trend)
@@ -446,7 +446,7 @@ floa.point <- floa_point(data)
 floa.roislien <- floa_roislien(data)
 floa.lenhoff <- floa_lenhoff(data, k_reihe = 50, n.boot = n.boot, cp.begin = 0, alpha = 0.05)
 
-plot_loa(data, floa.point, floa.roislien, floa.lenhoff)
+plot_loa(data, floa.point, floa.roislien, floa.lenhoff, ylim = c(-10, 10))
 ```
 
 #### Curves phase shifted in x-axis direction
@@ -458,7 +458,7 @@ floa.point <- floa_point(data)
 floa.roislien <- floa_roislien(data)
 floa.lenhoff <- floa_lenhoff(data, k_reihe = 50, n.boot = n.boot, cp.begin = 0, alpha = 0.05)
 
-plot_loa(data, floa.point, floa.roislien, floa.lenhoff)
+plot_loa(data, floa.point, floa.roislien, floa.lenhoff, ylim = c(-5, 5))
 ```
 
 #### Real-world validation data
@@ -470,11 +470,10 @@ floa.point <- floa_point(data)
 floa.roislien <- floa_roislien(data)
 floa.lenhoff <- floa_lenhoff(data, k_reihe = 50, n.boot = n.boot, cp.begin = 0, alpha = 0.05)
 
-plot_loa(data, floa.point, floa.roislien, floa.lenhoff)
+plot_loa(data, floa.point, floa.roislien, floa.lenhoff, ylim = c(-15, 15))
 ```
 
 ### Leave-one (curve) out cross validation
-Displayed are boxes for different calculation methods (FLoA~RCB_v2~, FLoA~RCB_v3~, FLoA~Roislien~, FLoA~Point~)
 
 #### Realistic smooth wave data (constant variance, no trend)
 a. Coverage of the entire curve

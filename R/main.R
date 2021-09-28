@@ -121,7 +121,7 @@ floa.point <- floa_point(data)
 floa.roislien <- floa_roislien(data)
 floa.lenhoff <- floa_lenhoff(data, k_reihe = 50, n.boot = n.boot, cp.begin = 0, alpha = 0.05)
 
-plot_loa(data, floa.point, floa.roislien, floa.lenhoff)
+plot_loa(data, floa.point, floa.roislien, floa.lenhoff, ylim = c(-5, 5))
 
 
 # ********************************* Coverage ***********************************
