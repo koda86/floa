@@ -1,5 +1,6 @@
 ---
-title: "Analysis of different methods for constructing continuous limits of agreement from smooth biomechanical data"
+title: "Comparison of continuous prediction bands for the validation of smooth 1D biomechanical time series data"
+
 author:
   - name: Daniel Koska
     email: daniel.koska@hsw.tu-chemnitz.de
@@ -32,30 +33,30 @@ output:
 
 ### TODO
 <!-- - Exemplarische Paper für die jeweiligen simulierten Datensätze raussuchen -->
-- Weitere synthetische Daten siehe Paper Robinson et al. (2021)
-- Evtl. simulierte Datensätze um Beispiele aus https://mjskay.github.io/ggdist/articles/lineribbon.html erweitern (insbesondere das erste Beispiel mit x-versetzten Gausskurven)!
-- Simulierte Daten durch Funktionen ersetzen? Eigentlich aktuell eher unnötig, da die Zeitreihen ja eigentlich bereits mithilfe von Funktionen modelliert wurden. Zudem wird nicht interpoliert, abgeleitet o. Ä. ... letztlich für die aktuelle Idee des Papers eher ungeeignet (plus man umgeht Probleme wie mögliche Glättungsartefakte, oder die Definition eines functional mean).
-- Falls doch FDA, dann evtl. als eigenständiges Skript forken
-- Begründung warum Prädiktionsintervalle anstelle von Konfidenzintervallen
 <!-- - Umbennung entire curve in "All-or-nothing" (entlehnt von Juul et al.) -->
+<!-- - Toleranzintervalle mit reinnehmen? -->
+<!-- - ROISLIEN durch Toleranzintervalle ersetzen! -->
 - .bib file anlegen
 - Begriff spatiotemporal überdenken (wie ist das im Kontext FDA definiert)
-- Ratkowsky besorgen
-- Begründung warum Prädiktionsintervalle und nicht Konfidenzintervalle (theoretisch könnte man beides machen; Prädiktionsintervalle scheinen mir aber eher das zu sein, was man will)
 
-### TODO read (again)
-- Parker et al. (2021) https://bmcmedresmethodol.biomedcentral.com/articles/10.1186/s12874-020-01022-x
-- Robinson, Vanrenterghem, Pataky (2021) Sample size estimation for biomechanical waveforms: Current practice, recommendations and a comparison to discrete power analysis
-- Olshen et al. (1989) Gait analysis and the bootstrap
-- Curvewise point and interval summaries for tidy data frames of draws from distributions https://mjskay.github.io/ggdist/reference/curve_interval.html
-- Horvath, Kokoszka & Reeder (2013) Estimation of the mean of functional time series and a two-sample problem
-- Generell die Kooperationspaper von Hörmann und Kokoszka zu FDA Statistik,insbesondere 'Inference for Functional Data with Applications' (2012)
-- Ratkowsky 1990 Handbook of nonlinear regression models
+<!-- ### TODO read (again) -->
+<!-- - White Basics of Estimating Measurement Uncertainty -->
+<!-- - Francq B, Govaerts B. How to regress and predict in a Bland-Altman plot? Review and contribution based on tolerance intervals and -->
+<!-- correlated-errors-in-variables models. Statist Med. 2016;35:2328-2358. -->
+<!-- - Francq Confidence, prediction, and tolerance in linear mixed models -->
+<!-- - Vock (2016) -->
+<!-- - Parker et al. (2021) https://bmcmedresmethodol.biomedcentral.com/articles/10.1186/s12874-020-01022-x -->
+<!-- - Robinson, Vanrenterghem, Pataky (2021) Sample size estimation for biomechanical waveforms: Current practice, recommendations and a comparison to discrete power analysis -->
+<!-- - Olshen et al. (1989) Gait analysis and the bootstrap -->
+<!-- - Curvewise point and interval summaries for tidy data frames of draws from distributions https://mjskay.github.io/ggdist/reference/curve_interval.html -->
+<!-- - Horvath, Kokoszka & Reeder (2013) Estimation of the mean of functional time series and a two-sample problem -->
+<!-- - Generell die Kooperationspaper von Hörmann und Kokoszka zu FDA Statistik,insbesondere 'Inference for Functional Data with Applications' (2012) -->
+<!-- - Ratkowsky 1990 Handbook of nonlinear regression models -->
 
 
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
 library(ggplot2)
-library(boot)
+# library(boot)
 
 dir.script <- "~/floa/R"
 dir.data <- "~/floa/R/examples"
@@ -83,122 +84,254 @@ source("plot_cov_ver.R")
 source("estimate_uncertainty_loa.R")
 ```
 
-<!-- # Alternatives Intro -->
-
-<!-- SHORT NOTE!? -->
-
-<!-- Ansatz: Neben der Validierung von Messgeräten spielt auch die Validierung von Modellergebnissen eine Rolle! -->
-
-<!-- 1. Es gibt einen Unterschied zwischen Konfidenz- und Prädiktionsintervallen: Prediction intervals are a prediction of a future observation, while confidence intervals represent a predicted mean response.  -->
-
-<!-- <!-- https://stats.stackexchange.com/questions/16493/difference-between-confidence-intervals-and-prediction-intervals --> -->
-<!-- The difference between a prediction interval and a confidence interval is the standard error. -->
-<!-- The standard error for a confidence interval on the mean takes into account the uncertainty due to sampling. The line you computed from your sample will be different from the line that would have been computed if you had the entire population, the standard error takes this uncertainty into account. -->
-<!-- The standard error for a prediction interval on an individual observation takes into account the uncertainty due to sampling like above, but also takes into account the variability of the individuals around the predicted mean. The standard error for the prediction interval will be wider than for the confidence interval and hence the prediction interval will be wider than the confidence interval. -->
-
-<!-- Für die Validierung von Messinstrumenten sind aus unserer Sicht eher Prädiktionsintervalle interessant! Daher beziehen sich alle folgenden Aussagen ausschließlich auf Prädiktionsintervalle. -->
-
-<!-- 2. Punktweise Prädiktionsbänder (und Konfidenzbänder) sind gegenüber simultatnen zu eng (Olea & Plagborg-Moeller, 2018; Lenhoff et al., 1999). Daher wurden in der Vergangenheit Korrekturverfahren (e. .g. Lenhoff, Bonferroni, Šidák, projection, sup-t bands) vorgeschlagen -->
-
-<!-- <!-- See Mirzargar et al. (2014) or Juul et al. (2020) for an accessible introduction to data depth and curve boxplots / functional boxplots. --> -->
-
 # Introduction
 
-Having a good estimate of the amount of measurement error is a basic requirement when analyzing movement data. The classic linear error model describes measurement error as the sum of systematic and random deviations from the true value. A complete characterization of the measurement error, however, is complex, as different sources of variance (within, between) and noise must be considered. The analysis of sensor data is further complicated by the fact that the output of many measurement systems in biomechanics - such as e. g. joint angles, ground reaction forces, or center of mass trajectories - is available in the form of continuous signals (curve data) within which the error can vary over time.
+Die Beurteilung der Validität biomechanischer Messverfahren erfolgt üblicherweise über den Vergleich eines 'neuen' Messsystems mit einem etablierten. Dabei werden Bewegungen mit zwei Messsystemen simultan aufgezeichnet und Messwerte miteinander verglichen, die theoretisch den gleichen Wert aufweisen sollten. Die statistische Aufbereitung der zwangsläufig zu beobachtenden Abweichungen ist dabei aus verschiedenen Gründen nicht trivial. Eine besondere Herausforderung stellt die Tatsache dar, dass der Output der meisten Messsysteme in Form höherdimensionaler Daten (z. B. 1D Kurvendaten wie EMG-Signale oder COP Verläufe, 2D plantare Druckmatrizen oder 3D bone strain fields) vorliegt, innerhalb derer der Messfehler variiert. Der Fokus dieses Papers liegt auf 1D Kurvendaten, die den häufigsten Anwendungsfall in biomechanischen Bewegungsanalysen darstellen.
 
-Therefore, when analyzing the validity of curve data, the entire length of the curve should be accounted for. This can be accomplished e. g. by applying statistics separately to all points of the curve [Pini et al. (2019). The pointwise approach allows for an error representation over the entire domain, but ignores the fact, that the sampling points within a curve are locally correlated (Deluzio & Astephen, 2007; Pataky, 2010). From a statistical point of view, this implies that the random error component is likely underrepresented when the (nonzero) covariance term of adjacent sampling points is not accounted for (Lenhoff et al., 1999).
+In den allermeisten Validierungsstudien wird der Zeitreihencharakter zugunsten einfacher(er) Modelle vernachlässigt und Kurvendaten auf einzelne diskrete (0D)Punkte oder skalare Features (z. B. local extrema, rates of change, or ranges of motion) reduziert. Daraus ergeben sich eine Reihe von Problemen für die Bewertung des Messfehlers: (i) non-stationary error processes are not considered (ii) the validity of statements derived from discrete variables is limited by domain alignment (i. e. phase shift) and the risk of examining points that have little relevance for the system under investigation (Donoghue et al., 2008; Pataky et al., 2008; Richter et al., 2014; Park et al., 2017) (iii) biomechanische Daten, die die Bewegung von Körpersegmenten direkt messen, sind durch die fundamentalen Viskositätseigenschaften biologischer Gewebe (Fung, 1981) und Freiheitsgrade menschlicher Gelenkbewegungen charakterisisiert. Beispielsweise sind im Verlauf einer Gelenkwinkelkurve keine Sprünge zu erwarten. Aus statistischer Sicht bedeutet das, dass die Samplingpunkte innerhalb einer Kurve keine lose Ansammlung von Einzelpunkten darstellen, sondern lokal korreliert sind (Deluzio & Astephen, 2007; Pataky, 2010). Bei der einfachen Übertragung punktweiser Statistiken auf alle Samplingpunkte der Kurve ist damit zu erwarten, dass die zufällige Fehlerkomponente unterschätzt wird, da der (nonzero) covariance term of adjacent sampling points nicht berücksichtigt wird (Olea & Plagborg-Moeller, 2018; Lenhoff et al., 1999). Die üblicherweise zur Korrektur beim multiplen Testen eingesetzten Korrekturverfahren zur Anpassung des alpha levels (Hochberg & , 1987) führen aufgrund der hohen Anzahl an Datenpunkten pro Kurve ($t \le 100$) zu sehr konservativen Schätzungen weshalb dieses Vorgehen hier nicht zielführend ist. Ein besserer Ansatz ist es Kurven direkt als zusammenhängende Objekte zu betrachten.
 
-Es gibt verschiedene Ansätze dieses Problem zu adressieren. Was bislang fehlt ist eine systematische Validierung und Gegenüberstellung verschiedener Methoden. Im Paper sollen daher wichtige Methoden zur Konstruktion kontinuierlicher Übereinstimmnugsbänder anhand repräsentativer Datensätze (synthetisch und real-world) verglichen werden und deren Vor- und Nachteile gegenübergestellt werden.
-<!-- Zudem sollen relevante methodische Aspekte diskutiert (z. B. Prädiktions- vs. Konfidenzbänder für die Validierung von Messsystemen) -->
+Sutherland, Olshen, Biden & Wyatt (1988, 1989) (BOOT) haben für Gelenkwinkeldaten im Kontext von Ganganalysen Ende der 1980er Jahre eine Methode vorgestellt, bei der Kurvendaten mithilfe eines random (Fourier) coefficient Regressionsmodells approximiert werden und aus den so gebildeten funktionalen Objekte anschließend durch Bootstrapping Prädiktionsbänder für normales Gehen gebildet werden. Lenhoff et al. (1999) illustrated the same method on a generic gait analysis data set (comprised of joint angle curves) and compared it to pointwise Gaussian intervals. By means of a leave-one out cross validation they found that the Sutherland prediction bands provide appropriate coverage for continuous curve gait data (86% coverage at 90% nominal coverage level) while pointwise Gaussian bands are shown to provide inadequate coverage (54%). Røislien et al. (2012) haben einen Ansatz präsentiert, mit dem die Methode von Bland & Altman (1983) für kontinuierliche Daten erweitert wird. Der Ansatz von Bland & Altman ist die am weitesten verbreitete Methode in Methodenvergleichen (Ludbrook, 2010) und verwendet die Differenzen zwischen zwei Messmethoden für die Konstruktion von Limits Agreement (LoA).
 
-Bei allen etablierten Vorzuügen funktionaler/kontinuerlicher Verfahren ist aktuell zu konstatieren, dass diese Methoden in der angewandten Forschung im Bereich Biomechanik/Bewegungswissenschafte kaum Anwendung finden. Wir spekulieren, dass für die praktische Umsetzung Fähigkeiten in den Bereichen Statistik und Programmierung erforderlich sind, die bei vielen "Praktikern" nicht ausreichend vorhanden sind. Um die Verbreitung funktionaler Methoden zu katalysieren stellen wir daher die im Paper analysierten Methoden als frei verfügbaren R Code zur Verfügung.
+Das vorliegende Paper strebt eine systematische Validierung verschiedener Methoden zur Konstruktion kontinuierlicher Fehlerintervalle bei Methodenvergleichen an. Dazu sollen drei verschiedene Methoden anhand simulierter und realer Datensätze charakteristischer glatter Kurven biomechanischer Messysteme (Gelenkwinkelverläufe von zwei Messsystemen) verglichen werden: (1) punktweise Bland and Altman LoA, (2) LoA nach Roislien et al. und (3) gebootstrappte funktionale Prädiktionsbänder (Sutherland, Olshen, Biden & Wyatt (1988, 1989)). Da sowohl die Intervalle von Sutherland als auch Roislien im Wesentlichen Prädiktionsintervalle repräsentieren, soll der Methodenvergleich exemplarisch am Beispiel kontinuierlicher Prädiktionsbänder vollzogen werden. Die Methode lässt sich jedoch prinzipiell auch auf andere Intervallmethoden wie Konfidenz- oder Toleranzintervalle übertragen. Zur Beurteilung der Intervallgüte werden die qualitative Verläufe der Intervallgrenzen der jeweiligen Verfahren gegen die tatsächlichen Differenzen geplottet und die entsprechenden coverage properties berechnet. Für die Beurteilung der Intervallgüte wird im Rahmen einer leave-one out cross validation die Unsicherheit in den berechneten LoA angegeben.
 
-
-<!-- <!-- ... and likely results in a systematic underrepresentation of ... values (Juul et al., 2020; Mirzagar et al. (2014). --> -->
-
-<!-- <!-- https://mjskay.github.io/ggdist/reference/curve_interval.html --> -->
-<!-- <!-- Hier referenzierte Paper u. a.  --> -->
-<!-- <!-- - Juul Jonas, Kaare Græsbøll, Lasse Engbo Christiansen, and Sune Lehmann. (2020). "Fixed-time descriptive statistics underestimate extremes of epidemic curve ensembles". arXiv e-print. arXiv:2007.05035 --> -->
-<!-- <!-- - Mirzargar, Mahsa, Ross T Whitaker, and Robert M Kirby. (2014). "Curve Boxplot: Generalization of Boxplot for Ensembles of Curves". IEEE Transactions on Visualization and Computer Graphics. 20(12): 2654-2663. doi: 10.1109/TVCG.2014.2346455 --> -->
-
-<!-- From a statistical point of view, this implies that the random error component is likely underrepresented when the (nonzero) covariance term of adjacent sampling points is not accounted for (Lenhoff et al., 1999). In addition, most traditional point statistics are either not suitable (e.g. statistical tests of mean differences), or are only suitable to a limited extent (e.g. product-moment correlation) to quantify the agreement between two measurement systems (Bland and Altman, 1986). -->
-
-<!-- One possibility to address the problem of pointwise analysis is to treat entire curves as (functional) objects rather than as a series of unconnected points. -->
-
-<!-- <!-- Es gibt eine Reihe von Ansätzen aus anderen Bereichen (z. B. Covid Prädiktion), bei denen sog. Function oder Curve Boxplots eingesetzt werden. --> -->
-<!-- <!-- https://mjskay.github.io/ggdist/reference/curve_interval.html --> -->
-<!-- <!-- Hier referenzierte Paper u. a.  --> -->
-<!-- <!-- - Juul Jonas, Kaare Græsbøll, Lasse Engbo Christiansen, and Sune Lehmann. (2020). "Fixed-time descriptive statistics underestimate extremes of epidemic curve ensembles". arXiv e-print. arXiv:2007.05035 --> -->
-<!-- <!-- - Mirzargar, Mahsa, Ross T Whitaker, and Robert M Kirby. (2014). "Curve Boxplot: Generalization of Boxplot for Ensembles of Curves". IEEE Transactions on Visualization and Computer Graphics. 20(12): 2654-2663. doi: 10.1109/TVCG.2014.2346455 --> -->
-
-<!-- Sutherland et al. (1988) introduced a method in which continuous signals are reconstructed using Fourier series and bootstrapped to estimate of the variation of the sample mean and thus estimate confidence intervals. Lenhoff et al. (1999) illustrated their method on a generic gait analysis data set (comprised of joint angle curves) and compared it to pointwise Gaussian intervals. The authors found that Sutherland et al. bootstrap bands provide appropriate coverage for continuous curve gait data (86% coverage for a targeted coverage of 90%) while pointwise Gaussian bands are shown to provide inadequate coverage (54% for a targeted coverage of 90%). -->
-
-<!-- <!-- In other words, a single 0.95-CI for each one of the quantities of interest is computed and, in this sense, they are called pointwise CIs. However, if the target is the estimation of a vector of values (such as the CDF or the return level function evaluated in a grid of points, for instance), more accurate than computing the corresponding pointwise CIs for each one of the quantities of interest is to construct simultaneous CIs (also called a confidence band). Simultaneous CIs are a group of CIs (a CI for each one of the quantities of interest) designed to jointly contain this vector of unknown values with a prescribed high probability (95%, for instance). In this way, it would be possible to make a joint probabilistic assessment for some quantiles of the corresponding CDF. Because simultaneous CIs include information on model reliability, they are are much more informative than pointwise CIs [14]. --> -->
-
-<!-- Røislien et al. (2012) presented a similar approach to calculate a functional version of the the Limits of Agreement (LoA) method suggested by Bland & Altman. They first calculate functional difference curves which are then bootstrapped to obtain 95% confidence intervals. The approach accounts for the autocorrelation characteristic in the signal and at the same time allows for an intuitive description of the systematic and random error terms in the original sampling space (e.g. actual degrees). Røislien et al., however, rely on a number of strong model assumptions, which are often not or only partially fulfilled in empirical data sets: -->
-
-<!-- (i) The error distribution is approximately normal. -->
-
-<!-- The construction of symmetric prediction bands as described in Røislien et al. [10] relies on Gaussian assumptions. Non-normality, however, is often present when e.g. sensor values are truncated because of limited range or resolution, or because values drift over time. -->
-
-<!-- (ii) Time-continuous differences of two measurement systems and the corresponding averages must be uncorrelated. -->
-
-<!-- This assumption is violated considerably in many validation data sets [12]. E.g., Atallah et al. [13] found that the agreement between an ear-worn accelerometer and a force-plate instrumented treadmill was associated with gait speed when estimating gait cycle duration. When validating a foot-worn gyroscope for treadmill running, Koska & Maiwald [14] observed a linear error trend that was associated with foot strike behavior. -->
-
-<!-- (iii) Aus einem Datensatz bestehend aus einer Kurve eines Probanden lassen sich durch Bootstrapping von mittleren Kurven Unsicherheitsintervalle bilden, die ein geeignetes Maß für die estimation uncertainty darstellen. -->
-
-<!-- Hier werden arithmetische mean curves verwendet, the variability of which will reflect variation between means. In many cases, however, it is the variability of individual values that is relevant, and the limits will be too narrow by a factor of approximately the square root of the number of curves within the sample. -->
-
-<!-- Ein weiteres Problem ist, dass die Methode keine messwiederholten Daten berücksichtigt. Da sich messwiederholte Kurven i. d. R. ähnlicher sind als unabhängige Kurven, besteht die Gefahr die Streuung des Messsystems zu überschätzen. -->
-
-<!-- <!-- Anwendung der Argumentation der Reviewer* auf die "Roislien_FLoA": In Roislien et al. werden 95% Konfidenzintervalle gebootstrapped. The authors are producing the arithmetic mean curves, the variability of which will reflect variation between means. It is the variability of individual values that is relevant, and the limits will be too narrow by a factor of approximately the square root of n.subj. --> -->
-
-<!-- <!-- Formulierung aus dem alten Skript --> -->
-<!-- <!-- (iii) Measurement uncertainty can be estimated adequately by bootstrapping the error variance from a sample that consists of a single curve per subject. --> -->
-<!-- <!-- If no repeated measurements are included in the sample, an essential error component (intra-individual variance) is ignored. The bootstrap – like any other statistical procedure – cannot solve this problem, as it can only estimate proportions of variance that are contained in the sample. --> -->
-
-<!-- <!-- Weiterer ("zugehöriger) Reviewerkommentar: --> -->
-<!-- <!-- In looking at limits of agreement, the authors are considering the extent of within pair variation. However, in looking at the point wise limits of agreement, these are defined to incorporate a between pair standard deviation. Even if it was appropriate to utilise between pair variability, the authors should note that it is variances that are additive and not SDs. Perhaps the authors' lack of understanding comes from their erroneous assumption (iii).  --> -->
-
-<!-- <!-- Olsen et al. [15] examined the validity of an inertial measurement unit (IMU) for analyzing the spatial displacement of the distal limbs of horses using functional LoA (FLoA). Their approach differs from Røislien et al. [10] in that initially linear mixed models were fitted to the repeated measurements of different horses. Functional data estimates of the mean trends in the strides were then determined from the model fits and FLoA were calculated. This procedure accounts for repeated measurements and eliminates the need to emulate empirical curves with Fourier series or splines. The FLoA computed this way performed well in comparison with traditional Bland & Altman LoA. The procedure, however, is subject to the same restrictions as any conventional linear regression model and is therefore limited when model assumptions are violated. --> -->
-
-
-
-<!-- <!-- Warum eigentlich Prädiktionsbänder und keine Konfidenzbänder? (Siehe Einleitung Lenhoff) --> -->
-<!-- <!-- Aktuell würde ich es so formulieren: In der Mehrheit der Fälle ist man an der nächsten (Einzel)Observation interessiert, nicht unbedingt an Mittelwerten (obwohl es durchaus Szenarien gibt, wo das akzeptabel sein kann) + im Zweifel generell lieber breitere Fehlerintervalle --> -->
-
-<!-- The principal object of this paper was to demonstrate a method for constructing continuous prediction intervals from curve data that addresses the aforementioned issues (analyzing the whole curve, including repeated measures, model assumptions (normal distribution, equal variances)), and thus enables a more appropriate characterization of the agreement between measurement curves on the basis of easy to interpret error bands (i.e. LoA in the actual measurement unit). -->
-
-<!-- <!-- Es gibt bereits Ansätze für funktionale Boxplots (inkl. Vergleich mit punktweisen Intervallen), das Ganze wurde aber noch nie für Differenzenkurven untersucht. --> -->
-
-<!-- We use synthetic time series data sets containing typical curves of biomechanical measurement systems to illustrate the method and compare the resulting prediction bands to pointwise Bland & Altman parameters and LoA constructed similar to the method described in Roislien et al. (2012). For model validation, the respective LoA are cross validated using a leave-one-out approach. -->
-
-<!-- <!-- Aus Bland and Altman (2007): If each pair of X and Y measurements is treated as if from a different individual the structure of the data is ignored and incorrect estimates are  --> -->
-<!-- <!-- Ähnliche Formulierung aus https://bmcmedresmethodol.biomedcentral.com/articles/10.1186/s12874-020-01022-x : In the repeated measures case, applying the standard limits of agreement to the data will result in limits that are too narrow because they do not take into account the reduction in variability that arises when working with averages of readings.  --> -->
+Obwohl wir in der Arbeit bei Weitem nicht alle Anwendungsfälle (Methoden, Intervalle, Datensätze) abdecken können, hoffen wir einen Impuls für die breitere Anwendung kontinuierlicher Methoden im Rahmen biomechanischer Validierungsstudien setzen zu können. In diesem Sinne stellen wir auch den zugehörigen R Code im Anhang zur freien Verfügung.
 
 # Methods
 
-## Limits of agreement methods
+### Data sets
 
-FLoA derived by different methods are compared
+Für den Vergleich der Methoden wurden vier (simulierte und reale) Datensätze verwendet. Jeder der Datensätze enthält jeweils $N = 220$ Kurven der Länge $T = 101$ Datenpunkte aus $M = 2$ Messsystemen $(m=1,2)$. Das entspricht in jedem Datensatz $D = 110$ Differenzkurven, die durch Subtraktion gebildet werden:
 
-* Randomized Cluster Bootstrap (FLoA~RCB~)
-  + One random stride per subject (FLoA~RCB_v2~)
-  + Fetch a SINGLE random stride from all strides (FLoA~RCB_v3~)
+$\sum D_{ij} = \sum_{i=1}^{I} \sum_{j=1}^{J} Y_{ij} - X_{ij} = 110$
 
-* Roislien-like intervals (FLoA~Roslien~)
-  + Select one random stride from each subject ONCE and bootstrap the resulting sample
-  
-Pointwise continuous LoA are constructed using mean +- 1.96 * SD
+X und Y sind (I x J) Matrizen der beiden Messsysteme, mit $I = 11$ Probanden und $J = 10$ wiederholten Kurven pro Proband. Die Größe der Datensätze entspricht in etwa dem typischen Stichprobenumfang in Validierungsstudien.
 
-* Pointwise Gaussian intervals (FLoA~Point~)
-  + FLoA~Point~ are calculated using using mean +- 1.96 * SD (standard deviations derived from linear mixed effects models)
+<!-- Die $nN$ Kurven entsprechen $J = 10$ repeated measures von $I = 11$ Probanden und $m = 2$ Messsystemen: -->
+<!-- $n = m * \sum_{i=1}^{11} \sum_{j=1}^{10} n_{ij} = 220$ -->
 
-Linear mixed effects models (lme4 package (Bates, Maechler, Bolker, & Walker, 2015)) were used because of the advantages over fixed-effects models (e. g. ANOVA as suggested by Bland & Altman, 1999), such as e. g. (i) missing or unbalanced data are less problematic and (ii) inference can be made based on a wider population of patients (Parker et al., 2020). Implementation details are provided in the R code within the supplementary material.
+Alle simulierten Datensätze wurden als glatte Kurven, ähnlich Gelenkwinkelverläufen, mit dem gleichen Grundmodell generiert. Die Kurven korrespondieren nicht mit realen Signalen und wurden teilweise bewusst überspitzt konstruiert um den Einfluss bestimmter Differenzcharakteristika auf das Verhalten der Bänder möglichst deutlich darzustellen. Die Kurven wurden als trigonometrische Funktionen durch Addition zweier Sinusfunktionen konstruiert:
 
-### FLoA~RCB~ construction
+$$
+X_{ij}(t) = (offset_{m}) + f_{1} + f_{2}, Y_{ij}(t) = (offset_{m}) + f_{3} + f_{4}
+$$
+mit
 
-<!-- See Mirzargar et al. (2014) or Juul et al. (2020) for an accessible introduction to data depth and curve boxplots / functional boxplots. -->
+$$
+f_{1, 3} = Asin(Bt)^{c + 3}
+$$
+und
+
+$$
+f_{2, 4} = Asin(Bt)
+$$
+$A$, $B$ sind Zufallsvariablen mit unterschiedlichen Verteilungseigenschaften (normal, uniform, Weibull) über deren Parameter systematische und zufällige Unterschiede zwischen Probanden (between subject variation), Schritten (within subject variation) und Messystemen modelliert werden. $c$ ist eine Konstante ($c = 2$). Zudem wurden - je nach Datensatz - unterschiedliche Offsets als normalverteilte Zufallsvariablen mit variierenden $\mu$ und $\sigma$ simuliert:
+
+$$
+offset_{m} = \sim N(\mu, \sigma_{i})
+$$
+Im Sinne der Reproduzierbarkeit wurden alle Zufallsvariablen mit einem random seed initialisiert. Der Code für die Generierung der Kurven kann im Anhang im Detail nachvollzogen werden.
+
+```{r echo = FALSE, warning = FALSE, message = FALSE}
+data <- example_data(dat = "smooth_realistic", dir.data)
+data.single.mc <- subset(data, device == "MC")
+data.single.imu <- subset(data, device == "IMU")
+
+PLOT.1 <- ggplot(data = data.single.mc, aes(x = frame, y = value, group = strideID)) +
+  geom_line() +
+  scale_color_grey(start = 0.6, end = 0.9) +
+  geom_line(data = data.single.imu, aes(x = frame, y = value, group = strideID, colour = as.factor(subjectID)), alpha = 0.3) +
+  labs(x = "Time-normalized signal [%]", y = "Value") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(size = 14),
+        axis.title.x = element_text(size = 14),
+        axis.text.y = element_text(size = 14),
+        axis.title.y = element_text(size = 14),
+        legend.position = "none")
+
+
+data <- example_data(dat = "non_gaussian", dir.data)
+data.single.mc <- subset(data, device == "MC")
+data.single.imu <- subset(data, device == "IMU")
+
+PLOT.2 <- ggplot(data = data.single.mc, aes(x = frame, y = value, group = strideID)) +
+  geom_line() +
+  scale_color_grey(start = 0.6, end = 0.9) +
+  geom_line(data = data.single.imu, aes(x = frame, y = value, group = strideID, colour = as.factor(subjectID)), alpha = 0.3) +
+  labs(x = "Time-normalized signal [%]", y = "Value") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(size = 14),
+        axis.title.x = element_text(size = 14),
+        axis.text.y = element_text(size = 14),
+        axis.title.y = element_text(size = 14),
+        legend.position = "none")
+
+
+data <- example_data(dat = "shift", dir.data)
+data.single.mc <- subset(data, device == "MC")
+data.single.imu <- subset(data, device == "IMU")
+
+PLOT.3 <- ggplot(data = data.single.mc, aes(x = frame, y = value, group = strideID)) +
+  geom_line() +
+  scale_color_grey(start = 0.6, end = 0.9) +
+  geom_line(data = data.single.imu, aes(x = frame, y = value, group = strideID, colour = as.factor(subjectID)), alpha = 0.3) +
+  labs(x = "Time-normalized signal [%]", y = "Value") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(size = 14),
+        axis.title.x = element_text(size = 14),
+        axis.text.y = element_text(size = 14),
+        axis.title.y = element_text(size = 14),
+        legend.position = "none")
+
+
+data <- example_data(dat = "imu_mc", dir.data)
+data.single.mc <- subset(data, device == "MC")
+data.single.imu <- subset(data, device == "IMU")
+
+PLOT.4 <- ggplot(data = data.single.mc, aes(x = frame, y = value, group = strideID)) +
+  geom_line() +
+  scale_color_grey(start = 0.6, end = 0.9) +
+  geom_line(data = data.single.imu, aes(x = frame, y = value, group = strideID, colour = as.factor(subjectID)), alpha = 0.3) +
+  labs(x = "Time-normalized signal [%]", y = "Value") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(size = 14),
+        axis.title.x = element_text(size = 14),
+        axis.text.y = element_text(size = 14),
+        axis.title.y = element_text(size = 14),
+        legend.position = "none")
+```
+
+
+```{r echo = FALSE, warning = FALSE, message = FALSE, fig.cap = "Figure 1: Kurvenverläufe in den jeweiligen Datensätzen (A - D). Schwarze Kurven im Hintergrund sind die Werte des Referenzsystems."}
+PLOT <- ggpubr::ggarrange(PLOT.1, PLOT.2, PLOT.3, PLOT.4,
+                          labels = c("A", "B", "C", "D"),
+                          ncol = 2,
+                          nrow = 2)
+PLOT
+```
+
+Fig. 1 stellt die originalen Kurven beider Messsysteme in den vier verwendeten Datensätzen (A - D) dar:
+
+* Datensatz A : Simulated curves with Gaussian error model ($\epsilon_{i} \sim N (0, \sigma_{i}^2)$).
+
+Die Daten repräsentieren den Fall, dass die Kurven zweier Messsysteme qualitativ ähnlich sind und kein relevanter Bias vorliegt.
+
+* Datensatz B : Simulated curves with non-Gaussian erros and heteroskedasticity
+
+Der Skalierungsparameter des zweiten Messsystems ist als normalverteilte Zufallsvariable mit Weibull-verteiltem Mittelwert modelliert ($\epsilon_{i} \sim N(\mu \sim Wei(\gamma = 1.5,\alpha  = 1), \sigma_{i})$). Wie in (A) liegt kein Bias vor.
+
+Solche Daten liegen vor, wenn mindestens eines der Messsysteme Kurven produziert, die qualitativ und quantitativ deutlich vom wahren Wert abweichen (hier: Messsystem 2, grau). In diesem Fall sind elementare Modellvoraussetzungen für parametrische Verfahren wie Bland and Altman erheblich verletzt.
+
+* Datensatz C : Simulated curves curves with Gaussian error model and phase shift in x-axis direction.
+
+Die Kurven wurden mit dem selben Modell wie in (A) erstellt, aber die Kurven von Messsystem 2 (grau) sind auf der x-Achse verschoben. Auch hier sind Modellvoraussetzungen erheblich verletzt, die Differenzen weisen aber eine andere Verteilung auf als in Modell (B). In der Praxis treten vergleichbare Kurvenverläufe auf, wenn die Messung eines Systems in ihrem zeitlichen Verlauf in irgendeiner Weise systematisch beeinflusst wird, z. B. wenn die Messsysteme infolge der Platzierung am Körper unterschiedliche Bewegungen aufzeichnen, oder durch Filterartefakte.
+
+* Datensatz D : Reale Messdaten aus der Validierung einer inertialen Messeinheit (IMU)
+
+Real-world hip joint angle curves from healthy subjects walking at 6 km/h on a treadmill without gradient recorded simultaneously using an optical motion capture system (MC) and IMU. Die Kurven unterscheiden sich qualitativ und in der absoluten Ausprägung der Differenzen.
+
+### Calculation methods
+
+Um die untersuchten Methoden im gleichen Wahrscheinlichkeitsraum (probability space, function space?) zu analysieren, wurden Differenzkurven zwischen den beiden Systemen als Berechnungsgrundlage gebildet. Im Kontext von Messsystemvalidierungen bietet sich die Verwendung von Differenzkurven zudem an, weil mit diesen Kurven unmittelbar die (von Bland & Altman formulierte) Fragestellung beantwortet wird, inwiefern die verglichenen Methoden in der Praxis austauschbar eingesetzt werden können?
+
+Auf Grundlage der Differenzkurven wurden Prädiktionsintervalle mit drei unterschiedlichen Methoden berechnet:
+
+* 1. POINT : Pointwise continuous LoA according to Bland & Altman (1999, 2007)
+
+Für alle $t = 101$ Punkte wurden jeweils über alle $d$ Kurven Bland & Altman LoA berechnet. Wenn diese Differenzen normalverteilt (homoskedastisch, unabhängig) sind, kann erwartet werden, dass 95% der Differenzen im Intervall mean difference $\pm$ 1.96 $*$ standard deviation of the differences liegen. Dieses einfache Modell kann erweitert werden wenn die Modellvoraussetzungen nicht ausreichend erfüllt sind (z. B. nichtnormalverteilte Differenzen (logarithmische Transformation), Abhängigkeit der Differenzen vom zugehörigen Mittelwert (Regressionsansatz), Abhängigkeit der Kurven (messwiederholte Daten)).
+
+Wir verwenden in der vorliegenden Arbeit ein Modell für wiederholte Messungen, in dem sich der wahre Wert über jedes Differenzpaar ändert. Das Modell beschreibt die Differenz zwischen zwei Messsystemen als Summe der mittleren Differenz ($\overline{d}$) und zweier Varianzkomponenten (between (\sigma^2_{db}), within (\sigma^2_{dw})):
+<!-- Auch wenn hier jeweils die gleiche Anzahl Kurven für jedes Messsystem vorliegt, erlaubt die verwendete Formel die Übertragung auf den unbalancierten Fall. -->
+
+$$
+LoA = D_{ij} = \overline{d} + \sqrt{\sigma^2_{db} + \sigma^2_{dw}}
+$$
+Die beiden Varianzkomponenten können mithilfe einer einfaktoriellen Varianzanalyse bestimmt werden. \sigma^2_{dw} wird dabei als residual mean square ($MS_{w}$) direkt aus dem ANOVA table abgelesen. \sigma^2_{db} berechnet sich aus der Differenz aus between-subject mean squares und $MS_{w}$, geteilt durch einen Term, der die Anzahl der $i$ Probanden und $j$ Kurven berücksichtigt. Wenn für alle Probanden die gleiche Anzahl an Datenpunkten vorliegt (wie im vorliegenden Fall), reduziert sich dieser Term auf die Anzahl der Datenpunkte (Kurven) pro Proband ($j = 10$):
+
+$$
+\sigma^2_{db} = \frac{(MS_{b} - MS_{w})}{j}
+$$
+
+Für weiterführende Informationen zur Berechnung (z. B. bei ungleicher Anzahl Observationen pro Proband), siehe Bland & Altman (1999) sowie die zugehörige Implementierung als R Code im Anhang.
+
+* 2. ROISLIEN : Functional limits of agreement (FLoA) according to Roislien et al. (2012)
+
+Die Methode von Røislien et al. (2012) wurde als Erweiterung der Methode von Bland & Altman (1983) für kontinuierliche Differenzen ($d(t)$) entwickelt. Roislien et al. approximieren die Kurven im Datensatz daher zunächst mithilfe elementarer trigonometrischer Funktionen. Die Berechnung der Modellparameter (mean, standard deviation) erfolgt im Anschluss jedoch - genau wie in POINT - separat für jeden Punkt der Kurve. Daher macht es in der praktischen Umsetzung de facto keinen Unterschied ob die originalen (diskreten) oder funktionalen Kurven verwendet werden. Wir verzichten daher im Rahmen dieses Papers auf die Repräsentation der Kurven als Funktionen. Damit ergeben sich gegenüber POINT zwei Unterschiede:
+
+(i) Da die Unabhängigkeit der Kurven vorausgesetzt wird, werden keine wiederholten Kurven verwendet, sondern je eine Kurve pro Proband ausgewählt. Es wird also nicht wie bei POINT mit allen Kurven gerechnet, sondern mit einer reduzierten Version des Datensatzes. 
+
+(ii) Die (punktweise) Berechnung der LoA erfolgt für diese $j = i$ Kurven mithilfe des minimalen Bland & Altman Modells als $FLoA = d(t) \pm 1.96SD(t)$ berechnet, wobei $\overline{d}(t)$ die kontinuierliche mean difference bezeichnet. 
+
+* 3. BOOT : Boostrapped functional prediction bands according Sutherland et al. (1988), Olshen et al. (1989) and Lenhoff et al. (1999)
+
+Die Methode
+
+Das Bootstrapping der Prädiktionsintervalle wird nicht mit diskreten Werten gemessener Kurven durchgeführt, sondern mit Funktionen der Kurven. Die Funktionen werden durch Kurvenanpassung mit Fourier-Reihen erzeugt. Kurvenanpassung ist notwendig, da diskrete Messwerte eines Kurvenverlaufs keine unabhängig voneinander auftretenden Ereignisse sind, die einer Normalverteilung unterliegen.
+
+Im ersten Schritt des Verfahrens werden alle gemessenen Kurven (n) mithilfe von Fourier-Reihen als Funktionen modelliert:
+
+$$
+f(t) = \mu_{i} + \sum_{k=1}^K(\alpha_{i, k}cos(\frac{2\pi kt}{T}) + \beta_{i, k} sin(\frac{2\pi kt}{T}))
+$$
+Die Freiheitsgrade $K$ sind dabei so zu wählen, dass die Kurven ausreichend gut angepasst werden. In der vorliegenden Arbeit wurden die Kurven großzügig mit K = 50 approximiert. Die Koeffizienten der Kurven werden durch die Methode der kleinsten Quadrate angenähert. Für das weitere Vorgehen ist dabei wichtig, dass $\mu$ für alle Kurven 0 sein muss, da die Standardabweichungskurve der Kurvenschar sonst einen Offset aufweist. Durch die Kurvenanpassung wird für jede Kurve ein Vektor mit $2k+1$ Koeffizenten erzeugt:
+
+$$
+W_{i} = (\mu_{i}, \alpha_{i, 1}, \beta_{i, k}, ..., \beta_{i, K})
+$$
+Die Vektoren werden in einer Matrix M mit den Dimensionen n (Zeilen) und 2k+1 (Spalten) zusammengefasst. Durch Mittelwertbildung und Berechnung der Varianz über die Spalten können jetzt Vektoren der Mittelwert- (W) und der Varianzkoeffizienten (Σw) berechnet werden. Durch Multiplikation von W (Formel 18) und Σw (Formel 19) mit
+
+$$
+l(t) = (1, cos(\frac{2\pi 1t}{T}, sin(\frac{2\pi 1t}{T}, ..., cos(\frac{2\pi Kt}{T}, sin(\frac{2\pi Kt}{T},))
+$$
+lassen sich die Mittelwertkurve
+
+$$
+\hat{f}(t) = \overline{W}^T l (t)
+$$
+und der Verlauf der Standardabweichung 
+
+$$
+\hat{\sigma}_{f(t)} = \sqrt(l(T)^T \sum_{w} l(t))
+$$
+der Kurvenschar anpassen.
+
+Anschließend werden aus der Matrix M die Koeffizienten von n Kurven im
+Bootstrappingverfahren b mal gezogen (Ziehen mit Zurücklegen). Jede Bootstrap-Wiederholung erzeugt ein 'bootstrap sample' (Bootstrap-Ziehung) entsprechend der ursprünglichen Kurvenanzahl n. Aus den Koeffizienten der n Kurven jeder Bootstrap-Ziehung werden mit
+
+$$
+\hat{f}
+$$
+
+und
+
+$$
+
+$$
+
+$$
+P \{\max_{t} (\frac{|\hat{f}_{n+1}(t) - \hat{f}(t)|}{\hat{\sigma}_{f(t)}} \le C_{p}\} = 1-\alpha
+$$
+
+$$
+\max_{\{P^{\circ}_t(j)\}}
+$$
+
+1. Fourier
+2. Bootstrap
+3. Prädiktionsbänder
+
+Let fn + 1(t) denote a future draw from the population mean curve that is defined by Eq.
+(0.1) and let Yn + 1(t) be an observed curve generated by Eqs. (0.2) and (0.3). Given a desired confidence level 100(1− a)%, we chose the constant Cp so that
+
+
+95% prediction bands
+
+The bootstrap method does not rely on any parametric assumption concerning the distribution of the data at each point of the curve. Bootstrap prediction and confidence intervals can be theoretically justified asymptotically although their performance in small-sample settings has to be studied on a case-by-case basis.
+
+
+400 bootstrap iterations
+
+Für weitere Details zur Methode siehe Lenhoff et al. (1999), Appendix A, sowie die zugehörige Implementierung als R Code im Anhang.
+
 
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
 # Wrapper function for example data sets. Function arguments:
@@ -215,262 +348,106 @@ data <- example_data(dat = "smooth", dir.data)
 floa.point <- floa_point(data)
 ```
 
-## Validation
 
-#### Data generating process
-To compare different methods for constructing continuous LoA, several sets of smooth curve data were simulated across a range of common biomechanical signals and error characteristics. The quality of the curves is similar, as the paper is primarily developed for a validation context in which the same movement process is analyzed using similar methods (two measurement devices or models). For the same reason, the curves do not necessarily correspond to real-world signals as we were more concerned with illustrating the respective methods and error characterstics.
+### Leave-one out cross validation
 
-All curves were modeled as Fourier series from additively superimposed sine functions. Each data set contains n.strides = 10 curves from n.subj = 11 simulated subjects. Each curve consists of t = 101 data points. 
+Um die coverage Performance der untersuchten Methoden zu bewerten, wurden die jeweiligen Intervalle im leave-one-out Verfahren kreuzvalidiert. Dabei wird eine Kurve vom Datensatz entfernt und die Intervalle anhand der übrigen Kurven berechnet. Dieser Vorgang wird für jede der $n$ Kurven eines Datensatzes wiederholt. Der Anteil der vorgehaltenen Kurven, die in den Bändern enthalten sind, wird mit zwei verschiedenen Kennwerten beschrieben:
 
-<!-- Aus Robinson et al. (2021) -->
-<!-- Exemplar 1D effects from the biomechanics literature across a range of signal types were collated and reported (Bakke & Besier, 2020, Barrios & Willson, 2017, Bovi, Rabuetti, Mazzoleni, & Ferrarin, 2011, Phan et al., 2017, Gomes, Ackermann, Ferreira, Orselli, & Sacco, 2017, Robinson et al., 2014). -->
+* Percentage of entirely covered curves (all points within the limits)
 
-<!-- the code to reproduce all 1D effects is provided at https://github.com/m-a-robinson/sample-size -->
+* Mean (SD) of curve points within the respective FLoA: The fraction of points along a curve within the limits is calculated and averaged across all curves of a subject.
 
-<!-- Robinson et al. (2014) Impact of Knee Modeling Approach on Indicators and Classification of Anterior Cruciate Ligament Injury Risk -->
+Für die punktweisen wurde 
 
-<!-- * (4) Data with (missing) peaks. Same model as in (i), except a couple of frames where a short, prominent peak occurs in one of the two signals. This typically happens in high-frequency signals such as accelerations or ground reaction forces, where peaks are underrepresented or entirely missing when e. g. sampling rates are too low or lowpass filter artefacts occur. Also, modelling these kind of abrupt changes in the signal (when e. g. to estimate ground reaction forces from acceleration values) is more difficult and my result in similar errors (Alcantara, 2021).  -->
-<!-- <!-- Alcantara et al. Modelling/estimating ground reaction forces from acceleration values, z. B. https://www.biorxiv.org/content/10.1101/2021.03.17.435901v1.full --> -->
-<!-- <!-- Johnson et al. (2020) Multidimensional ground reaction forces and moments from wearable sensor accelerations via deep learning --> -->
+### LoA uncertainty estimation
 
-#### Smooth wave data (constant variance, no trend) with subjectwise bias
-Homoscedastic (normal) error. Within and between subject differences between curves were modeled using random systematic offset (bias) and random variation of curve parameters. The data are representative of e. g. joint angle measurements simultaneously recorded from two kinematic measurement systems (e. g. a camera-based measurement systems and a goniometer).
-```{r echo = FALSE, warning = FALSE, message = FALSE}
-data <- example_data(dat = "smooth_realistic", dir.data)
+Um die Schwankung der Intervallgrenzen über wiederholte Berechnungen hinweg zu veranschaulichen, wurden für die BOOT und ROISLIEN Intervalle Unsicherheitsbänder gebootstrapped (b = 400 Wiederholungen). Die Unsicherheit in diesen Verfahren entsteht durch das wiederholte Ziehen mit Zurücklegen im Rahmen des Bootstrapverfahrens (BOOT) bzw. die jeweils unterschiedlichen gezogenen Einzelkurven (ROISLIEN).
 
-data.single.mc <- subset(data, device == "MC")
-data.single.imu <- subset(data, device == "IMU")
+Im Falle der POINT Intervalle werden alle Kurven eines Datensatzes verwendet, weshalb keine Schwankung der Intervallgrenzen auftritt. Verschiedene Autoren schlagen jedoch Konfidenzintervalle als Erweiterung ihres ursprünglichen Ansatzes vor, um den sampling error insbesondere kleinere Stichproben (Bland & Altman, 1986; Hamilton & Stamey, 2007; Giavarina, 2015) zu berücksichtigen. Bland & Altman (1986) schätzen den Standardfehler der Differenzen auf ungefähr $\sqrt{3*s² / c}$.
 
-PLOT <- ggplot(data = data.single.mc, aes(x = frame, y = value, group = strideID)) +
-  geom_line() +
-  scale_color_grey(start = 0.6, end = 0.9) +
-  geom_line(data = data.single.imu, aes(x = frame, y = value, group = strideID, colour = as.factor(subjectID)), alpha = 0.3) +
-  labs(x = "Time-normalized signal [%]", y = "Signal value") +
-  theme_minimal() +
-  theme(axis.text.x = element_text(size = 20),
-        axis.title.x = element_text(size = 18),
-        axis.text.y = element_text(size = 20),
-        axis.title.y = element_text(size = 18),
-        legend.position = "none")
+mit $s$ ... Standardabweichung
+und $c$ ... Anzahl der Kurven im Datensatz
 
-PLOT
-```
+Für die Berechnung von Konfidenzintervallen wird noch das geeignete Quantil der t-Verteilung mit n − 1 Freiheitsgraden benötigt. Das Konfidenzintervall reicht dann vom oberen/unteren Limit minus t$*$Standardfehler bis zum oberen/unteren Limit plus t$*$Standardfehler. Im vorliegenden Paper wurden 95% Konfidenzintervalle gerechnet.
 
-#### Smooth curves (homoscedasticity, normal error, no trend)
-Homoscedastic (normal) error. Within and between subject differences between curves were modeled using random systematic offset (bias) and random variation of curve parameters. The data are representative of e. g. joint angle measurements simultaneously recorded from two kinematic measurement systems (e. g. a camera-based measurement systems and a goniometer).
-```{r echo = FALSE, warning = FALSE, message = FALSE}
-data <- example_data(dat = "smooth", dir.data)
+Die vollständige von Bland & Altman vorgeschlagene Formel (95% CI für 95% LoA) lautet damit: 
 
-data.single.mc <- subset(data, device == "MC")
-data.single.imu <- subset(data, device == "IMU")
-
-PLOT <- ggplot(data = data.single.mc, aes(x = frame, y = value, group = strideID)) +
-  geom_line() +
-  scale_color_grey(start = 0.6, end = 0.9) +
-  geom_line(data = data.single.imu, aes(x = frame, y = value, group = strideID, colour = as.factor(subjectID)), alpha = 0.3) +
-  labs(x = "Time-normalized signal [%]", y = "Signal value") +
-  theme_minimal() +
-  theme(axis.text.x = element_text(size = 20),
-        axis.title.x = element_text(size = 18),
-        axis.text.y = element_text(size = 20),
-        axis.title.y = element_text(size = 18),
-        legend.position = "none")
-
-PLOT
-```
-
-#### Smooth curves with nonlinear error trend
-Same model as in (i), but with a nonlinear trend underlying one of the two signals. Similar errors can be observed e. g. when joint angles are calculated (numerically integrated) from gyroscope signals.
-```{r echo = FALSE, warning = FALSE, message = FALSE}
-data <- example_data(dat = "smooth_trend", dir.data)
-
-data.single.mc <- subset(data, device == "MC")
-data.single.imu <- subset(data, device == "IMU")
-
-PLOT <- ggplot(data = data.single.mc, aes(x = frame, y = value, group = strideID)) +
-  geom_line() +
-  scale_color_grey(start = 0.6, end = 0.9) +
-  geom_line(data = data.single.imu, aes(x = frame, y = value, group = strideID, colour = as.factor(subjectID)), alpha = 0.3) +
-  labs(x = "Time-normalized signal [%]", y = "Signal value") +
-  theme_minimal() +
-  theme(axis.text.x = element_text(size = 20),
-        axis.title.x = element_text(size = 18),
-        axis.text.y = element_text(size = 20),
-        axis.title.y = element_text(size = 18),
-        legend.position = "none")
-
-PLOT
-```
-
-#### Heteroscedastic measurement error (no trend)
-Smooth curves created using the same model and parameters as in (i), but Weibulll distributed random curve (amplitude) parameters. This introduces non-gaussian measurement error (asymmetric/skewed distribution of differences around the mean difference).
-<!-- Smooth curves with non-gaussian (Weibull) error (no trend) -->
-```{r echo = FALSE, warning = FALSE, message = FALSE}
-data <- example_data(dat = "non_gaussian", dir.data)
-
-data.single.mc <- subset(data, device == "MC")
-data.single.imu <- subset(data, device == "IMU")
-
-PLOT <- ggplot(data = data.single.mc, aes(x = frame, y = value, group = strideID)) +
-  geom_line() +
-  scale_color_grey(start = 0.6, end = 0.9) +
-  geom_line(data = data.single.imu, aes(x = frame, y = value, group = strideID, colour = as.factor(subjectID)), alpha = 0.3) +
-  labs(x = "Time-normalized signal [%]", y = "Signal value") +
-  theme_minimal() +
-  theme(axis.text.x = element_text(size = 20),
-        axis.title.x = element_text(size = 18),
-        axis.text.y = element_text(size = 20),
-        axis.title.y = element_text(size = 18),
-        legend.position = "none")
-
-PLOT
-```
-
-#### Curves phase shifted in x-axis direction
-```{r echo = FALSE, warning = FALSE, message = FALSE}
-data <- example_data(dat = "shift", dir.data)
-
-data.single.mc <- subset(data, device == "MC")
-data.single.imu <- subset(data, device == "IMU")
-
-PLOT <- ggplot(data = data.single.mc, aes(x = frame, y = value, group = strideID)) +
-  geom_line() +
-  scale_color_grey(start = 0.6, end = 0.9) +
-  geom_line(data = data.single.imu, aes(x = frame, y = value, group = strideID, colour = as.factor(subjectID)), alpha = 0.3) +
-  labs(x = "Time-normalized signal [%]", y = "Signal value") +
-  theme_minimal() +
-  theme(axis.text.x = element_text(size = 20),
-        axis.title.x = element_text(size = 18),
-        axis.text.y = element_text(size = 20),
-        axis.title.y = element_text(size = 18),
-        legend.position = "none")
-
-PLOT
-```
-
-#### Real-world validation data
-```{r echo = FALSE, warning = FALSE, message = FALSE}
-data <- example_data(dat = "imu_mc", dir.data)
-
-data.single.mc <- subset(data, device == "MC")
-data.single.imu <- subset(data, device == "IMU")
-
-PLOT <- ggplot(data = data.single.mc, aes(x = frame, y = value, group = strideID)) +
-  geom_line() +
-  scale_color_grey(start = 0.6, end = 0.9) +
-  geom_line(data = data.single.imu, aes(x = frame, y = value, group = strideID, colour = as.factor(subjectID)), alpha = 0.3) +
-  labs(x = "Time-normalized signal [%]", y = "Signal value") +
-  theme_minimal() +
-  theme(axis.text.x = element_text(size = 20),
-        axis.title.x = element_text(size = 18),
-        axis.text.y = element_text(size = 20),
-        axis.title.y = element_text(size = 18),
-        legend.position = "none")
-
-PLOT
-```
-
-### Leave-one (curve) out cross validation
-Leave-one (curve) out method to estimate the achieved coverage
-
-Prediction intervals are calculated from size.dataset = number.subjects - 1 and then validated against the left out curve for four different methods:
-
-* FLoA~RCB_v2~   : One random stride per subject
-
-* FLoA~RCB_v3~   : Fetch a SINGLE random stride from all strides
-
-* FLoA~Roislien~ : Roislien approach (Get one random stride from each subject ONCE and bootstrap the resulting sample)
-       
-* FLoA~Point~ : Pointwise B & A Limits of Agreement
-
-#### Coverages
-Coverages are displayed for two different scenarios:
-
-* a: Percentage of entirely covered curves (all points within the limits)
-
-* b: Mean (SD) of curve points within the respective FLoA: The fraction of points along a curve within the limits is calculated and averaged across all curves of a subject.
-
-### LoA uncertainty
-In order to quantify the uncertainty of the calculated LoA across different methods, LoA were calculated n.boot times and compared using uncertainty bands.
+$(\overline{d} \pm z_{0.975}*s) \pm t_{0.975, n-1}*s*\sqrt{3*s² / c}$, mit $z_{0.975} = 1.96$
 
 # Results
 
 ### Functional limits of agreement
 
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
-n.boot <- 100
+n.boot <- 30
 ```
 
-#### Smooth wave data (constant variance, no trend) with subjectwise bias
+#### Simulated curves with Gaussian error model (A)
 
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
 data <- example_data(dat = "smooth_realistic", dir.data)
 
 floa.point <- floa_point(data)
 floa.roislien <- floa_roislien(data)
-floa.lenhoff <- floa_lenhoff(data, k_reihe = 50, n.boot = n.boot, cp.begin = 0, alpha = 0.05)
+floa.lenhoff.pred  <- floa_lenhoff(data,
+                                   k_reihe = 50,
+                                   n.boot = n.boot,
+                                   band = "prediction",
+                                   cp.begin = 0,
+                                   alpha = 0.05)
 
-plot_loa(data, floa.point, floa.roislien, floa.lenhoff, ylim = c(-5, 5))
+plot_loa(data, floa.point, floa.roislien, floa.lenhoff.pred, ylim = c(-5, 5))
 ```
 
-#### Smooth curves (homoscedasticity, normal error, no trend)
+#### Simulated curves with non-normal, heteroskedastic differences (B)
 
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
-data <- example_data(dat = "smooth", dir.data)
-
-floa.point <- floa_point(data)
-floa.roislien <- floa_roislien(data)
-floa.lenhoff <- floa_lenhoff(data, k_reihe = 50, n.boot = n.boot, cp.begin = 0, alpha = 0.05)
-
-plot_loa(data, floa.point, floa.roislien, floa.lenhoff, ylim = c(-5, 5))
+# data <- example_data(dat = "non_gaussian", dir.data)
+# 
+# floa.point <- floa_point(data)
+# floa.roislien <- floa_roislien(data)
+# floa.lenhoff.pred  <- floa_lenhoff(data,
+#                                    k_reihe = 50,
+#                                    n.boot = n.boot,
+#                                    band = "prediction",
+#                                    cp.begin = 0,
+#                                    alpha = 0.05)
+# 
+# plot_loa(data, floa.point, floa.roislien, floa.lenhoff.pred, ylim = c(-10, 10))
 ```
 
-#### Smooth curves with nonlinear error trend
+#### Simulated curves curves with Gaussian error model created and phase shift in x-axis direction (C)
 
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
-data <- example_data(dat = "smooth_trend", dir.data)
-
-floa.point <- floa_point(data)
-floa.roislien <- floa_roislien(data)
-floa.lenhoff <- floa_lenhoff(data, k_reihe = 50, n.boot = n.boot, cp.begin = 0, alpha = 0.05)
-
-plot_loa(data, floa.point, floa.roislien, floa.lenhoff, ylim = c(-5, 5))
+# data <- example_data(dat = "shift", dir.data)
+# 
+# floa.point <- floa_point(data)
+# floa.roislien <- floa_roislien(data)
+# floa.lenhoff.pred  <- floa_lenhoff(data,
+#                                    k_reihe = 50,
+#                                    n.boot = n.boot,
+#                                    band = "prediction",
+#                                    cp.begin = 0,
+#                                    alpha = 0.05)
+# 
+# plot_loa(data, floa.point, floa.roislien, floa.lenhoff.pred, ylim = c(-5, 5))
 ```
 
-#### Heteroscedastic measurement error (no trend)
+#### Real-world validation data (hip joint angles)
 
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
-data <- example_data(dat = "non_gaussian", dir.data)
-
-floa.point <- floa_point(data)
-floa.roislien <- floa_roislien(data)
-floa.lenhoff <- floa_lenhoff(data, k_reihe = 50, n.boot = n.boot, cp.begin = 0, alpha = 0.05)
-
-plot_loa(data, floa.point, floa.roislien, floa.lenhoff, ylim = c(-10, 10))
-```
-
-#### Curves phase shifted in x-axis direction
-
-```{r echo = FALSE, warning = FALSE, message = FALSE}
-data <- example_data(dat = "shift", dir.data)
-
-floa.point <- floa_point(data)
-floa.roislien <- floa_roislien(data)
-floa.lenhoff <- floa_lenhoff(data, k_reihe = 50, n.boot = n.boot, cp.begin = 0, alpha = 0.05)
-
-plot_loa(data, floa.point, floa.roislien, floa.lenhoff, ylim = c(-5, 5))
-```
-
-#### Real-world validation data
-
-```{r echo = FALSE, warning = FALSE, message = FALSE}
-data <- example_data(dat = "imu_mc", dir.data)
-
-floa.point <- floa_point(data)
-floa.roislien <- floa_roislien(data)
-floa.lenhoff <- floa_lenhoff(data, k_reihe = 50, n.boot = n.boot, cp.begin = 0, alpha = 0.05)
-
-plot_loa(data, floa.point, floa.roislien, floa.lenhoff, ylim = c(-15, 15))
+# data <- example_data(dat = "imu_mc", dir.data)
+# 
+# floa.point <- floa_point(data)
+# floa.roislien <- floa_roislien(data)
+# floa.lenhoff.pred  <- floa_lenhoff(data,
+#                                    k_reihe = 50,
+#                                    n.boot = n.boot,
+#                                    band = "prediction",
+#                                    cp.begin = 0,
+#                                    alpha = 0.05)
+# 
+# plot_loa(data, floa.point, floa.roislien, floa.lenhoff.pred, ylim = c(-15, 15))
 ```
 
 ### Leave-one (curve) out cross validation
@@ -478,47 +455,40 @@ plot_loa(data, floa.point, floa.roislien, floa.lenhoff, ylim = c(-15, 15))
 #### Realistic smooth wave data (constant variance, no trend)
 a. Coverage of the entire curve
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
-data <- example_data(dat = "smooth_realistic", dir.data)
-
-# Leave-one curve out approach
-# ------------------------------------------------------------------------------
-cover.cross.singlecurve <- singlecurve_coverage(data, n.boot)
-
-# Calculate percent from counts
-calculate_percent <- function(data) {
-  percentage <- (sum(data) / length(data))
-  percentage <- round(percentage, digits = 2)
-}
-
-covered.curves.percent <- apply(cover.cross.singlecurve, 2, calculate_percent)
-covered.curves.percent <- data.frame(t(covered.curves.percent))
-colnames(covered.curves.percent) <- c("Point", "Roislien", "Lenhoff")
-
-knitr::kable(covered.curves.percent, caption = "Percentages of entirely covered curves")
-
-# # Leave-one subject out approach
-# # ------------------------------------------------------------------------------
-# cover.cross <- crossval_coverage(data, n.boot)
-# # colnames(cover.cross) <- c("RCB_1", "RCB_2", "RCB_3", "Roislien_4", "Point_5")
+# data <- example_data(dat = "smooth_realistic", dir.data)
 # 
-# plot_cov_ver(cover.cross)
+# # Leave-one curve out approach
+# # ------------------------------------------------------------------------------
+# cover.cross.singlecurve <- singlecurve_coverage(data, n.boot)
+# 
+# # Calculate percent from counts
+# calculate_percent <- function(data) {
+#   percentage <- (sum(data) / length(data))
+#   percentage <- round(percentage, digits = 2)
+# }
+# 
+# covered.curves.percent <- apply(cover.cross.singlecurve, 2, calculate_percent)
+# covered.curves.percent <- data.frame(t(covered.curves.percent))
+# colnames(covered.curves.percent) <- c("Point", "Roislien", "Lenhoff")
+# 
+# knitr::kable(covered.curves.percent, caption = "Percentages of entirely covered curves")
 ```
 
 b. Mean (SD) of covered curve points
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
-# Leave-one curve out approach
-# ------------------------------------------------------------------------------
-cover.cross.fraction.singlecurve <- singlecurve_coverage_fraction(data, n.boot)
-
-cover.cross.mean.sd <- rbind(round(colMeans(cover.cross.fraction.singlecurve), 2),
-             round(apply(cover.cross.fraction.singlecurve, 2, sd), 2)
-)
-colnames(cover.cross.mean.sd) <- c("Point", "Roislien", "Lenhoff")
-
-knitr::kable(cover.cross.mean.sd, caption = "Mean (top) and SD of covered points across the curve")
-
-# # Display as boxplots across methods
-# plot_cov_ver(cover.cross.fraction.singlecurve)
+# # Leave-one curve out approach
+# # ------------------------------------------------------------------------------
+# cover.cross.fraction.singlecurve <- singlecurve_coverage_fraction(data, n.boot)
+# 
+# cover.cross.mean.sd <- rbind(round(colMeans(cover.cross.fraction.singlecurve), 2),
+#              round(apply(cover.cross.fraction.singlecurve, 2, sd), 2)
+# )
+# colnames(cover.cross.mean.sd) <- c("Point", "Roislien", "Lenhoff")
+# 
+# knitr::kable(cover.cross.mean.sd, caption = "Mean (top) and SD of covered points across the curve")
+# 
+# # # Display as boxplots across methods
+# # plot_cov_ver(cover.cross.fraction.singlecurve)
 ```
 
 <!-- c. Average distance to the outer point of the curve set -->
@@ -548,47 +518,40 @@ c. Uncertainty in LoA (95% percentile intervals)
 #### Smooth, wave data (normal error, constant variance, no trend)
 a. Coverage of the entire curve
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
-data <- example_data(dat = "smooth", dir.data)
-
-# Leave-one curve out approach
-# ------------------------------------------------------------------------------
-cover.cross.singlecurve <- singlecurve_coverage(data, n.boot)
-
-# Calculate percent from counts
-calculate_percent <- function(data) {
-  percentage <- (sum(data) / length(data))
-  percentage <- round(percentage, digits = 2)
-}
-
-covered.curves.percent <- apply(cover.cross.singlecurve, 2, calculate_percent)
-covered.curves.percent <- data.frame(t(covered.curves.percent))
-colnames(covered.curves.percent) <- c("Point", "Roislien", "Lenhoff")
-
-knitr::kable(covered.curves.percent, caption = "Percentages of entirely covered curves")
-
-# # Leave-one subject out approach
-# # ------------------------------------------------------------------------------
-# cover.cross <- crossval_coverage(data, n.boot)
-# # colnames(cover.cross) <- c("RCB_1", "RCB_2", "RCB_3", "Roislien_4", "Point_5")
+# data <- example_data(dat = "smooth", dir.data)
 # 
-# plot_cov_ver(cover.cross)
+# # Leave-one curve out approach
+# # ------------------------------------------------------------------------------
+# cover.cross.singlecurve <- singlecurve_coverage(data, n.boot)
+# 
+# # Calculate percent from counts
+# calculate_percent <- function(data) {
+#   percentage <- (sum(data) / length(data))
+#   percentage <- round(percentage, digits = 2)
+# }
+# 
+# covered.curves.percent <- apply(cover.cross.singlecurve, 2, calculate_percent)
+# covered.curves.percent <- data.frame(t(covered.curves.percent))
+# colnames(covered.curves.percent) <- c("Point", "Roislien", "Lenhoff")
+# 
+# knitr::kable(covered.curves.percent, caption = "Percentages of entirely covered curves")
 ```
 
 b. Mean (SD) of covered curve points
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
-# Leave-one curve out approach
-# ------------------------------------------------------------------------------
-cover.cross.fraction.singlecurve <- singlecurve_coverage_fraction(data, n.boot)
-
-cover.cross.mean.sd <- rbind(round(colMeans(cover.cross.fraction.singlecurve), 2),
-             round(apply(cover.cross.fraction.singlecurve, 2, sd), 2)
-)
-colnames(cover.cross.mean.sd) <- c("Point", "Roislien", "Lenhoff")
-
-knitr::kable(cover.cross.mean.sd, caption = "Mean (top) and SD of covered points across the curve")
-
-# # Display as boxplots across methods
-# plot_cov_ver(cover.cross.fraction.singlecurve)
+# # Leave-one curve out approach
+# # ------------------------------------------------------------------------------
+# cover.cross.fraction.singlecurve <- singlecurve_coverage_fraction(data, n.boot)
+# 
+# cover.cross.mean.sd <- rbind(round(colMeans(cover.cross.fraction.singlecurve), 2),
+#              round(apply(cover.cross.fraction.singlecurve, 2, sd), 2)
+# )
+# colnames(cover.cross.mean.sd) <- c("Point", "Roislien", "Lenhoff")
+# 
+# knitr::kable(cover.cross.mean.sd, caption = "Mean (top) and SD of covered points across the curve")
+# 
+# # # Display as boxplots across methods
+# # plot_cov_ver(cover.cross.fraction.singlecurve)
 ```
 
 <!-- c. Average distance to the outer point of the curve set -->
@@ -619,37 +582,37 @@ c. Uncertainty in LoA (95% percentile intervals)
 
 a. Coverage of the entire curve
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
-data <- example_data(dat = "smooth_trend", dir.data)
-
-# Leave-one curve out approach
-# ------------------------------------------------------------------------------
-cover.cross.singlecurve <- singlecurve_coverage(data, n.boot)
-
-# Calculate percent from counts
-calculate_percent <- function(data) {
-  percentage <- (sum(data) / length(data))
-  percentage <- round(percentage, digits = 2)
-}
-
-covered.curves.percent <- apply(cover.cross.singlecurve, 2, calculate_percent)
-covered.curves.percent <- data.frame(t(covered.curves.percent))
-colnames(covered.curves.percent) <- c("Point", "Roislien", "Lenhoff")
-
-knitr::kable(covered.curves.percent, caption = "Percentages of entire covered curves")
+# data <- example_data(dat = "smooth_trend", dir.data)
+# 
+# # Leave-one curve out approach
+# # ------------------------------------------------------------------------------
+# cover.cross.singlecurve <- singlecurve_coverage(data, n.boot)
+# 
+# # Calculate percent from counts
+# calculate_percent <- function(data) {
+#   percentage <- (sum(data) / length(data))
+#   percentage <- round(percentage, digits = 2)
+# }
+# 
+# covered.curves.percent <- apply(cover.cross.singlecurve, 2, calculate_percent)
+# covered.curves.percent <- data.frame(t(covered.curves.percent))
+# colnames(covered.curves.percent) <- c("Point", "Roislien", "Lenhoff")
+# 
+# knitr::kable(covered.curves.percent, caption = "Percentages of entire covered curves")
 ```
 
 b. Mean (SD) of covered curve points
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
-# Leave-one curve out approach
-# ------------------------------------------------------------------------------
-cover.cross.fraction.singlecurve <- singlecurve_coverage_fraction(data, n.boot)
-
-cover.cross.mean.sd <- rbind(round(colMeans(cover.cross.fraction.singlecurve), 2),
-             round(apply(cover.cross.fraction.singlecurve, 2, sd), 2)
-)
-colnames(cover.cross.mean.sd) <- c("Point", "Roislien", "Lenhoff")
-
-knitr::kable(cover.cross.mean.sd, caption = "Mean (top) and SD of covered points across the curve")
+# # Leave-one curve out approach
+# # ------------------------------------------------------------------------------
+# cover.cross.fraction.singlecurve <- singlecurve_coverage_fraction(data, n.boot)
+# 
+# cover.cross.mean.sd <- rbind(round(colMeans(cover.cross.fraction.singlecurve), 2),
+#              round(apply(cover.cross.fraction.singlecurve, 2, sd), 2)
+# )
+# colnames(cover.cross.mean.sd) <- c("Point", "Roislien", "Lenhoff")
+# 
+# knitr::kable(cover.cross.mean.sd, caption = "Mean (top) and SD of covered points across the curve")
 ```
 
 <!-- c. Average distance to the outer point of the curve set -->
@@ -679,52 +642,40 @@ c. Uncertainty in LoA (95% percentile intervals)
 #### Curves with non-gaussian (Weibull distributed) error (no trend)
 a. Coverage of the entire curve
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
-data <- example_data(dat = "non_gaussian", dir.data)
-
-# Leave-one curve out approach
-# ------------------------------------------------------------------------------
-cover.cross.singlecurve <- singlecurve_coverage(data, n.boot)
-
-# Calculate percent from counts
-calculate_percent <- function(data) {
-  percentage <- (sum(data) / length(data))
-  percentage <- round(percentage, digits = 2)
-}
-
-covered.curves.percent <- apply(cover.cross.singlecurve, 2, calculate_percent)
-covered.curves.percent <- data.frame(t(covered.curves.percent))
-colnames(covered.curves.percent) <- c("Point", "Roislien", "Lenhoff")
-
-knitr::kable(covered.curves.percent, caption = "Percentages of entire covered curves")
-
-# # Leave-one subject out approach
-# # ------------------------------------------------------------------------------
-# cover.cross <- crossval_coverage(data, n.boot)
-# # colnames(cover.cross) <- c("RCB_1", "RCB_2", "RCB_3", "Roislien_4", "Point_5")
+# data <- example_data(dat = "non_gaussian", dir.data)
 # 
-# plot_cov_ver(cover.cross)
+# # Leave-one curve out approach
+# # ------------------------------------------------------------------------------
+# cover.cross.singlecurve <- singlecurve_coverage(data, n.boot)
+# 
+# # Calculate percent from counts
+# calculate_percent <- function(data) {
+#   percentage <- (sum(data) / length(data))
+#   percentage <- round(percentage, digits = 2)
+# }
+# 
+# covered.curves.percent <- apply(cover.cross.singlecurve, 2, calculate_percent)
+# covered.curves.percent <- data.frame(t(covered.curves.percent))
+# colnames(covered.curves.percent) <- c("Point", "Roislien", "Lenhoff")
+# 
+# knitr::kable(covered.curves.percent, caption = "Percentages of entire covered curves")
 ```
 
 b. Mean (SD) of covered curve points
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
-# Leave-one curve out approach
-# ------------------------------------------------------------------------------
-cover.cross.fraction.singlecurve <- singlecurve_coverage_fraction(data, n.boot)
-
-cover.cross.mean.sd <- rbind(round(colMeans(cover.cross.fraction.singlecurve), 2),
-             round(apply(cover.cross.fraction.singlecurve, 2, sd), 2)
-)
-colnames(cover.cross.mean.sd) <- c("Point", "Roislien", "Lenhoff")
-
-knitr::kable(cover.cross.mean.sd, caption = "Mean (top) and SD of covered points across the curve")
-
-# # Display as boxplots acroos methods
-# plot_cov_ver(cover.cross.fraction.singlecurve)
-
-# # Leave-one subject out approach
+# # Leave-one curve out approach
 # # ------------------------------------------------------------------------------
-# cover.cross.fraction <- crossval_coverage_fraction(data, n.boot)
-# plot_cov_ver(cover.cross.fraction)
+# cover.cross.fraction.singlecurve <- singlecurve_coverage_fraction(data, n.boot)
+# 
+# cover.cross.mean.sd <- rbind(round(colMeans(cover.cross.fraction.singlecurve), 2),
+#              round(apply(cover.cross.fraction.singlecurve, 2, sd), 2)
+# )
+# colnames(cover.cross.mean.sd) <- c("Point", "Roislien", "Lenhoff")
+# 
+# knitr::kable(cover.cross.mean.sd, caption = "Mean (top) and SD of covered points across the curve")
+# 
+# # # Display as boxplots acroos methods
+# # plot_cov_ver(cover.cross.fraction.singlecurve)
 ```
 
 <!-- c. Average distance to the outer point of the curve set -->
@@ -754,52 +705,40 @@ c. Uncertainty in LoA (95% percentile intervals)
 #### Curves phase shifted in x-axis direction
 a. Coverage of the entire curve
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
-data <- example_data(dat = "shift", dir.data)
-
-# Leave-one curve out approach
-# ------------------------------------------------------------------------------
-cover.cross.singlecurve <- singlecurve_coverage(data, n.boot)
-
-# Calculate percent from counts
-calculate_percent <- function(data) {
-  percentage <- (sum(data) / length(data))
-  percentage <- round(percentage, digits = 2)
-}
-
-covered.curves.percent <- apply(cover.cross.singlecurve, 2, calculate_percent)
-covered.curves.percent <- data.frame(t(covered.curves.percent))
-colnames(covered.curves.percent) <- c("Point", "Roislien", "Lenhoff")
-
-knitr::kable(covered.curves.percent, caption = "Percentages of entire covered curves")
-
-# # Leave-one subject out approach
-# # ------------------------------------------------------------------------------
-# cover.cross <- crossval_coverage(data, n.boot)
-# # colnames(cover.cross) <- c("RCB_1", "RCB_2", "RCB_3", "Roislien_4", "Point_5")
+# data <- example_data(dat = "shift", dir.data)
 # 
-# plot_cov_ver(cover.cross)
+# # Leave-one curve out approach
+# # ------------------------------------------------------------------------------
+# cover.cross.singlecurve <- singlecurve_coverage(data, n.boot)
+# 
+# # Calculate percent from counts
+# calculate_percent <- function(data) {
+#   percentage <- (sum(data) / length(data))
+#   percentage <- round(percentage, digits = 2)
+# }
+# 
+# covered.curves.percent <- apply(cover.cross.singlecurve, 2, calculate_percent)
+# covered.curves.percent <- data.frame(t(covered.curves.percent))
+# colnames(covered.curves.percent) <- c("Point", "Roislien", "Lenhoff")
+# 
+# knitr::kable(covered.curves.percent, caption = "Percentages of entire covered curves")
 ```
 
 b. Mean (SD) of covered curve points
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
-# Leave-one curve out approach
-# ------------------------------------------------------------------------------
-cover.cross.fraction.singlecurve <- singlecurve_coverage_fraction(data, n.boot)
-
-cover.cross.mean.sd <- rbind(round(colMeans(cover.cross.fraction.singlecurve), 2),
-             round(apply(cover.cross.fraction.singlecurve, 2, sd), 2)
-)
-colnames(cover.cross.mean.sd) <- c("Point", "Roislien", "Lenhoff")
-
-knitr::kable(cover.cross.mean.sd, caption = "Mean (top) and SD of covered points across the curve")
-
-# # Display as boxplots acroos methods
-# plot_cov_ver(cover.cross.fraction.singlecurve)
-
-# # Leave-one subject out approach
+# # Leave-one curve out approach
 # # ------------------------------------------------------------------------------
-# cover.cross.fraction <- crossval_coverage_fraction(data, n.boot)
-# plot_cov_ver(cover.cross.fraction)
+# cover.cross.fraction.singlecurve <- singlecurve_coverage_fraction(data, n.boot)
+# 
+# cover.cross.mean.sd <- rbind(round(colMeans(cover.cross.fraction.singlecurve), 2),
+#              round(apply(cover.cross.fraction.singlecurve, 2, sd), 2)
+# )
+# colnames(cover.cross.mean.sd) <- c("Point", "Roislien", "Lenhoff")
+# 
+# knitr::kable(cover.cross.mean.sd, caption = "Mean (top) and SD of covered points across the curve")
+# 
+# # # Display as boxplots acroos methods
+# # plot_cov_ver(cover.cross.fraction.singlecurve)
 ```
 
 <!-- c. Average distance to the outer point of the curve set -->
@@ -829,52 +768,40 @@ c. Uncertainty in LoA (95% percentile intervals)
 #### Real-world validation data
 a. Coverage of the entire curve
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
-data <- example_data(dat = "imu_mc", dir.data)
-
-# Leave-one curve out approach
-# ------------------------------------------------------------------------------
-cover.cross.singlecurve <- singlecurve_coverage(data, n.boot)
-
-# Calculate percent from counts
-calculate_percent <- function(data) {
-  percentage <- (sum(data) / length(data))
-  percentage <- round(percentage, digits = 2)
-}
-
-covered.curves.percent <- apply(cover.cross.singlecurve, 2, calculate_percent)
-covered.curves.percent <- data.frame(t(covered.curves.percent))
-colnames(covered.curves.percent) <- c("Point", "Roislien", "Lenhoff")
-
-knitr::kable(covered.curves.percent, caption = "Percentages of entire covered curves")
-
-# # Leave-one subject out approach
-# # ------------------------------------------------------------------------------
-# cover.cross <- crossval_coverage(data, n.boot)
-# # colnames(cover.cross) <- c("RCB_1", "RCB_2", "RCB_3", "Roislien_4", "Point_5")
+# data <- example_data(dat = "imu_mc", dir.data)
 # 
-# plot_cov_ver(cover.cross)
+# # Leave-one curve out approach
+# # ------------------------------------------------------------------------------
+# cover.cross.singlecurve <- singlecurve_coverage(data, n.boot)
+# 
+# # Calculate percent from counts
+# calculate_percent <- function(data) {
+#   percentage <- (sum(data) / length(data))
+#   percentage <- round(percentage, digits = 2)
+# }
+# 
+# covered.curves.percent <- apply(cover.cross.singlecurve, 2, calculate_percent)
+# covered.curves.percent <- data.frame(t(covered.curves.percent))
+# colnames(covered.curves.percent) <- c("Point", "Roislien", "Lenhoff")
+# 
+# knitr::kable(covered.curves.percent, caption = "Percentages of entire covered curves")
 ```
 
 b. Mean (SD) of covered curve points
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
 # Leave-one curve out approach
-# ------------------------------------------------------------------------------
-cover.cross.fraction.singlecurve <- singlecurve_coverage_fraction(data, n.boot)
-
-cover.cross.mean.sd <- rbind(round(colMeans(cover.cross.fraction.singlecurve), 2),
-             round(apply(cover.cross.fraction.singlecurve, 2, sd), 2)
-)
-colnames(cover.cross.mean.sd) <- c("Point", "Roislien", "Lenhoff")
-
-knitr::kable(cover.cross.mean.sd, caption = "Mean (top) and SD of covered points across the curve")
-
-# # Display as boxplots acroos methods
-# plot_cov_ver(cover.cross.fraction.singlecurve)
-
-# # Leave-one subject out approach
 # # ------------------------------------------------------------------------------
-# cover.cross.fraction <- crossval_coverage_fraction(data, n.boot)
-# plot_cov_ver(cover.cross.fraction)
+# cover.cross.fraction.singlecurve <- singlecurve_coverage_fraction(data, n.boot)
+# 
+# cover.cross.mean.sd <- rbind(round(colMeans(cover.cross.fraction.singlecurve), 2),
+#              round(apply(cover.cross.fraction.singlecurve, 2, sd), 2)
+# )
+# colnames(cover.cross.mean.sd) <- c("Point", "Roislien", "Lenhoff")
+# 
+# knitr::kable(cover.cross.mean.sd, caption = "Mean (top) and SD of covered points across the curve")
+# 
+# # # Display as boxplots acroos methods
+# # plot_cov_ver(cover.cross.fraction.singlecurve)
 ```
 
 <!-- c. Average distance to the outer point of the curve set -->
@@ -905,15 +832,48 @@ c. Uncertainty in LoA (95% percentile intervals)
 
 # Discussion
 
-Punktweise FLoA unterrepräsentieren den Messfehler
+Punktweise FLoA unterrepräsentieren den Messfehler sind aber ganz ok. Allerdings gilt es zu konstatieren, dass die korrekte Berechnung (ANOVA-Varianzanteile, Konfidenzintervalle) auch nicht unbedingt trivial ausfällt.
 
 FLoA Roislien tendieren dazu zu weit auszufallen (den Messfehler zu überrepräsentieren)
 
-<!-- Anwendung der Argumentation der Reviewer* auf die "Roislien_FLoA": In Roislien et al. werden 95% Konfidenzintervalle gebootstrapped. The authors are producing the arithmetic mean curves, the variability of which will reflect variation between means. It is the variability of individual values that is relevant, and the limits will be too narrow by a factor of approximately the square root of n.subj. -->
-d
-It might be beneficial to work with functional data as suggested by Lenhoff et al. (1999) or Roislien et al. (2012) when e. g. interpolating data to a standardized length. This approach, however, wasn't necessary in this paper, since the synthetic data were created from functions and were designed to all have equal length (101 data points).
+Im Allgemeinen sind Prädiktionsintervalle überall dort von Interesse, wo neue Messwerte gegen normative Daten (z. B. aus einer Referenzdatenbank) verglichen werden. Wenn die Abweichung ein bestimmtes Maß überschreitet, d. h. der Proband nicht zur Referenzpopulation gehört, dann werden - wie bei Olshen et al. (1989) - bestimmte pathologische Muster angenommen und eine - wie auch immer geartete - Therapie vorgeschlagen. Entsprechend wichtig ist es diese Intervalle mit der richtigen Breite zu konstruieren, andernfalls gehen etwaige Effekte im Rauschen unter (zu weit) oder es werden Effekte angenommen, die so gar nicht auftreten (zu eng).
 
-Wir empfehlen die Daten zu plotten. Am Ende ist jeder Datensatz bzw. jede Fragestellung unterschiedlich und ein pauschaler coverage value wird der Qualität des Messgeräts (in Bezug auf die jeweilige Fragestellung möglicherweise nicht gerecht).
+
+Die Bland & Altman Methode setzt normalverteilte, homoskedastische und unabhängige Differenzen voraus. Diese Annahmen sind allerdings beim Vergleich verschiedener Messmethoden häufig verletzt. Die Verteilung der Differenzen zwischen zwei Systemen wird z. B. erheblich verzerrt, wenn Sensorwerte wegen einer Begrenzung des Messbereichs oder der Auflösung abgeschnitten werden, oder wegen (nichtlinearem) Drift. Die Unabhängigkeitsannahme wird dann verletzt, wenn messwiederholte Daten vorliegen. Meswiederholte Werte sind sich i. d. R. ähnlicher (d. h. sie streuen weniger) als die Kurven verschiedener Probanden. Entsprechend besteht die Gefahr, die Streuung der Differenzen zwischen zwei Messmethoden zu unterschätzen. Um dem entgegenzuwirken, verwenden Roislien nur jeweils eine Kurve je Proband, was wiederum zu Lasten einer erheblichen Unsicherheit bezüglich der Streuung der berechneten LoA erkauft wird.
+
+
+
+KONFIDENZINTERVALLE VS. PRÄDIKTIONSINTERVALLE
+<!-- Prädiktionsbänder sind kontinuierliche Intervalle, in denen eine zukünftige Beobachtung einer Zufallsvariablen (Messkurve) mit einem gegebenen Konfidenzniveau enthalten ist. Anhand dieser Prädiktionsbänder werden Entscheidungen über die Form und den Effekt von Behandlungen für einzelne Probanden getroffen. Zu enge Prädiktionsbänder implizieren im beschriebenen Anwendungsfall, dass der Gang eines Probanden ein von der Norm abweichendes Muster aufweist, dass behandelt werden muss.  -->
+Der hier beschriebene Anwendungsfall (Prädiktionsbänder) deckt natürlich nur ein gewisses Spektrum relevanter Fragestellungen ab. In vielen weit verbreiteten Studiendesigns, z. B. Interventionsstudien, ist mit den breiten Prädiktionsbändern oder den noch breiteren Toleranzbändern nicht viel zu holen. Mit den im Paper kontruierten Bändern würde nahezu jeder Effekt im Messfehlintervall untergehen. In solchen Fällen Studien sind aber ohnehin eher Mittelwerte von Interesse, die in Signifikanztests auf Unterschiede untersucht werden. In diesem Fall sind die schmaleren Konfidenzintervalle eher geeignet um die Abweichung/Übereinstimmung zwischen den gemessenen Mittelwertkurven zweier Messsysteme zu beschreiben.
+<!-- Für Details zu Unterschieden in den coverage properties von LoA und herkömmlichen Prädiktionsintervallen sei an dieser Stelle auf Francq et al. (2020) verwiesen. -->
+
+<!-- LENHOFF -->
+<!-- In some research studies it is important to determine confidence bands for the mean curve of a given population. For example, a researcher might want to characterize the effect upon the mean external varus moment of a group of subjects treated with a given type of knee brace. In this example, the researcher would wish to determine a confidence band for the mean difference in the external varus moment for subjects while wearing the brace and the external varus moment for the same subjects while not wearing the brace. If the confidence -->
+<!-- band about the difference of the braced and un-braced curves of each subject contains the horizontal line at value zero, then one could state that there was no significant difference between the two conditions. This application is illustrated in Fig. 1. -->
+
+
+https://statmodeling.stat.columbia.edu/2010/12/05/what_do_practit/
+The key assumptions of a regression model are validity and additivity. Except when you’re focused on predictions, don’t spend one minute worrying about distributional issues such as normality or equal variance of the errors.
+
+
+Wir empfehlen grundsätzlich die Daten zu plotten. Am Ende ist jeder Datensatz bzw. jede Fragestellung unterschiedlich und ein pauschaler coverage value wird der Qualität des Messgeräts (in Bezug auf die jeweilige Fragestellung möglicherweise nicht gerecht).
+
+Die Erkenntnisse der vorliegenden Studie können nicht 1:1 auf andere Arten von Daten (z. B. Bodenreaktionskraftkurven, EMG Signale) übertragen, sondern gelten primär für glatte Kurven.
+
+SPM
+Pataky: A methodology called Statistical Parametric Mapping (SPM) (Friston et al., 2007) can partially offset these limitations by providing a framework for the continuous statistical analysis of smooth bounded nD fields.
+
+Trotz der theoretisch und praktisch demonstrierten Überlegenheit funktionaler Verfahren konnten sich deren Einsatz im Kontext der Validierung von Messinstrumenten noch nicht recht durchsetzen. Wir spekulieren, dass dies in direktem Zusammenhang mit der Komplexität der Verfahren steht, die eine hohe Hürde für viele Praktiker mit weniger ausgeprägten Statistik- und Programmierkenntnissen darstellt. Um die Verbreitung funktionaler Methoden zu katalysieren stellen wir daher die bei der Erstellung des Papers implementierten Methoden als R Code frei zur Verfügung (GPL).
+
+Angesichts der überragenden Bedeutung der Kenntniss des Messfehlers ist es erstaunlich wie wenig sich viele Studien mit der Frage nach der Größe des Messfehlers beschäftigen. Gut demonstrieren lässt sich das am Beispiel von IMU's ...
+
+
+
+Wir glauben dass die geringe Verbreitung kontinuierlicher Methoden trotz erwiesenermaßen gut funktionierender Methoden in der Praxis an der programmiertechnischen Umsetzung scheitert. Wir hoffen mit diesem Paper und dem Code im Anhang einen Beitrag dazu zu leisten, dass mehr Forscher diese Methoden adaptieren und veralteten/ungeeigneten Methoden (Korrelationskoeffizienten etc.) den Rücken kehren.
+
+
+<!-- Es gibt auch immer mehr readily available (und kostenlose) Lösungen, siehe https://mjskay.github.io/ggdist/articles/lineribbon.html -->
 
 <!-- Limitations of curvewise intervals -->
 <!-- https://mjskay.github.io/ggdist/articles/lineribbon.html -->
@@ -934,6 +894,14 @@ Wir empfehlen die Daten zu plotten. Am Ende ist jeder Datensatz bzw. jede Frages
 <!-- Interessant beim Juul Paper ist auch der Umgang mit ("abgeschnittenen") Extremwerten: -->
 <!-- Here we have argued that computing confidence intervals using fixed-time descriptive systematically suppresses trajectory extremes. This is natural. -->
 <!-- Fixed-time descriptive statistics are designed to show the least extreme predictions on a given date, not to take entire curves into account. -->
+
+<!-- <!-- Es gibt eine Reihe von Ansätzen aus anderen Bereichen (z. B. Covid Prädiktion), bei denen sog. Function oder Curve Boxplots eingesetzt werden. -->
+<!-- <!-- https://mjskay.github.io/ggdist/reference/curve_interval.html -->
+<!-- <!-- Hier referenzierte Paper u. a.  -->
+<!-- <!-- - Juul Jonas, Kaare Græsbøll, Lasse Engbo Christiansen, and Sune Lehmann. (2020). "Fixed-time descriptive statistics underestimate extremes of epidemic curve ensembles". arXiv e-print. arXiv:2007.05035 -->
+<!-- <!-- - Mirzargar, Mahsa, Ross T Whitaker, and Robert M Kirby. (2014). "Curve Boxplot: Generalization of Boxplot for Ensembles of Curves". IEEE Transactions on Visualization and Computer Graphics. 20(12): 2654-2663. doi: 10.1109/TVCG.2014.2346455 -->
+
+<!-- <!-- See Mirzargar et al. (2014) or Juul et al. (2020) for an accessible introduction to data depth and curve boxplots / functional boxplots. -->
 
 # Conclusion
 
