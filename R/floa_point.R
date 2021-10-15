@@ -54,7 +54,8 @@ floa_point <- function(data) {
   # Confidence intervals for the 95% limits of agreement (Bland & Altman, 1986)
   # The standard error of the limits is approximately sqrt(3*s^2 / n)
   n.curves <- length(unique(data$strideID))
-  standard.error.d2s <- sqrt(3*floa.point$total.sd^2 / n.curves)
+  # standard.error.d2s <- sqrt(3*floa.point$total.sd^2 / n.curves)
+  standard.error.d2s <- sqrt(1/n.curves + (z0.975^2 / (2*(n.curves-1)))) * floa.point$total.sd
 
   # t-score of the 95th quantile of the Student t distribution with df = (n.curves - 1)
   t <- qt(.975, df = n.curves - 1)
