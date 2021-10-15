@@ -306,28 +306,28 @@ floa.point <- floa_point(data)
 
 ### Leave-one out cross validation
 
-Um die coverage Performance der untersuchten Methoden zu bewerten, wurden die jeweiligen Intervalle im leave-one-out Verfahren kreuzvalidiert. Dabei wird eine Kurve vom Datensatz entfernt und die Intervalle anhand der übrigen Kurven berechnet. Dieser Vorgang wird für jede der $n$ Kurven eines Datensatzes wiederholt. Der Anteil der vorgehaltenen Kurven, die in den Bändern enthalten sind, wird mit zwei verschiedenen Kennwerten beschrieben:
+Um die coverage Performance der untersuchten Methoden zu bewerten, wurden die jeweiligen Intervalle im leave-one-out Verfahren kreuzvalidiert. Dazu wird jeweils eine Kurve vom Datensatz entfernt und die Intervalle anhand der übrigen Kurven berechnet. Dieser Vorgang wird für jede der $N$ Kurven eines Datensatzes wiederholt. Der Anteil der vorgehaltenen Kurven, die in den Bändern enthalten sind, wird mit zwei verschiedenen Kennwerten beschrieben:
 
 * Percentage of entirely covered curves (all points within the limits)
 
 * Mean (SD) of curve points within the respective FLoA: The fraction of points along a curve within the limits is calculated and averaged across all curves of a subject.
 
-Für die punktweisen wurde 
-
 ### LoA uncertainty estimation
 
-Um die Schwankung der Intervallgrenzen über wiederholte Berechnungen hinweg zu veranschaulichen, wurden für die BOOT und ROISLIEN Intervalle Unsicherheitsbänder gebootstrapped (b = 400 Wiederholungen). Die Unsicherheit in diesen Verfahren entsteht durch das wiederholte Ziehen mit Zurücklegen im Rahmen des Bootstrapverfahrens (BOOT) bzw. die jeweils unterschiedlichen gezogenen Einzelkurven (ROISLIEN).
+Um die Schwankung der Intervallgrenzen über wiederholte Berechnungen hinweg zu veranschaulichen, wurden für alle drei Verfahren Unsicherheitsbänder durch gebootstrapped ($B = 400$). Die Unsicherheit entsteht durch wiederholtes Ziehen mit Zurücklegen im Rahmen des Bootstrapverfahrens (BOOT) bzw. die jeweils unterschiedlichen gezogenen Einzelkurven (ROISLIEN).
 
-Im Falle der POINT Intervalle werden alle Kurven eines Datensatzes verwendet, weshalb keine Schwankung der Intervallgrenzen auftritt. Verschiedene Autoren schlagen jedoch Konfidenzintervalle als Erweiterung ihres ursprünglichen Ansatzes vor, um den sampling error insbesondere kleinere Stichproben (Bland & Altman, 1986; Hamilton & Stamey, 2007; Giavarina, 2015) zu berücksichtigen. Bland & Altman (1986) schätzen den Standardfehler der Differenzen auf ungefähr $\sqrt{3*s² / c}$.
+Im Falle der POINT Intervalle werden alle Kurven eines Datensatzes verwendet, weshalb keine Schwankung der Intervallgrenzen auftritt. Verschiedene Autoren schlagen jedoch Konfidenzintervalle (KI) als Erweiterung ihres ursprünglichen Ansatzes vor, um den sampling error insbesondere kleiner Stichproben (Bland & Altman, 1986; Hamilton & Stamey, 2007; Giavarina, 2015) zu berücksichtigen. Bland & Altman (1986) schlagen die folgende Formel vor (95% CI für 95% LoA):
 
-mit $s$ ... Standardabweichung
-und $c$ ... Anzahl der Kurven im Datensatz
+$$
+(\overline{d} \pm z_{0.975}SD) \pm t_{0.975, n-1}SD\sqrt{\frac{1}{N} + \frac{z^2_{0.975}}{2(N-1)}}
+$$
+Quelle? Wo steht die Formel drin?
+
+mit $z_{0.975} = 1.96$.
+
+<!-- schätzen den Standardfehler der Differenzen auf ungefähr $\sqrt{3*s² / c}$. -->
 
 Für die Berechnung von Konfidenzintervallen wird noch das geeignete Quantil der t-Verteilung mit n − 1 Freiheitsgraden benötigt. Das Konfidenzintervall reicht dann vom oberen/unteren Limit minus t$*$Standardfehler bis zum oberen/unteren Limit plus t$*$Standardfehler. Im vorliegenden Paper wurden 95% Konfidenzintervalle gerechnet.
-
-Die vollständige von Bland & Altman vorgeschlagene Formel (95% CI für 95% LoA) lautet damit: 
-
-$(\overline{d} \pm z_{0.975}*s) \pm t_{0.975, n-1}*s*\sqrt{3*s² / c}$, mit $z_{0.975} = 1.96$
 
 # Results
 
@@ -467,7 +467,7 @@ b. Mean (SD) of covered curve points
 
 c. Uncertainty in LoA (95% percentile intervals)
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
-# estimate_uncertainty_loa(data, n.boot)
+estimate_uncertainty_loa(data, n.boot)
 ```
 
 #### Smooth, wave data (normal error, constant variance, no trend)
