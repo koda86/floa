@@ -16,8 +16,8 @@ plot_loa <- function (data, floa.point, floa.roislien, floa.lenhoff, ylim) {
   floa.lenhoff <- data.frame(t(floa.lenhoff))
 
   # Difference curves -------------------------------------------------
-  device1 <- data.frame(subset(data, device == "IMU")$value)
-  device2 <- data.frame(subset(data, device == "MC")$value)
+  device1 <- subset(data, device == "IMU", select = value)
+  device2 <- subset(data, device == "MC", select = value)
 
   device.diff <- device1 - device2
   colnames(device.diff)[1] <- "value"
@@ -30,14 +30,12 @@ plot_loa <- function (data, floa.point, floa.roislien, floa.lenhoff, ylim) {
   device.diff$strideID <- as.factor(rep(1:n.strides, each = 101))
   device.diff$subjectID <- as.factor(rep(1:n.subjects, each = strides.per.subject * n.frames))
 
-
   # For line graphs, the data points must be grouped so that it knows which points to connect.
   # In this case, it is simple -- all points should be connected, so group=1.
   # When more variables are used and multiple lines are drawn, the grouping for lines is usually done by variable.
   PLOT.DIFF <- ggplot(data = device.diff, aes(x = frame, y = value)) +
-    geom_line(data = device.diff,
-              aes(group = strideID),
-              alpha = 0.25) +
+    geom_line(aes(group = strideID),
+              alpha = 0.15) +
     scale_color_grey(start = 0.8, end = 0.2) +
     # Plot lower limit of agreement
     geom_line(data = floa.lenhoff,

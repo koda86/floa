@@ -42,7 +42,12 @@ singlecurve_coverage_fraction <- function (data, n.boot) {
     # floa.v2       <- floa_rcb(data.one.out, n.boot, ver = "v2")
     # floa.v3       <- floa_rcb(data.one.out, n.boot, ver = "v3")
     floa.roislien <- floa_roislien(data.one.out)
-    floa.lenhoff <- floa_lenhoff(data.one.out, k_reihe = 30, n.boot = n.boot, cp.begin = 0, alpha = 0.05)
+    floa.lenhoff  <- floa_lenhoff(data,
+                                  k_reihe = 50,
+                                  n.boot = n.boot,
+                                  band = "prediction",
+                                  cp.begin = 0,
+                                  alpha = 0.05)
 
     # Plot left out curve vs. various FLoA methods -----------------------
     data.subset <- subset(data, strideID == curve.idx)

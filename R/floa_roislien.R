@@ -18,11 +18,5 @@ floa_roislien <- function(data) {
 
   rownames(floa.roislien) <- c("upper", "mean", "lower")
 
-  # # Plausibility check
-  # plot(diff.curves[, 1], type="l", ylim = c(-5, 5))
-  # apply(diff.curves, 2, lines, type = "l")
-  # lines(floa.roislien["upper", ], col = "red", size = 3)
-  # lines(floa.roislien["lower", ], col = "red", size = 3)
-
   return(floa.roislien)
 }

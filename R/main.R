@@ -11,18 +11,10 @@
 # (see subsection data sets)
 #
 # TODO:
-#   + Wie lassen sich zu weite LoA effektiv beschreiben / in einen Parameter giessen? Abstand zur aeussersten Kurve (als MSE)?
-#   + Weitere edge case Datensaetze a la shift
-#   + range-Angabe unertainty intervals!
-#   + Wie lassen sich (potenziell) zu weite LoA quantifizieren (Roislien!?)? Estimation uncertainty in Roislien is probably a lot higher
-#   + mean or median for floa.rcb?
-#   + 95% coverage implementieren
-#   + (Implementieren FDA)
 #   + Preallocation in floa_rcb()
 #   + Implement balanced data in floa_rcb.R
 #
 # TODO READ:
-#   + B&A, 2007
 #   + https://bmcmedresmethodol.biomedcentral.com/articles/10.1186/s12874-020-01022-x
 #   + Ratkowsky - Handbook of nonlinear regression models
 #   + Robinson et al. (2021)
@@ -117,11 +109,25 @@ n.boot <- 400
 #      strap the resulting sample (of length (n=length(subjects))
 # floa <- floa_rcb(data, n.boot, ver = "v2")
 
-floa.point <- floa_point(data)
+floa.point    <- floa_point(data)
 floa.roislien <- floa_roislien(data)
-floa.lenhoff <- floa_lenhoff(data, k_reihe = 50, n.boot = n.boot, cp.begin = 0, alpha = 0.05)
+floa.lenhoff.pred  <- floa_lenhoff(data,
+                                   k_reihe = 50,
+                                   n.boot = n.boot,
+                                   band = "prediction",
+                                   cp.begin = 0,
+                                   alpha = 0.05)
 
-plot_loa(data, floa.point, floa.roislien, floa.lenhoff, ylim = c(-5, 5))
+floa.lenhoff.conf  <- floa_lenhoff(data,
+                                   k_reihe = 50,
+                                   n.boot = n.boot,
+                                   band = "confidence",
+                                   cp.begin = 0,
+                                   alpha = 0.05)
+
+
+plot_loa(data, floa.point, floa.roislien, floa.lenhoff.pred, ylim = c(-15, 15))
+plot_loa(data, floa.point, floa.roislien, floa.lenhoff.conf, ylim = c(-15, 15))
 
 
 # ********************************* Coverage ***********************************
