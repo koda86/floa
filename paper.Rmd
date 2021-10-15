@@ -1,34 +1,33 @@
 ---
-title: "Comparison of continuous prediction bands for the validation of smooth 1D biomechanical time series data"
-
+title: Comparison of continuous prediction bands for the validation of smooth 1D biomechanical
+  time series data
 author:
-  - name: Daniel Koska
-    email: daniel.koska@hsw.tu-chemnitz.de
-    affiliation: Chemnitz University of Technology, Research Methodology and Data Analysis in Biomechanics
-    footnote: Corresponding Author
-  - name: Doris Oriwol
-    email: doris.oriwol@partner.kit.edu
-    affiliation: Karlsruhe Institute of Technology
-  - name: Christian Maiwald
-    email: christian.maiwald@hsw.tu-chemnitz.de
-    affiliation: Chemnitz University of Technology, Research Methodology and Data Analysis in Biomechanics
-# address:
-#   - code: Chemnitz University of Technology
-#     address:  Thüringer Weg 11, 09126 Chemnitz
-#   - code: Another University
-#     address: Department, Street, City, State, Zip
+- name: Daniel Koska
+  email: daniel.koska@hsw.tu-chemnitz.de
+  affiliation: Chemnitz University of Technology, Research Methodology and Data Analysis
+    in Biomechanics
+  footnote: Corresponding Author
+- name: Doris Oriwol
+  email: doris.oriwol@partner.kit.edu
+  affiliation: Karlsruhe Institute of Technology
+- name: Christian Maiwald
+  email: christian.maiwald@hsw.tu-chemnitz.de
+  affiliation: Chemnitz University of Technology, Research Methodology and Data Analysis
+    in Biomechanics
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+journal: An awesome journal
 abstract: |
   Paper als short communication / technical note?
 
-date: "`r format(Sys.time(), '%d %B, %Y')`"
-journal: "An awesome journal"
-# bibliography: sendaFAB.bib
-# output: rticles::elsevier_article
+header-includes:
+  - \usepackage{amsmath}
 output:
   html_document:
-    toc: true
-    toc_float: true
+    toc: yes
+    toc_float: yes
     theme: united
+  pdf_document:
+    toc: yes
 ---
 
 ### TODO
@@ -102,9 +101,13 @@ Obwohl wir in der Arbeit bei Weitem nicht alle Anwendungsfälle (Methoden, Inter
 
 Für den Vergleich der Methoden wurden vier (simulierte und reale) Datensätze verwendet. Jeder der Datensätze enthält jeweils $N = 220$ Kurven der Länge $T = 101$ Datenpunkte aus $M = 2$ Messsystemen $(m=1,2)$. Das entspricht in jedem Datensatz $D = 110$ Differenzkurven, die durch Subtraktion gebildet werden:
 
-$\sum D_{ij} = \sum_{i=1}^{I} \sum_{j=1}^{J} Y_{ij} - X_{ij} = 110$
+\begin{equation}
+\tag{1}
+\sum D_{ij} = \sum_{i=1}^{I} \sum_{j=1}^{J} Y_{ij} - X_{ij} = 110
+\label{eq:mean}
+\end{equation}
 
-X und Y sind (I x J) Matrizen der beiden Messsysteme, mit $I = 11$ Probanden und $J = 10$ wiederholten Kurven pro Proband. Die Größe der Datensätze entspricht in etwa dem typischen Stichprobenumfang in Validierungsstudien.
+X und Y sind (I x J) Matrizen der beiden Messsysteme, mit $I = 11$ Probanden und $J = 10$ wiederholten Kurven pro Proband. Die Größe der Datensätze entspricht in etwa dem typischen Stichprobenumfang vieler Validierungsstudien.
 
 <!-- Die $nN$ Kurven entsprechen $J = 10$ repeated measures von $I = 11$ Probanden und $m = 2$ Messsystemen: -->
 <!-- $n = m * \sum_{i=1}^{11} \sum_{j=1}^{10} n_{ij} = 220$ -->
@@ -112,22 +115,22 @@ X und Y sind (I x J) Matrizen der beiden Messsysteme, mit $I = 11$ Probanden und
 Alle simulierten Datensätze wurden als glatte Kurven, ähnlich Gelenkwinkelverläufen, mit dem gleichen Grundmodell generiert. Die Kurven korrespondieren nicht mit realen Signalen und wurden teilweise bewusst überspitzt konstruiert um den Einfluss bestimmter Differenzcharakteristika auf das Verhalten der Bänder möglichst deutlich darzustellen. Die Kurven wurden als trigonometrische Funktionen durch Addition zweier Sinusfunktionen konstruiert:
 
 $$
-X_{ij}(t) = (offset_{m}) + f_{1} + f_{2}, Y_{ij}(t) = (offset_{m}) + f_{3} + f_{4}
+X_{ij} = (offset_{m}) + f_{1}(t) + f_{2}(t),\\Y_{ij}(t) = (offset_{m}) + f_{3}(t) + f_{4}(t)
 $$
 mit
 
 $$
-f_{1, 3} = Asin(Bt)^{c + 3}
+f_{1, 3}(t) = Asin(Bt)^{c + 3}
 $$
 und
 
 $$
-f_{2, 4} = Asin(Bt)
+f_{2, 4}(t) = Asin(Bt)
 $$
 $A$, $B$ sind Zufallsvariablen mit unterschiedlichen Verteilungseigenschaften (normal, uniform, Weibull) über deren Parameter systematische und zufällige Unterschiede zwischen Probanden (between subject variation), Schritten (within subject variation) und Messystemen modelliert werden. $c$ ist eine Konstante ($c = 2$). Zudem wurden - je nach Datensatz - unterschiedliche Offsets als normalverteilte Zufallsvariablen mit variierenden $\mu$ und $\sigma$ simuliert:
 
 $$
-offset_{m} = \sim N(\mu, \sigma_{i})
+offset_{m} \sim N(\mu_{i}, \sigma=0.05)
 $$
 Im Sinne der Reproduzierbarkeit wurden alle Zufallsvariablen mit einem random seed initialisiert. Der Code für die Generierung der Kurven kann im Anhang im Detail nachvollzogen werden.
 
@@ -231,107 +234,59 @@ Real-world hip joint angle curves from healthy subjects walking at 6 km/h on a t
 
 ### Calculation methods
 
-Um die untersuchten Methoden im gleichen Wahrscheinlichkeitsraum (probability space, function space?) zu analysieren, wurden Differenzkurven zwischen den beiden Systemen als Berechnungsgrundlage gebildet. Im Kontext von Messsystemvalidierungen bietet sich die Verwendung von Differenzkurven zudem an, weil mit diesen Kurven unmittelbar die (von Bland & Altman formulierte) Fragestellung beantwortet wird, inwiefern die verglichenen Methoden in der Praxis austauschbar eingesetzt werden können?
-
-Auf Grundlage der Differenzkurven wurden Prädiktionsintervalle mit drei unterschiedlichen Methoden berechnet:
+Die untersuchten Prädiktionsbänder wurden ausschließlich anhand der gebildeten Differenzkurven $D$ gebildet um die Vergleichbarkeit der Methoden zu gewährleisten. Prädiktionsbänder wurden mit drei unterschiedlichen Verfahren berechnet:
 
 * 1. POINT : Pointwise continuous LoA according to Bland & Altman (1999, 2007)
 
-Für alle $t = 101$ Punkte wurden jeweils über alle $d$ Kurven Bland & Altman LoA berechnet. Wenn diese Differenzen normalverteilt (homoskedastisch, unabhängig) sind, kann erwartet werden, dass 95% der Differenzen im Intervall mean difference $\pm$ 1.96 $*$ standard deviation of the differences liegen. Dieses einfache Modell kann erweitert werden wenn die Modellvoraussetzungen nicht ausreichend erfüllt sind (z. B. nichtnormalverteilte Differenzen (logarithmische Transformation), Abhängigkeit der Differenzen vom zugehörigen Mittelwert (Regressionsansatz), Abhängigkeit der Kurven (messwiederholte Daten)).
-
-Wir verwenden in der vorliegenden Arbeit ein Modell für wiederholte Messungen, in dem sich der wahre Wert über jedes Differenzpaar ändert. Das Modell beschreibt die Differenz zwischen zwei Messsystemen als Summe der mittleren Differenz ($\overline{d}$) und zweier Varianzkomponenten (between (\sigma^2_{db}), within (\sigma^2_{dw})):
+Für alle $t = 101$ Punkte wurden jeweils über alle $D$ Kurven LoA berechnet. Bei erfüllten Modellvoraussetzungen (unabhängige Kurven, normalverteilte Differenzen, Homoskedastizität), kann erwartet werden, dass 95% der Differenzen im Intervall mean difference $\pm$ 1.96 $*$ standard deviation of the differences liegen. Wir verwenden in der vorliegenden Arbeit ein komplexeres Modell für wiederholte Messungen, in dem sich der wahre Wert über jedes Differenzpaar ändert (Bland & Altman, 1999). Das Modell beschreibt die Differenz zwischen zwei Messsystemen als Summe der mittleren Differenz ($\overline{d}$) und zweier Varianzkomponenten (between ($\sigma^2_{db}$), within ($\sigma^2_{dw}$)):
 <!-- Auch wenn hier jeweils die gleiche Anzahl Kurven für jedes Messsystem vorliegt, erlaubt die verwendete Formel die Übertragung auf den unbalancierten Fall. -->
 
 $$
 LoA = D_{ij} = \overline{d} + \sqrt{\sigma^2_{db} + \sigma^2_{dw}}
 $$
-Die beiden Varianzkomponenten können mithilfe einer einfaktoriellen Varianzanalyse bestimmt werden. \sigma^2_{dw} wird dabei als residual mean square ($MS_{w}$) direkt aus dem ANOVA table abgelesen. \sigma^2_{db} berechnet sich aus der Differenz aus between-subject mean squares und $MS_{w}$, geteilt durch einen Term, der die Anzahl der $i$ Probanden und $j$ Kurven berücksichtigt. Wenn für alle Probanden die gleiche Anzahl an Datenpunkten vorliegt (wie im vorliegenden Fall), reduziert sich dieser Term auf die Anzahl der Datenpunkte (Kurven) pro Proband ($j = 10$):
+Die beiden Varianzkomponenten können mithilfe einer einfaktoriellen Varianzanalyse bestimmt werden. \sigma^2_{dw} kann als residual mean square ($MS_{w}$) direkt aus dem ANOVA table abgelesen werden. \sigma^2_{db} berechnet sich aus der Differenz aus between-subject mean squares und $MS_{w}$, geteilt durch einen Term, der die Anzahl der $i$ Probanden und $j$ Kurven berücksichtigt. Wenn für alle Probanden die gleiche Anzahl an Datenpunkten vorliegt (wie im vorliegenden Fall), reduziert sich dieser Term auf die Anzahl der Datenpunkte (Kurven) pro Proband ($j = 10$):
 
 $$
 \sigma^2_{db} = \frac{(MS_{b} - MS_{w})}{j}
 $$
-
-Für weiterführende Informationen zur Berechnung (z. B. bei ungleicher Anzahl Observationen pro Proband), siehe Bland & Altman (1999) sowie die zugehörige Implementierung als R Code im Anhang.
+Für weiterführende Informationen zur Berechnung (z. B. bei ungleicher Anzahl Observationen pro Proband) siehe Bland & Altman (1999, 2007) sowie die zugehörige Implementierung als R Code im Anhang.
 
 * 2. ROISLIEN : Functional limits of agreement (FLoA) according to Roislien et al. (2012)
 
-Die Methode von Røislien et al. (2012) wurde als Erweiterung der Methode von Bland & Altman (1983) für kontinuierliche Differenzen ($d(t)$) entwickelt. Roislien et al. approximieren die Kurven im Datensatz daher zunächst mithilfe elementarer trigonometrischer Funktionen. Die Berechnung der Modellparameter (mean, standard deviation) erfolgt im Anschluss jedoch - genau wie in POINT - separat für jeden Punkt der Kurve. Daher macht es in der praktischen Umsetzung de facto keinen Unterschied ob die originalen (diskreten) oder funktionalen Kurven verwendet werden. Wir verzichten daher im Rahmen dieses Papers auf die Repräsentation der Kurven als Funktionen. Damit ergeben sich gegenüber POINT zwei Unterschiede:
-
-(i) Da die Unabhängigkeit der Kurven vorausgesetzt wird, werden keine wiederholten Kurven verwendet, sondern je eine Kurve pro Proband ausgewählt. Es wird also nicht wie bei POINT mit allen Kurven gerechnet, sondern mit einer reduzierten Version des Datensatzes. 
-
-(ii) Die (punktweise) Berechnung der LoA erfolgt für diese $j = i$ Kurven mithilfe des minimalen Bland & Altman Modells als $FLoA = d(t) \pm 1.96SD(t)$ berechnet, wobei $\overline{d}(t)$ die kontinuierliche mean difference bezeichnet. 
+Die Methode von Røislien et al. (2012) wurde als Erweiterung der Methode von Bland & Altman (1983) für kontinuierliche Differenzen ($d(t)$) entwickelt. Roislien et al. approximieren die Kurven im Datensatz daher zunächst mithilfe elementarer trigonometrischer Funktionen. Die Berechnung der Modellparameter ($\overline{d}$, $\sigma$) erfolgt im Anschluss allerdings - genau wie in POINT - separat für jeden Punkt der Kurve. Daher macht es in der praktischen Umsetzung de facto keinen Unterschied ob die originalen (diskreten) oder funktionalen Kurven verwendet werden. Wir verzichten daher im Rahmen dieses Papers auf die Repräsentation der Kurven als Funktionen. Das Modell ist dennoch interessant weil gegenüber der Variante in POINT (i) keine wiederholten Kurven verwendet werden, sondern nur je eine Kurve pro Proband um die Modellvoraussetzung der Unabhängigkeit der Kurven nicht zu verletzen und (ii) die (punktweise) Berechnung der LoA für diese $j = i$ Kurven mithilfe des minimalen Bland & Altman Modells erfolgt ($LoA = d(t) \pm 1.96SD(t)$), wobei $\overline{d}(t)$ die kontinuierliche mean difference bezeichnet. 
 
 * 3. BOOT : Boostrapped functional prediction bands according Sutherland et al. (1988), Olshen et al. (1989) and Lenhoff et al. (1999)
 
-Die Methode
+Die Methode ist die einzige der vorgestellten Methoden, die vollständig funktional arbeitet, d. h. die Konstruktion der Prädiktionsbänder findet nicht punktweise, sondern auf Grundlage ganzer Kurven statt.
 
-Das Bootstrapping der Prädiktionsintervalle wird nicht mit diskreten Werten gemessener Kurven durchgeführt, sondern mit Funktionen der Kurven. Die Funktionen werden durch Kurvenanpassung mit Fourier-Reihen erzeugt. Kurvenanpassung ist notwendig, da diskrete Messwerte eines Kurvenverlaufs keine unabhängig voneinander auftretenden Ereignisse sind, die einer Normalverteilung unterliegen.
+Bootstrapping ist ein nicht-parametrisches Verfahren und kommt daher ohne Annahmen zur Verteilung der Differenzen aus.
 
-Im ersten Schritt des Verfahrens werden alle gemessenen Kurven (n) mithilfe von Fourier-Reihen als Funktionen modelliert:
-
-$$
-f(t) = \mu_{i} + \sum_{k=1}^K(\alpha_{i, k}cos(\frac{2\pi kt}{T}) + \beta_{i, k} sin(\frac{2\pi kt}{T}))
-$$
-Die Freiheitsgrade $K$ sind dabei so zu wählen, dass die Kurven ausreichend gut angepasst werden. In der vorliegenden Arbeit wurden die Kurven großzügig mit K = 50 approximiert. Die Koeffizienten der Kurven werden durch die Methode der kleinsten Quadrate angenähert. Für das weitere Vorgehen ist dabei wichtig, dass $\mu$ für alle Kurven 0 sein muss, da die Standardabweichungskurve der Kurvenschar sonst einen Offset aufweist. Durch die Kurvenanpassung wird für jede Kurve ein Vektor mit $2k+1$ Koeffizenten erzeugt:
+Im ersten Schritt des Verfahrens werden alle $N$ gemessenen Kurven mithilfe von Fourier-Reihen als Funktionen approximiert:
 
 $$
-W_{i} = (\mu_{i}, \alpha_{i, 1}, \beta_{i, k}, ..., \beta_{i, K})
+f_{n}(t) = \mu_{n} + \sum_{k=1}^K(\alpha_{nk}cos(\frac{2\pi kt}{T}) + \beta_{nk} sin(\frac{2\pi kt}{T}))
 $$
-Die Vektoren werden in einer Matrix M mit den Dimensionen n (Zeilen) und 2k+1 (Spalten) zusammengefasst. Durch Mittelwertbildung und Berechnung der Varianz über die Spalten können jetzt Vektoren der Mittelwert- (W) und der Varianzkoeffizienten (Σw) berechnet werden. Durch Multiplikation von W (Formel 18) und Σw (Formel 19) mit
+Die Anzahl der Fourier-Basisfunktionen $K$ ist dabei so zu wählen, dass die Kurven bestmöglich angenähert werden und keine ungewollte Glättungseffekte entstehen. In der vorliegenden Arbeit wurde großzügig $K = 50$ gewählt. Die Koeffizienten ($\mu_{n}, \alpha_{n1}, \beta_{n1}, ..., \alpha_{nK}, \beta_{nK}$) werden durch die Methode der kleinsten Quadrate bestimmt. 
 
-$$
-l(t) = (1, cos(\frac{2\pi 1t}{T}, sin(\frac{2\pi 1t}{T}, ..., cos(\frac{2\pi Kt}{T}, sin(\frac{2\pi Kt}{T},))
-$$
-lassen sich die Mittelwertkurve
+asserts that the curve starts and ends at the same height.
+<!-- Für das weitere Vorgehen ist dabei wichtig, dass $\mu$ für alle Kurven 0 sein muss, da die Standardabweichungskurve der Kurvenschar sonst einen Offset aufweist. -->
 
-$$
-\hat{f}(t) = \overline{W}^T l (t)
-$$
-und der Verlauf der Standardabweichung 
+Die Koeffizienten werden in einer Matrix $M$ mit den Dimensionen $N$ (Zeilen) und $2K+1$ zusammengefasst. Aus dieser Matrix werden durch Bootstrapping $B = 400$ mal $N$ Kurven aus $M$ mit Zurücklegen gezogen, für die jeweils die mittlere Kurve $\hat{f^b}(t)$ und Kovarianzmatrix $\hat{\sigma_{\hat{f^b}(t)}}$ bestimmt werden.
+
+Im Mittel über alle Bootstrapiterationen lässt sich daraus der Anteil der Kurven bestimmen, deren maximale standardisierte Abweichung vom Bootstrap-Mittel ($\hat{f^b}(t)$) kleiner gleich $C_{p}$ beträgt.
 
 $$
-\hat{\sigma}_{f(t)} = \sqrt(l(T)^T \sum_{w} l(t))
+\frac{1}{B} \sum_{b=1}^B [\frac{1}{N} \sum_{n=1}^N I(\max_{t} (\frac{|\hat{f}_{n}(t) - \hat{f^b}(t)|}{\hat{\sigma}_{f(t)}} \le C_{p})]
 $$
-der Kurvenschar anpassen.
+wobei $I(E)$ eine Matrix ist die Werte von entweder 0 ($E$ tritt nicht auf) oder 1 ($E$ tritt auf) annimmt.
 
-Anschließend werden aus der Matrix M die Koeffizienten von n Kurven im
-Bootstrappingverfahren b mal gezogen (Ziehen mit Zurücklegen). Jede Bootstrap-Wiederholung erzeugt ein 'bootstrap sample' (Bootstrap-Ziehung) entsprechend der ursprünglichen Kurvenanzahl n. Aus den Koeffizienten der n Kurven jeder Bootstrap-Ziehung werden mit
 
-$$
-\hat{f}
-$$
 
-und
+$C_{p}$ muss dabei so optimiert werden, dass es der gewünschten coverage probability des Prädiktionsbandes $P = 1- \alpha$ (hier: $\alpha=0.05$) entspricht. Damit ist berechnet sich das Prädiktionsband als:
 
 $$
-
+\hat{f}(t) \pm C_{p} * \hat{\sigma}_{f(t)}
 $$
-
-$$
-P \{\max_{t} (\frac{|\hat{f}_{n+1}(t) - \hat{f}(t)|}{\hat{\sigma}_{f(t)}} \le C_{p}\} = 1-\alpha
-$$
-
-$$
-\max_{\{P^{\circ}_t(j)\}}
-$$
-
-1. Fourier
-2. Bootstrap
-3. Prädiktionsbänder
-
-Let fn + 1(t) denote a future draw from the population mean curve that is defined by Eq.
-(0.1) and let Yn + 1(t) be an observed curve generated by Eqs. (0.2) and (0.3). Given a desired confidence level 100(1− a)%, we chose the constant Cp so that
-
-
-95% prediction bands
-
-The bootstrap method does not rely on any parametric assumption concerning the distribution of the data at each point of the curve. Bootstrap prediction and confidence intervals can be theoretically justified asymptotically although their performance in small-sample settings has to be studied on a case-by-case basis.
-
-
-400 bootstrap iterations
-
-Für weitere Details zur Methode siehe Lenhoff et al. (1999), Appendix A, sowie die zugehörige Implementierung als R Code im Anhang.
-
 
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
 # Wrapper function for example data sets. Function arguments:
@@ -841,6 +796,13 @@ Im Allgemeinen sind Prädiktionsintervalle überall dort von Interesse, wo neue 
 
 Die Bland & Altman Methode setzt normalverteilte, homoskedastische und unabhängige Differenzen voraus. Diese Annahmen sind allerdings beim Vergleich verschiedener Messmethoden häufig verletzt. Die Verteilung der Differenzen zwischen zwei Systemen wird z. B. erheblich verzerrt, wenn Sensorwerte wegen einer Begrenzung des Messbereichs oder der Auflösung abgeschnitten werden, oder wegen (nichtlinearem) Drift. Die Unabhängigkeitsannahme wird dann verletzt, wenn messwiederholte Daten vorliegen. Meswiederholte Werte sind sich i. d. R. ähnlicher (d. h. sie streuen weniger) als die Kurven verschiedener Probanden. Entsprechend besteht die Gefahr, die Streuung der Differenzen zwischen zwei Messmethoden zu unterschätzen. Um dem entgegenzuwirken, verwenden Roislien nur jeweils eine Kurve je Proband, was wiederum zu Lasten einer erheblichen Unsicherheit bezüglich der Streuung der berechneten LoA erkauft wird.
 
+Stichprobengröße: Es kann natürlich gut sein, dass die punnktweisen Verfahren bei höheren Stichprobenumfängen besser performen.
+
+Die Berechnung der LoA ist mit bestimmten (parametrischen) Modellvoraussetzungen verbunden, dass ist aber am Ende eigentlich egal, weil: Was mache ich denn wenn die verletzt sind?
+
+
+Wir können natürlich nicht mit vier Datensätzen die gesamte Bandbreite abdecken, obwohl damit schon sehr viele Anwendungsfälle abgedeckt werden. Weiterhin ist der Anwendungsbereich auf eine spezielle Art von Kurven (glatte Kurve) beschränkt. Kurven mit vergleichbaren Eigenschaften werden von vielen biomechanischen Messsystemen erzeugt:  Bestimmte Bodenreaktionskräfte (horizontal), tiefpassgefilterte Signale, COP Verläufe etc.. Es gibt aber auch Kurven die ganz andere Charkteristiken wie z. B. Sprünge/Unstetigkeiten im Verlauf (vertikale Bodenreaktionskurven), hohe Rauschanteile (z. B. EMG, ungefilterte Beschleunigungssignale), nichtstationäres Verhalten (z. B. Drift bei intergrierten Gyrosignalen) aufweisen. Es ist nicht klar inwiefern die untersuchten Methoden auch bei diesen Signalen brauchbare Ergebnisse liefern. Gerade bei Signalen mit sprunghaften Änderungen ist denkbar dass punktweise Intervalle zu plausibleren Ergebnissen führen können.
+<!-- Lenhoff geht z. B. nicht für nichtstionäre Signale! -->
 
 
 KONFIDENZINTERVALLE VS. PRÄDIKTIONSINTERVALLE
@@ -867,6 +829,11 @@ Pataky: A methodology called Statistical Parametric Mapping (SPM) (Friston et al
 Trotz der theoretisch und praktisch demonstrierten Überlegenheit funktionaler Verfahren konnten sich deren Einsatz im Kontext der Validierung von Messinstrumenten noch nicht recht durchsetzen. Wir spekulieren, dass dies in direktem Zusammenhang mit der Komplexität der Verfahren steht, die eine hohe Hürde für viele Praktiker mit weniger ausgeprägten Statistik- und Programmierkenntnissen darstellt. Um die Verbreitung funktionaler Methoden zu katalysieren stellen wir daher die bei der Erstellung des Papers implementierten Methoden als R Code frei zur Verfügung (GPL).
 
 Angesichts der überragenden Bedeutung der Kenntniss des Messfehlers ist es erstaunlich wie wenig sich viele Studien mit der Frage nach der Größe des Messfehlers beschäftigen. Gut demonstrieren lässt sich das am Beispiel von IMU's ...
+
+
+Als Ansatz für die Konstruktion besserer Bänder:
+Nichtparametrischer Ansatz mit Perzentilen (asymmetrische Bänder)
+
 
 
 
