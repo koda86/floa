@@ -1,6 +1,6 @@
 ---
-title: Comparison of continuous prediction bands for the validation of smooth 1D biomechanical
-  time series data
+title: Comparison of continuous prediction bands for the validation of biomechanical
+  curve data
 author:
 - name: Daniel Koska
   email: daniel.koska@hsw.tu-chemnitz.de
@@ -85,11 +85,11 @@ source("estimate_uncertainty_loa.R")
 
 # Introduction
 
-Die Beurteilung der Validität biomechanischer Messverfahren erfolgt üblicherweise über den Vergleich eines 'neuen' Messsystems mit einem etablierten. Dabei werden Bewegungen mit zwei Messsystemen simultan aufgezeichnet und Messwerte miteinander verglichen, die theoretisch den gleichen Wert aufweisen sollten. Die statistische Aufbereitung der zwangsläufig zu beobachtenden Abweichungen ist dabei aus verschiedenen Gründen nicht trivial. Eine besondere Herausforderung stellt die Tatsache dar, dass der Output der meisten Messsysteme in Form höherdimensionaler Daten (z. B. 1D Kurvendaten wie EMG-Signale oder COP Verläufe, 2D plantare Druckmatrizen oder 3D bone strain fields) vorliegt, innerhalb derer der Messfehler variiert. Der Fokus dieses Papers liegt auf 1D Kurvendaten, die den häufigsten Anwendungsfall in biomechanischen Bewegungsanalysen darstellen.
+Die Beurteilung der Validität biomechanischer Messverfahren erfolgt üblicherweise über den Vergleich eines 'neuen' Messsystems mit einem etablierten. Dabei werden Bewegungen mit zwei Messsystemen simultan aufgezeichnet und Messwerte miteinander verglichen, die theoretisch den gleichen Wert aufweisen sollten. Die statistische Aufbereitung der gemessenen Abweichungen ist bereits bei 0D Punktdaten (z. B. body mass) nicht trivial (Bland & Altman, 1983) und wird zusätzlich erschwert, wenn Messungen als höherdimensionale Daten vorliegen (z. B. 1D Kurvendaten wie EMG-Signale oder COP Verläufe, 2D plantare Druckmatrizen oder 3D bone strain fields). Ein relevanter Anwendungsfall in biomechanischen Bewegungsanalysen sind dabei 1D Zeitreihendaten (Kurven), die zwei wesentliche Unterschiede gegenüber Punktdaten aufweisen: 1. Der Messfehler variiert über der Zeit. 2. Die einzelnen Samplingpunkte der Kurven sind keine bloße Aneinanderreihung unabhängiger Messwerte, sondern lokal abhängige Events (Deluzio & Astephen, 2007; Pataky, 2010). Dieser Umstand ergibt sich aus dem anatomischen Kontext (Viskositätseigenschaften biologischer Gewebe (Fung, 1981), Freiheitsgrade menschlicher Gelenkbewegungen etc.).
 
-In den allermeisten Validierungsstudien wird der Zeitreihencharakter zugunsten einfacher(er) Modelle vernachlässigt und Kurvendaten auf einzelne diskrete (0D)Punkte oder skalare Features (z. B. local extrema, rates of change, or ranges of motion) reduziert. Daraus ergeben sich eine Reihe von Problemen für die Bewertung des Messfehlers: (i) non-stationary error processes are not considered (ii) the validity of statements derived from discrete variables is limited by domain alignment (i. e. phase shift) and the risk of examining points that have little relevance for the system under investigation (Donoghue et al., 2008; Pataky et al., 2008; Richter et al., 2014; Park et al., 2017) (iii) biomechanische Daten, die die Bewegung von Körpersegmenten direkt messen, sind durch die fundamentalen Viskositätseigenschaften biologischer Gewebe (Fung, 1981) und Freiheitsgrade menschlicher Gelenkbewegungen charakterisisiert. Beispielsweise sind im Verlauf einer Gelenkwinkelkurve keine Sprünge zu erwarten. Aus statistischer Sicht bedeutet das, dass die Samplingpunkte innerhalb einer Kurve keine lose Ansammlung von Einzelpunkten darstellen, sondern lokal korreliert sind (Deluzio & Astephen, 2007; Pataky, 2010). Bei der einfachen Übertragung punktweiser Statistiken auf alle Samplingpunkte der Kurve ist damit zu erwarten, dass die zufällige Fehlerkomponente unterschätzt wird, da der (nonzero) covariance term of adjacent sampling points nicht berücksichtigt wird (Olea & Plagborg-Moeller, 2018; Lenhoff et al., 1999). Die üblicherweise zur Korrektur beim multiplen Testen eingesetzten Korrekturverfahren zur Anpassung des alpha levels (Hochberg & , 1987) führen aufgrund der hohen Anzahl an Datenpunkten pro Kurve ($t \le 100$) zu sehr konservativen Schätzungen weshalb dieses Vorgehen hier nicht zielführend ist. Ein besserer Ansatz ist es Kurven direkt als zusammenhängende Objekte zu betrachten.
+In den allermeisten Validierungsstudien werden diese Eigenschaften zugunsten einfacher(er) Modelle vernachlässigt und Kurvendaten auf einzelne diskrete Punkte oder skalare Features (z. B. local extrema, rates of change, or ranges of motion) reduziert. Daraus ergeben sich eine Reihe von Problemen für die Bewertung des Messfehlers: (i) non-stationary error processes are not considered (ii) the validity of statements derived from discrete variables is limited by domain alignment (i. e. phase shift) and the risk of examining points that have little relevance for the system under investigation (Donoghue et al., 2008; Pataky et al., 2008; Richter et al., 2014; Park et al., 2017) (iii) bei der Übertragung punktweiser Statistiken auf alle Samplingpunkte lokal korrelierter Kurven ist zu erwarten, dass die zufällige Fehlerkomponente unterschätzt wird, da der (nonzero) covariance term of adjacent sampling points nicht berücksichtigt wird (Olea & Plagborg-Moeller, 2018; Lenhoff et al., 1999). Die üblicherweise zur Korrektur beim multiplen Testen eingesetzten Korrekturverfahren zur Anpassung des alpha levels (Hochberg & , 1987) führen aufgrund der hohen Anzahl an Datenpunkten pro Kurve ($t \le 100$) zu sehr konservativen Schätzungen weshalb dieses Vorgehen hier nicht zielführend ist. Ein besserer Ansatz ist es Kurven direkt als zusammenhängende Objekte zu betrachten.
 
-Sutherland, Olshen, Biden & Wyatt (1988, 1989) (BOOT) haben für Gelenkwinkeldaten im Kontext von Ganganalysen Ende der 1980er Jahre eine Methode vorgestellt, bei der Kurvendaten mithilfe eines random (Fourier) coefficient Regressionsmodells approximiert werden und aus den so gebildeten funktionalen Objekte anschließend durch Bootstrapping Prädiktionsbänder für normales Gehen gebildet werden. Lenhoff et al. (1999) illustrated the same method on a generic gait analysis data set (comprised of joint angle curves) and compared it to pointwise Gaussian intervals. By means of a leave-one out cross validation they found that the Sutherland prediction bands provide appropriate coverage for continuous curve gait data (86% coverage at 90% nominal coverage level) while pointwise Gaussian bands are shown to provide inadequate coverage (54%). Røislien et al. (2012) haben einen Ansatz präsentiert, mit dem die Methode von Bland & Altman (1983) für kontinuierliche Daten erweitert wird. Der Ansatz von Bland & Altman ist die am weitesten verbreitete Methode in Methodenvergleichen (Ludbrook, 2010) und verwendet die Differenzen zwischen zwei Messmethoden für die Konstruktion von Limits Agreement (LoA).
+Sutherland, Olshen, Biden & Wyatt (1988, 1989) (BOOT) haben für Gelenkwinkeldaten im Kontext von Ganganalysen Ende der 1980er Jahre eine Methode vorgestellt, bei der Kurvendaten mithilfe eines random (Fourier) coefficient Regressionsmodells approximiert werden und aus den so gebildeten funktionalen Objekte durch Bootstrapping Prädiktionsbänder für normales Gehen gebildet werden. Lenhoff et al. (1999) illustrated the same method on a generic gait analysis data set (comprised of joint angle curves) and compared it to pointwise Gaussian intervals. By means of a leave-one out cross validation they found that the Sutherland prediction bands provide appropriate coverage for continuous curve gait data (86% coverage at 90% nominal coverage level) while pointwise Gaussian bands are shown to provide inadequate coverage (54%). Røislien et al. (2012) haben einen Ansatz präsentiert, mit dem die Methode von Bland & Altman (1983) für kontinuierliche Daten erweitert wird. Der Ansatz von Bland & Altman ist die am weitesten verbreitete Methode in Methodenvergleichen (Ludbrook, 2010) und verwendet die Differenzen zwischen zwei Messmethoden für die Konstruktion von Limits Agreement (LoA).
 
 Das vorliegende Paper strebt eine systematische Validierung verschiedener Methoden zur Konstruktion kontinuierlicher Fehlerintervalle bei Methodenvergleichen an. Dazu sollen drei verschiedene Methoden anhand simulierter und realer Datensätze charakteristischer glatter Kurven biomechanischer Messysteme (Gelenkwinkelverläufe von zwei Messsystemen) verglichen werden: (1) punktweise Bland and Altman LoA, (2) LoA nach Roislien et al. und (3) gebootstrappte funktionale Prädiktionsbänder (Sutherland, Olshen, Biden & Wyatt (1988, 1989)). Da sowohl die Intervalle von Sutherland als auch Roislien im Wesentlichen Prädiktionsintervalle repräsentieren, soll der Methodenvergleich exemplarisch am Beispiel kontinuierlicher Prädiktionsbänder vollzogen werden. Die Methode lässt sich jedoch prinzipiell auch auf andere Intervallmethoden wie Konfidenz- oder Toleranzintervalle übertragen. Zur Beurteilung der Intervallgüte werden die qualitative Verläufe der Intervallgrenzen der jeweiligen Verfahren gegen die tatsächlichen Differenzen geplottet und die entsprechenden coverage properties berechnet. Für die Beurteilung der Intervallgüte wird im Rahmen einer leave-one out cross validation die Unsicherheit in den berechneten LoA angegeben.
 
@@ -99,7 +99,7 @@ Obwohl wir in der Arbeit bei Weitem nicht alle Anwendungsfälle (Methoden, Inter
 
 ### Data sets
 
-Für den Vergleich der Methoden wurden vier (simulierte und reale) Datensätze verwendet. Jeder der Datensätze enthält jeweils $N = 220$ Kurven der Länge $T = 101$ Datenpunkte aus $M = 2$ Messsystemen $(m=1,2)$. Das entspricht in jedem Datensatz $D = 110$ Differenzkurven, die durch Subtraktion gebildet werden:
+Für den Vergleich der Methoden wurden vier Datensätze (drei simulierte und ein realer) verwendet. Jeder dieser Datensätze enthält jeweils $N = 220$ Kurven der Länge $T = 101$ Datenpunkte aus $M = 2$ Messsystemen. Das entspricht in jedem Datensatz $D = 110$ Differenzkurven:
 
 \begin{equation}
 \tag{1}
@@ -107,12 +107,7 @@ Für den Vergleich der Methoden wurden vier (simulierte und reale) Datensätze v
 \label{eq:mean}
 \end{equation}
 
-X und Y sind (I x J) Matrizen der beiden Messsysteme, mit $I = 11$ Probanden und $J = 10$ wiederholten Kurven pro Proband. Die Größe der Datensätze entspricht in etwa dem typischen Stichprobenumfang vieler Validierungsstudien.
-
-<!-- Die $nN$ Kurven entsprechen $J = 10$ repeated measures von $I = 11$ Probanden und $m = 2$ Messsystemen: -->
-<!-- $n = m * \sum_{i=1}^{11} \sum_{j=1}^{10} n_{ij} = 220$ -->
-
-Alle simulierten Datensätze wurden als glatte Kurven, ähnlich Gelenkwinkelverläufen, mit dem gleichen Grundmodell generiert. Die Kurven korrespondieren nicht mit realen Signalen und wurden teilweise bewusst überspitzt konstruiert um den Einfluss bestimmter Differenzcharakteristika auf das Verhalten der Bänder möglichst deutlich darzustellen. Die Kurven wurden als trigonometrische Funktionen durch Addition zweier Sinusfunktionen konstruiert:
+X und Y sind (I x J) Matrizen der beiden Messsysteme, mit $I = 11$ Probanden und $J = 10$ wiederholten Kurven pro Proband. Alle simulierten Datensätze wurden als glatte Kurven, ähnlich Gelenkwinkelverläufen, mit dem gleichen Grundmodell generiert. Dazu wurden für jedes Messsystem zwei ähnliche Sinusfunktionen überlagert:
 
 $$
 X_{ij} = (offset_{m}) + f_{1}(t) + f_{2}(t),\\Y_{ij}(t) = (offset_{m}) + f_{3}(t) + f_{4}(t)
@@ -232,6 +227,11 @@ Die Kurven wurden mit dem selben Modell wie in (A) erstellt, aber die Kurven von
 
 Real-world hip joint angle curves from healthy subjects walking at 6 km/h on a treadmill without gradient recorded simultaneously using an optical motion capture system (MC) and IMU. Die Kurven unterscheiden sich qualitativ und in der absoluten Ausprägung der Differenzen.
 
+
+Die Größe der Datensätze wurde bewusst klein gehalten, um dem typischen Stichprobenumfang vieler Validierungsstudien zu entsprechen. Die Kurven korrespondieren nicht mit realen Signalen und wurden teilweise bewusst überspitzt konstruiert um den Einfluss häufig auftretender Fehlercharakteristika (nicht Gauss'sche Fehler, Heteroskedastizität) auf das Verhalten der Bänder hervorzuheben.
+
+Der Code zum Erstellen der Kurven findet sich im Anhang und auf Github als R Code und txt Dateien.
+
 ### Calculation methods
 
 Die untersuchten Prädiktionsbänder wurden ausschließlich anhand der gebildeten Differenzkurven $D$ gebildet um die Vergleichbarkeit der Methoden zu gewährleisten. Prädiktionsbänder wurden mit drei unterschiedlichen Verfahren berechnet:
@@ -285,7 +285,7 @@ wobei $I(E)$ eine Matrix ist die Werte von entweder 0 ($E$ tritt nicht auf) oder
 $C_{p}$ muss dabei so optimiert werden, dass es der gewünschten coverage probability des Prädiktionsbandes $P = 1- \alpha$ (hier: $\alpha=0.05$) entspricht. Damit ist berechnet sich das Prädiktionsband als:
 
 $$
-\hat{f}(t) \pm C_{p} * \hat{\sigma}_{f(t)}
+\hat{f}(t) \pm C_{p} \hat{\sigma}_{f(t)}
 $$
 
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
