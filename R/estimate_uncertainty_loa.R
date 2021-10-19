@@ -1,18 +1,12 @@
 # Estimate uncertainty in different LoA approaches (95% percentile intervals for the LoA)
 estimate_uncertainty_loa <- function (data, n.boot) {
 
-  # floa.v2.upper <- vector(mode = "list", length = n.boot)
-  # floa.v2.lower <- vector(mode = "list", length = n.boot)
-  # floa.v3.upper <- vector(mode = "list", length = n.boot)
-  # floa.v3.lower <- vector(mode = "list", length = n.boot)
   floa.roislien.upper <- vector(mode = "list", length = n.boot)
   floa.roislien.lower <- vector(mode = "list", length = n.boot)
   floa.lenhoff.upper <- vector(mode = "list", length = n.boot)
   floa.lenhoff.lower <- vector(mode = "list", length = n.boot)
 
   for (i in 1:n.boot) {
-    # floa.v2       <- floa_rcb(data, n.boot, ver = "v2")
-    # floa.v3       <- floa_rcb(data, n.boot, ver = "v3")
     floa.roislien <- floa_roislien(data)
     floa.lenhoff  <- floa_lenhoff(data,
                                   k_reihe = 50,
@@ -21,10 +15,6 @@ estimate_uncertainty_loa <- function (data, n.boot) {
                                   cp.begin = 0,
                                   alpha = 0.05)
 
-    # floa.v2.upper[[i]] <- floa.v2["upper", ]
-    # floa.v2.lower[[i]] <- floa.v2["lower", ]
-    # floa.v3.upper[[i]] <- floa.v3["upper", ]
-    # floa.v3.lower[[i]] <- floa.v3["lower", ]
     floa.roislien.upper[[i]] <- floa.roislien["upper", ]
     floa.roislien.lower[[i]] <- floa.roislien["lower", ]
     floa.lenhoff.upper[[i]]  <- floa.lenhoff["upper", ]
@@ -32,33 +22,16 @@ estimate_uncertainty_loa <- function (data, n.boot) {
   }
 
   # Pointwise LoA return the same estimate every time (all curves are included)
-  # (They are outside the loop for this reason)
+  # (Therefore, they are outside the loop)
   floa.point <- data.frame(t(floa_point(data)))
 
-  # floa.v2.upper.unlist <- matrix(unlist(floa.v2.upper), 101)
-  # floa.v2.lower.unlist <- matrix(unlist(floa.v2.lower), 101)
-  # floa.v3.upper.unlist <- matrix(unlist(floa.v3.upper), 101)
-  # floa.v3.lower.unlist <- matrix(unlist(floa.v3.lower), 101)
   floa.roislien.upper.unlist <- matrix(unlist(floa.roislien.upper), 101)
   floa.roislien.lower.unlist <- matrix(unlist(floa.roislien.lower), 101)
   floa.lenhoff.upper.unlist <- matrix(unlist(floa.lenhoff.upper), 101)
   floa.lenhoff.lower.unlist <- matrix(unlist(floa.lenhoff.lower), 101)
 
   # Pointwise 95% percentile intervals for the LoA
-  # # floa.v2.upper.pi <- apply(floa.v2.upper.unlist, 1, quantile, probs = c(0.025, 0.975))
-  # # floa.v2.lower.pi <- apply(floa.v2.lower.unlist, 1, quantile, probs = c(0.025, 0.975))
-  # # floa.v3.upper.pi <- apply(floa.v3.upper.unlist, 1, quantile, probs = c(0.025, 0.975))
-  # # floa.v3.lower.pi <- apply(floa.v3.lower.unlist, 1, quantile, probs = c(0.025, 0.975))
-  # floa.roislien.upper.pi <- apply(floa.roislien.upper.unlist, 1, quantile, probs = c(0.025, 0.975))
-  # floa.roislien.lower.pi <- apply(floa.roislien.lower.unlist, 1, quantile, probs = c(0.025, 0.975))
-  # floa.lenhoff.upper.pi <- apply(floa.lenhoff.upper.unlist, 1, quantile, probs = c(0.025, 0.975))
-  # floa.lenhoff.lower.pi <- apply(floa.lenhoff.lower.unlist, 1, quantile, probs = c(0.025, 0.975))
-
   pi95 <- rbind(
-    # apply(floa.v2.upper.unlist, 1, quantile, probs = c(0.025, 0.975)),
-    # apply(floa.v2.lower.unlist, 1, quantile, probs = c(0.025, 0.975)),
-    # apply(floa.v3.upper.unlist, 1, quantile, probs = c(0.025, 0.975)),
-    # apply(floa.v3.lower.unlist, 1, quantile, probs = c(0.025, 0.975)),
     apply(floa.roislien.upper.unlist, 1, quantile, probs = c(0.025, 0.975)),
     apply(floa.roislien.lower.unlist, 1, quantile, probs = c(0.025, 0.975)),
     apply(floa.lenhoff.upper.unlist, 1, quantile, probs = c(0.025, 0.975)),
@@ -73,13 +46,10 @@ estimate_uncertainty_loa <- function (data, n.boot) {
   pi95 <- data.frame(t(pi95))
 
   colnames(pi95) <- c(
-    # "floa.v2.upper.2.5", "floa.v2.upper.97.5", "floa.v2.lower.2.5", "floa.v2.lower.97.5",
-    # "floa.v3.upper.2.5", "floa.v3.upper.97.5", "floa.v3.lower.2.5", "floa.v3.lower.97.5",
     "floa.roislien.upper.2.5", "floa.roislien.upper.97.5", "floa.roislien.lower.2.5", "floa.roislien.lower.97.5",
     "floa.lenhoff.upper.2.5", "floa.lenhoff.upper.97.5", "floa.lenhoff.lower.2.5", "floa.lenhoff.lower.97.5",
     "floa.point.upper.2.5", "floa.point.upper.97.5", "floa.point.lower.2.5", "floa.point.lower.97.5"
     )
-
 
   # Prepare data for ggploting -------------------------------------------------
   device1 <- data.frame(subset(data, device == "IMU")$value)
@@ -159,5 +129,19 @@ estimate_uncertainty_loa <- function (data, n.boot) {
     labs(x = "Time-normalized signal [%]", y = "Difference")
 
   PLOT.DIFF
+
+
+  # (Uncertainty) Area between 2.5 and 97.5 borders
+  uncert.area.limits <- c(sum(pi95$floa.roislien.upper.97.5) - sum(pi95$floa.roislien.upper.2.5),
+                          sum(pi95$floa.roislien.lower.97.5) - sum(pi95$floa.roislien.lower.2.5),
+                          sum(pi95$floa.lenhoff.upper.97.5) - sum(pi95$floa.lenhoff.upper.2.5),
+                          sum(pi95$floa.lenhoff.lower.97.5) - sum(pi95$floa.lenhoff.lower.2.5),
+                          sum(pi95$floa.point.upper.97.5) - sum(pi95$floa.point.upper.2.5),
+                          sum(pi95$floa.point.lower.97.5) - sum(pi95$floa.point.lower.2.5)
+                          )
+
+  names(uncert.area.limits) <- c("au.roislien", "al.roislien", "au.lenhoff", "al.lenhoff", "au.point", "al.point")
+
+  return(uncert.area.limits)
 }
 
