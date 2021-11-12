@@ -54,7 +54,6 @@ output:
 
 ```{r echo = FALSE, warning = FALSE, message = FALSE}
 library(ggplot2)
-# library(boot)
 
 dir.script <- "~/floa/R"
 dir.data <- "~/floa/R/examples"
@@ -78,7 +77,6 @@ source("crossval_coverage_fraction.R")
 source("singlecurve_coverage.R")
 source("singlecurve_coverage_fraction.R")
 source("plot_cov_ver.R")
-# source("distance_2_floa.R")
 source("estimate_uncertainty_loa.R")
 ```
 
