@@ -22,7 +22,6 @@ estimate_uncertainty_loa <- function (data, n.boot) {
   }
 
   # Pointwise LoA return the same estimate every time (all curves are included)
-  # (Therefore, they are outside the loop)
   floa.point <- data.frame(t(floa_point(data)))
 
   floa.roislien.upper.unlist <- matrix(unlist(floa.roislien.upper), 101)
@@ -132,15 +131,15 @@ estimate_uncertainty_loa <- function (data, n.boot) {
 
 
   # (Uncertainty) Area between 2.5 and 97.5 borders
-  uncert.area.limits <- c(sum(pi95$floa.roislien.upper.97.5) - sum(pi95$floa.roislien.upper.2.5),
-                          sum(pi95$floa.roislien.lower.97.5) - sum(pi95$floa.roislien.lower.2.5),
-                          sum(pi95$floa.lenhoff.upper.97.5) - sum(pi95$floa.lenhoff.upper.2.5),
-                          sum(pi95$floa.lenhoff.lower.97.5) - sum(pi95$floa.lenhoff.lower.2.5),
-                          sum(pi95$floa.point.upper.97.5) - sum(pi95$floa.point.upper.2.5),
-                          sum(pi95$floa.point.lower.97.5) - sum(pi95$floa.point.lower.2.5)
+  # POINT values are identical for the upper and lower limits as symmetric confidence intervals were calculated.
+  uncert.area.limits <- c(round(sum(pi95$floa.point.lower.97.5) - sum(pi95$floa.point.lower.2.5), 2),
+                          round(sum(pi95$floa.roislien.upper.97.5) - sum(pi95$floa.roislien.upper.2.5), 2),
+                          round(sum(pi95$floa.roislien.lower.97.5) - sum(pi95$floa.roislien.lower.2.5), 2),
+                          round(sum(pi95$floa.lenhoff.upper.97.5) - sum(pi95$floa.lenhoff.upper.2.5), 2),
+                          round(sum(pi95$floa.lenhoff.lower.97.5) - sum(pi95$floa.lenhoff.lower.2.5), 2)
                           )
 
-  names(uncert.area.limits) <- c("au.roislien", "al.roislien", "au.lenhoff", "al.lenhoff", "au.point", "al.point")
+  names(uncert.area.limits) <- c("POINT", "ROISLIEN (U)", "ROISLIEN (L)", "BOOT (U)", "BOOT (L)")
 
   return(uncert.area.limits)
 }

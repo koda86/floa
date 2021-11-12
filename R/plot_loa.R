@@ -24,9 +24,10 @@ plot_loa <- function (data, floa.point, floa.roislien, floa.lenhoff, ylim) {
 
   device.diff$frame <- seq(0, 100)
   n.frames <- length(unique(data$frame))
-  n.strides <- length(unique(data$strideID))
+  n.strides <- 110 # length(unique(data$strideID))
   n.subjects <- length(unique(data$subjectID))
-  strides.per.subject <- length(unique(data$strideID)) / n.subjects
+  strides.per.subject <- round(length(unique(data$strideID)) / n.subjects) # round() needed because one of the data sets ("imu_mc") is unbalanced and will result in error later on
+  # strides.per.subject <- length(unique(data$strideID)) / n.subjects
   device.diff$strideID <- as.factor(rep(1:n.strides, each = 101))
   device.diff$subjectID <- as.factor(rep(1:n.subjects, each = strides.per.subject * n.frames))
 
@@ -69,13 +70,13 @@ plot_loa <- function (data, floa.point, floa.roislien, floa.lenhoff, ylim) {
               size = 1.5,
               colour = "#009E73") +
     scale_y_continuous(limits = c(ylim[1], ylim[2])) +
-    labs(x = "Time-normalized signal [%]", y = "Difference") +
-    theme_minimal() +
-    theme(axis.text.x = element_text(size = 20),
-          axis.title.x = element_text(size = 22),
-          axis.text.y = element_text(size = 20),
-          axis.title.y = element_text(size = 22),
-          legend.position = "none")
+    labs(x = "Time-normalized signal [%]", y = "Difference")
+    # theme_minimal() +
+    # theme(axis.text.x = element_text(size = 20),
+    #       axis.title.x = element_text(size = 22),
+    #       axis.text.y = element_text(size = 20),
+    #       axis.title.y = element_text(size = 22),
+    #       legend.position = "none")
 
   PLOT.DIFF
 

@@ -23,10 +23,11 @@
 imu.mc <- readRDS(paste0(dir.data, "/", "data.rds"))
 
 # Pick 10 random strides from each of the 11 subjects
-stride.idx <- imu.mc %>% dplyr:::group_by(subjectID)  %>% dplyr::summarize(sample_n(data.frame(strideID), 10, replace = FALSE)) # sample(strideID, size = 10, replace = FALSE)
+stride.idx <- imu.mc %>% dplyr:::group_by(subjectID) %>% dplyr::summarize(sample_n(data.frame(strideID), 10, replace = FALSE))
 stride.idx <- stride.idx$strideID
 stride.idx <- as.numeric(stride.idx)
 
+# Detect and change all duplicated strides
 double.idx <- which(duplicated(stride.idx))
 stride.idx[double.idx] <- double.idx + 1
 imu.mc.balanced <- imu.mc[imu.mc$strideID %in% stride.idx, ]
@@ -81,9 +82,6 @@ for (subj.idx in 1:n.subj) {
 
     mc <- rnorm(1, offset.mean, 0.05) + sine.1 + sine.2
     imu <- rnorm(1, offset.mean, 0.05) + sine.3 + sine.4
-
-    # plot(mc, type = "l")
-    # lines(imu, col = "red")
 
     value.subj <- c(value.subj, c(imu, mc))
 
@@ -153,9 +151,6 @@ for (subj.idx in 1:n.subj) {
     mc <- sine.1 + sine.2
     imu <- offset + sine.3 + sine.4
 
-    # plot(mc, type = "l")
-    # lines(imu, col = "red")
-
     value.subj <- c(value.subj, c(imu, mc))
 
     device.imu <- rep("IMU", n.frames)
@@ -223,9 +218,6 @@ for (subj.idx in 1:n.subj) {
     mc <- sine.1 + sine.2
     imu <- offset + sine.3 + sine.4
 
-    # plot(mc, type = "l")
-    # lines(imu, col = "red")
-
     value.subj <- c(value.subj, c(imu, mc))
 
     device.imu <- rep("IMU", n.frames)
@@ -292,9 +284,6 @@ for (subj.idx in 1:n.subj) {
 
     mc <- rnorm(1, offset.mean, 0.05) + sine.1 + sine.2
     imu <- rnorm(1, offset.mean, 0.05) + sine.3 + sine.4 + trend
-
-    # plot(mc, type = "l")
-    # lines(imu, col = "red")
 
     value.subj <- c(value.subj, c(imu, mc))
 
@@ -364,9 +353,6 @@ for (subj.idx in 1:n.subj) {
 
     mc <- rnorm(1, offset.mean, 0.05) + sine.1 + sine.2
     imu <- rnorm(1, offset.mean, 0.05) + sine.3 + sine.4
-
-    # plot(mc, type = "l")
-    # lines(imu, col = "red")
 
     value.subj <- c(value.subj, c(imu, mc))
 
@@ -441,9 +427,6 @@ for (subj.idx in 1:n.subj) {
     imu[spike.idx] <- abs(imu[spike.idx] + abs(rnorm(1, mean = 0, sd = 0.1)))
     mc[spike.idx] <- abs(mc[spike.idx] + abs(rnorm(1, mean = 0.02, sd = 0.7)))
 
-    # plot(mc, type = "l")
-    # lines(imu, col = "red")
-
     value.subj <- c(value.subj, c(imu, mc))
 
     device.imu <- rep("IMU", n.frames)
@@ -510,9 +493,6 @@ for (subj.idx in 1:n.subj) {
 
     mc <- x.offset + sine.1 + sine.2
     imu <- x.offset + sine.3 + sine.4
-
-    # plot(mc, type = "l")
-    # lines(imu, col = "red")
 
     value.subj <- c(value.subj, c(imu, mc))
 

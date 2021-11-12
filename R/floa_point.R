@@ -51,13 +51,12 @@ floa_point <- function(data) {
                           )
 
   # PRECISION OF ESTIMATED LIMITS OF AGREEMENT
-  # Confidence intervals for the 95% limits of agreement (Bland & Altman, 1986)
-  # The standard error of the limits is approximately sqrt(3*s^2 / n)
+  # Confidence intervals for the 95% limits of agreement (Bland & Altman, 1999)
   n.curves <- length(unique(data$strideID))
-  # standard.error.d2s <- sqrt(3*floa.point$total.sd^2 / n.curves)
+  # Formula from Francq et al. (2020)
   standard.error.d2s <- sqrt(1/n.curves + (z0.975^2 / (2*(n.curves-1)))) * floa.point$total.sd
 
-  # t-score of the 95th quantile of the Student t distribution with df = (n.curves - 1)
+  # t-score of the 95th quantile of the Student t distribution with df = (n - 1)
   t <- qt(.975, df = n.curves - 1)
 
   floa.point.bnd <- rbind(floa.point.bnd,

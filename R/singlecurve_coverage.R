@@ -16,9 +16,6 @@ singlecurve_coverage <- function (data, n.boot) {
   # ####################################################################
   n.curves <- unique(data$strideID)
 
-  # cover.cross.rcb.v1   <- vector(mode = "list", length = length(n.curves))
-  # cover.cross.rcb.v2   <- vector(mode = "list", length = length(n.curves))
-  # cover.cross.rcb.v3   <- vector(mode = "list", length = length(n.curves))
   cover.cross.point    <- vector(mode = "list", length = length(n.curves))
   cover.cross.roislien <- vector(mode = "list", length = length(n.curves))
   cover.cross.lenhoff <- vector(mode = "list", length = length(n.curves))
@@ -28,9 +25,6 @@ singlecurve_coverage <- function (data, n.boot) {
     data.one.out <- subset(data, strideID != curve.idx)
 
     floa.point    <- floa_point(data.one.out)
-    # floa.v1       <- floa_rcb(data.one.out, n.boot, ver = "v1")
-    # floa.v2       <- floa_rcb(data.one.out, n.boot, ver = "v2")
-    # floa.v3       <- floa_rcb(data.one.out, n.boot, ver = "v3")
     floa.roislien <- floa_roislien(data.one.out)
     floa.lenhoff  <- floa_lenhoff(data,
                                   k_reihe = 50,
@@ -47,18 +41,12 @@ singlecurve_coverage <- function (data, n.boot) {
     device.diff <- device1$value - device2$value
 
     # Get coverage for the left out (difference) curve -------------------
-    # cover.cross.rcb.v1[curve.idx]   <- get_coverage_singlecurve(device.diff, floa.v1)
-    # cover.cross.rcb.v2[curve.idx]   <- get_coverage_singlecurve(device.diff, floa.v2)
-    # cover.cross.rcb.v3[curve.idx]   <- get_coverage_singlecurve(device.diff, floa.v3)
     cover.cross.point[curve.idx]      <- get_coverage_singlecurve(device.diff, floa.point)
     cover.cross.roislien[curve.idx]   <- get_coverage_singlecurve(device.diff, floa.roislien)
     cover.cross.lenhoff[curve.idx]    <- get_coverage_singlecurve(device.diff, floa.lenhoff)
   }
 
   cover.cross <- cbind(
-                      # unlist(cover.cross.rcb.v1),
-                      # unlist(cover.cross.rcb.v2),
-                      # unlist(cover.cross.rcb.v3),
                       unlist(cover.cross.point),
                       unlist(cover.cross.roislien),
                       unlist(cover.cross.lenhoff)
