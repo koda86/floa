@@ -39,15 +39,13 @@ floa_point <- function(data) {
   floa.point <- data.frame(unlist(mean.diff), unlist(total.sd))
   names(floa.point) <- c("mean.diff", "total.sd")
 
-  # Calculate mean, upper and lower limits of agreement (boundaries) to get the
-  # same structure as returned by the other methods (i. e. floa_rcb)
+  # Calculate mean, upper and lower limits of agreement (floa.point.loa) to
+  # get the same structure as returned by the other methods (i. e. floa_rcb)
+  z0.975 <- qnorm(0.975, mean = 0, sd = 1) # Quantile of the standard normal distribution
 
-  # Quantile of the standard normal distribution
-  z0.975 <- qnorm(0.975, mean = 0, sd = 1)
-
-  floa.point.bnd <- rbind(floa.point$mean.diff + z0.975*floa.point$total.sd,
+  floa.point.loa <- rbind(floa.point$mean.diff + z0.975 * floa.point$total.sd,
                           floa.point$mean.diff,
-                          floa.point$mean.diff - z0.975*floa.point$total.sd
+                          floa.point$mean.diff - z0.975 * floa.point$total.sd
                           )
 
   # PRECISION OF ESTIMATED LIMITS OF AGREEMENT
@@ -59,14 +57,15 @@ floa_point <- function(data) {
   # t-score of the 95th quantile of the Student t distribution with df = (n - 1)
   t <- qt(.975, df = n.curves - 1)
 
-  floa.point.bnd <- rbind(floa.point.bnd,
-                     floa.point$mean.diff + z0.975*floa.point$total.sd + t*standard.error.d2s,
-                     floa.point$mean.diff + z0.975*floa.point$total.sd - t*standard.error.d2s,
-                     floa.point$mean.diff - z0.975*floa.point$total.sd + t*standard.error.d2s,
-                     floa.point$mean.diff - z0.975*floa.point$total.sd - t*standard.error.d2s)
+  # Upper and lower uncertainty limits
+  upper.ci.upper <- floa.point$mean.diff + z0.975*floa.point$total.sd + t*standard.error.d2s
+  upper.ci.lower <- floa.point$mean.diff + z0.975*floa.point$total.sd - t*standard.error.d2s
+  lower.ci.upper <- floa.point$mean.diff - z0.975*floa.point$total.sd + t*standard.error.d2s
+  lower.ci.lower <- floa.point$mean.diff - z0.975*floa.point$total.sd - t*standard.error.d2s
 
-  row.names(floa.point.bnd) <- c("upper", "mean", "lower",
-                                 "stderror.dplus2s.upper", "stderror.dplus2s.lower", "stderror.dminus2s.upper", "stderror.dminus2s.lower")
+  floa.point.summary <- rbind(floa.point.loa, upper.ci.upper, upper.ci.lower, lower.ci.upper, lower.ci.lower)
+  row.names(floa.point.summary) <- c("upper.loa", "mean", "lower.loa",
+                                     "upper.ci.upper", "upper.ci.lower", "lower.ci.upper","lower.ci.lower")
 
-  return(floa.point.bnd)
+  return(floa.point.summary)
 }

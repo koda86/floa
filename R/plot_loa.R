@@ -1,4 +1,4 @@
-plot_loa <- function (data, floa.point, floa.roislien, floa.lenhoff, ylim) {
+plot_loa <- function (data, floa.point, floa.roislien, floa.boot, ylim) {
 
   # Plots the limits across the respective methods against all difference curves
   # in the data set
@@ -7,13 +7,13 @@ plot_loa <- function (data, floa.point, floa.roislien, floa.lenhoff, ylim) {
   # Arguments:
   # floa.point: point-wise limits of agreement (Bland & Altman, 2007)
   # floa.roislien: limits of agreement as in Roislien et al. (2012)
-  # floa.lenhoff: limits of agreement as in Lenhoff et al. (1999)
+  # floa.boot: limits of agreement as in Lenhoff et al. (1999)
   # ylim: y-axis limits (2 element numeric object)
   # ----------------------------------------------------------------------------
 
   floa.point <- data.frame(t(floa.point))
   floa.roislien <- data.frame(t(floa.roislien))
-  floa.lenhoff <- data.frame(t(floa.lenhoff))
+  floa.boot <- data.frame(t(floa.boot))
 
   # Difference curves -------------------------------------------------
   device1 <- subset(data, device == "IMU", select = value)
@@ -39,37 +39,37 @@ plot_loa <- function (data, floa.point, floa.roislien, floa.lenhoff, ylim) {
               alpha = 0.15) +
     scale_color_grey(start = 0.8, end = 0.2) +
     # Plot lower limit of agreement
-    geom_line(data = floa.lenhoff,
-              aes(x = seq(0, 100), y = upper, col = "red", group = 1),
+    geom_line(data = floa.boot,
+              aes(x = seq(0, 100), y = upper.loa, col = "red", group = 1),
               linetype = "solid",
               size = 1.5,
               colour = "#D55E00") +
-    geom_line(data = floa.lenhoff,
-              aes(x = seq(0, 100), y = lower, col = "red", group = 1),
+    geom_line(data = floa.boot,
+              aes(x = seq(0, 100), y = lower.loa, col = "red", group = 1),
               linetype = "solid",
               size = 1.5,
               colour = "#D55E00") +
     geom_line(data = floa.roislien,
-              aes(x = seq(0, 100), y = upper),
+              aes(x = seq(0, 100), y = upper.loa),
               linetype = "solid",
               size = 1.5,
               colour = "#56B4E9") +
     geom_line(data = floa.roislien,
-              aes(x = seq(0, 100), y = lower),
+              aes(x = seq(0, 100), y = lower.loa),
               linetype = "solid",
               size = 1.5,
               colour = "#56B4E9") +
     geom_line(data = floa.point,
-              aes(x = seq(0, 100), y = upper),
+              aes(x = seq(0, 100), y = upper.loa),
               linetype = "dotted",
               size = 1.5,
               colour = "#009E73") +
     geom_line(data = floa.point,
-              aes(x = seq(0, 100), y = lower),
+              aes(x = seq(0, 100), y = lower.loa),
               linetype = "dotted",
               size = 1.5,
               colour = "#009E73") +
-    scale_y_continuous(limits = c(ylim[1], ylim[2])) +
+    # scale_y_continuous(limits = c(ylim[1], ylim[2])) +
     labs(x = "Time-normalized signal [%]", y = "Difference")
     # theme_minimal() +
     # theme(axis.text.x = element_text(size = 20),

@@ -31,7 +31,7 @@ singlecurve_coverage_fraction <- function (data, n.boot) {
   # cover.cross.rcb.v3   <- vector(mode = "list", length = length(n.curves))
   cover.cross.point    <- vector(mode = "list", length = length(n.curves))
   cover.cross.roislien <- vector(mode = "list", length = length(n.curves))
-  cover.cross.lenhoff <- vector(mode = "list", length = length(n.curves))
+  cover.cross.boot <- vector(mode = "list", length = length(n.curves))
 
   for (curve.idx in n.curves) {
     # Calculate FLoA with one curve left out -----------------------------
@@ -42,7 +42,7 @@ singlecurve_coverage_fraction <- function (data, n.boot) {
     # floa.v2       <- floa_rcb(data.one.out, n.boot, ver = "v2")
     # floa.v3       <- floa_rcb(data.one.out, n.boot, ver = "v3")
     floa.roislien <- floa_roislien(data.one.out)
-    floa.lenhoff  <- floa_lenhoff(data,
+    floa.boot  <- floa_boot(data,
                                   k_reihe = 50,
                                   n.boot = n.boot,
                                   band = "prediction",
@@ -63,7 +63,7 @@ singlecurve_coverage_fraction <- function (data, n.boot) {
     # cover.cross.rcb.v3[curve.idx]   <- get_coverage_singlecurve_fraction(device.diff, floa.v3)
     cover.cross.point[curve.idx]      <- get_coverage_singlecurve_fraction(device.diff, floa.point)
     cover.cross.roislien[curve.idx]   <- get_coverage_singlecurve_fraction(device.diff, floa.roislien)
-    cover.cross.lenhoff[curve.idx]    <- get_coverage_singlecurve_fraction(device.diff, floa.lenhoff)
+    cover.cross.boot[curve.idx]    <- get_coverage_singlecurve_fraction(device.diff, floa.boot)
   }
 
   cover.cross <- cbind(
@@ -72,7 +72,7 @@ singlecurve_coverage_fraction <- function (data, n.boot) {
                       # unlist(cover.cross.rcb.v3),
                       unlist(cover.cross.point),
                       unlist(cover.cross.roislien),
-                      unlist(cover.cross.lenhoff)
+                      unlist(cover.cross.boot)
                       )
 
   return(cover.cross)

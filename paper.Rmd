@@ -31,13 +31,10 @@ output:
 
 ### TODO
 - Rolle von Messwiederholungen in der Fragestellung definieren!?
-- Tabellen- und Abbildungsbeschriftungen
-- Erklarende Abbildung Methodenkapitel uncertainty estimation (eahnlich Diss Doris)
+- Erklarende Abbildung Methodenkapitel uncertainty estimation (aehnlich Diss Doris)
 - Formelnummerierung
 <!-- - Exemplarische Paper für die jeweiligen simulierten Datensätze raussuchen -->
-- .bib file anlegen
 - Begriff concurrent validity reinbringen
-- Github-Link reinbringe
 
 <!-- ### TODO read (again) -->
 <!-- - White Basics of Estimating Measurement Uncertainty -->
@@ -68,7 +65,7 @@ source("example_data.R")
 source("pick_subwise_curves.R")
 source("draw_clusters.R")
 source("floa_rcb.R")
-source("lenhoff_doris.R")
+source("floa_boot.R")
 source("floa_point.R")
 source("floa_roislien.R")
 source("plot_loa.R")
@@ -85,12 +82,11 @@ source("estimate_uncertainty_loa.R")
 ```
 
 # Introduction
-<!-- Wie in allen empirischen Wissenschaften basiert der Erkenntnisgewinn auf der Qualität experimenteller Daten und hängt damit direkt von der Güte der eingesetzten Messverfahren ab. -->
 Die Biomechanik ist eine empirische Wissenschaft, d. h. der Erkenntnisgewinn basiert auf der Qualität experimenteller Daten und hängt damit direkt von der Güte der eingesetzten Messverfahren ab. Die Beurteilung der Validität des Messverfahrens erfolgt üblicherweise über den Vergleich eines zu validierenden Messsystems mit einem bereits etablierten. Dabei werden Bewegungen mit beiden Messsystemen simultan aufgezeichnet und die Messwerte verglichen, wobei ein möglichst hoher Übereinstimmungsgrad vorliegen sollte. 
 
 Die statistische Aufbereitung der gemessenen Abweichungen ist bereits bei 0D Punktdaten (z. B. body mass) nicht trivial (Bland & Altman, 1983) und wird zusätzlich erschwert, wenn höherdimensionale Daten vorliegen, z. B. in Form von 1D Kurvendaten (z. B. Gelenkwinkel, Bodenreaktionskurven, COP Trajektorien, EMG-Signale), 2D Matrizen (z. B. Druckverteilungsdaten), oder 3D Arrays (z. B. bone strain fields). Höherdimensionale Daten weisen gegenüber 0D Daten zwei wesentliche Unterschiede auf: 1. Der Messfehler variiert über der Zeit und 2. benachbarte Samplingpunkte sind nicht unabhängig, sondern lokal korreliert (Deluzio & Astephen, 2007; Pataky, 2010).
 
-In den allermeisten Validierungsstudien werden diese Charakteristika allerdings durch Diskretisierung (Reduzierung auf Einzelpunkte oder skalare Features wie z. B. local extrema, rates of change, or ranges of motion) ignoriert um die statistische Auswertung und Interpretation der Daten zu vereinfachen. Daraus ergeben sich eine Reihe von Problemen hinsichtlich der Bewertung des Messfehlers: (i) non-stationary error processes are not considered (ii) the validity of statements derived from discrete variables is limited by domain alignment (i. e. phase shift) and the risk of examining points that have little relevance for the system under investigation (Donoghue et al., 2008; Pataky et al., 2008; Richter et al., 2014; Park et al., 2017) (iii) wenn inferenzstatistische Verfahren wie Konfidenz- oder Prädiktionsintervalle simultan auf mehrere Samplingpunkte angewandt werden um kontinuierliche Fehlerbänder zu konstruieren, ist zu erwarten, dass die zufällige Fehlerkomponente unterschätzt wird weil die (nonzero) Kovarianz benachbarter Samplingpunkte nicht berücksichtigt wird (Olea & Plagborg-Moeller, 2018; Lenhoff et al., 1999). Die üblicherweise eingesetzten Korrekturverfahren zur Anpassung des alpha levels (Hochberg & , 1987) führen aufgrund der hohen Anzahl an Samplingpunkten zu extrem konservativen Schätzungen des zufälligen Fehlers.
+In den allermeisten Validierungsstudien werden diese Charakteristika allerdings durch Diskretisierung (Reduzierung auf Einzelpunkte oder skalare Features wie z. B. local extrema, rates of change, or ranges of motion) ignoriert um die statistische Auswertung und Interpretation der Daten zu vereinfachen. Daraus ergeben sich eine Reihe von Problemen hinsichtlich der Bewertung des Messfehlers: (i) non-stationary error processes are not considered (ii) the validity of statements derived from discrete variables is limited by domain alignment (i. e. phase shift) and the risk of examining points that have little relevance for the system under investigation (Donoghue et al., 2008; Pataky et al., 2008; Richter et al., 2014; Park et al., 2017) (iii) wenn inferenzstatistische Verfahren wie Konfidenz- oder Prädiktionsintervalle simultan auf mehrere Samplingpunkte angewandt werden um kontinuierliche Fehlerbänder zu konstruieren, ist zu erwarten, dass die zufällige Fehlerkomponente unterschätzt wird weil die (nonzero) Kovarianz benachbarter Samplingpunkte nicht berücksichtigt wird (Lenhoff et al., 1999; Olea & Plagborg-Moeller, 2018;). Die üblicherweise eingesetzten Korrekturverfahren zur Anpassung des alpha levels (Hochberg & , 1987) führen aufgrund der hohen Anzahl an Samplingpunkten zu extrem konservativen Schätzungen des zufälligen Fehlers.
 
 Lenhoff et al. (1999) haben das Problem punktweise konstruierter Bänder am Beispiel von 1D Gelenkwinkelverläufen (Kurven) demonstriert. Dazu verglichen sie punktweise berechnete Prädiktionsbänder gegenüber einer funktionalen Methode bei der Kurvendaten zunächst mithilfe von Fourierfunktionen approximiert werden und aus den so gebildeten funktionalen Kurven durch Bootstrapping Prädiktionsbänder gebildet werden (Sutherland, Olshen, Biden & Wyatt (1988, 1989)). They found that these prediction bands provided appropriate coverage for continuous curve gait data (86% coverage at 90% nominal coverage level) while pointwise Gaussian bands were shown to provide inadequate coverage (54%).
 
@@ -134,7 +130,7 @@ PLOT.1 <- ggplot(data = data.single.mc, aes(x = frame, y = value, group = stride
   geom_line() +
   scale_color_grey(start = 0.6, end = 0.9) +
   geom_line(data = data.single.imu, aes(x = frame, y = value, group = strideID, colour = as.factor(subjectID)), alpha = 0.3) +
-  labs(x = "Time-normalized signal [%]", y = "Value") +
+  labs(x = "Time-normalized signal [%]", y = "Angle [°]") +
   theme_minimal() +
   theme(axis.text.x = element_text(size = 14),
         axis.title.x = element_text(size = 14),
@@ -151,7 +147,7 @@ PLOT.2 <- ggplot(data = data.single.mc, aes(x = frame, y = value, group = stride
   geom_line() +
   scale_color_grey(start = 0.6, end = 0.9) +
   geom_line(data = data.single.imu, aes(x = frame, y = value, group = strideID, colour = as.factor(subjectID)), alpha = 0.3) +
-  labs(x = "Time-normalized signal [%]", y = "Value") +
+  labs(x = "Time-normalized signal [%]", y = "Angle [°]") +
   theme_minimal() +
   theme(axis.text.x = element_text(size = 14),
         axis.title.x = element_text(size = 14),
@@ -168,7 +164,7 @@ PLOT.3 <- ggplot(data = data.single.mc, aes(x = frame, y = value, group = stride
   geom_line() +
   scale_color_grey(start = 0.6, end = 0.9) +
   geom_line(data = data.single.imu, aes(x = frame, y = value, group = strideID, colour = as.factor(subjectID)), alpha = 0.3) +
-  labs(x = "Time-normalized signal [%]", y = "Value") +
+  labs(x = "Time-normalized signal [%]", y = "Angle [°]") +
   theme_minimal() +
   theme(axis.text.x = element_text(size = 14),
         axis.title.x = element_text(size = 14),
@@ -185,9 +181,13 @@ PLOT.4 <- ggplot(data = data.single.mc, aes(x = frame, y = value, group = stride
   geom_line() +
   scale_color_grey(start = 0.6, end = 0.9) +
   geom_line(data = data.single.imu, aes(x = frame, y = value, group = strideID, colour = as.factor(subjectID)), alpha = 0.3) +
-  labs(x = "Time-normalized signal [%]", y = "Value") +
+  labs(x = "Time-normalized signal [%]", y = "Angle [°]") +
   theme_minimal() +
-  theme(legend.position = "none")
+  theme(axis.text.x = element_text(size = 14),
+        axis.title.x = element_text(size = 14),
+        axis.text.y = element_text(size = 14),
+        axis.title.y = element_text(size = 14),
+        legend.position = "none")
 ```
 
 
@@ -197,6 +197,8 @@ PLOT <- ggpubr::ggarrange(PLOT.1, PLOT.2, PLOT.3, PLOT.4,
                           ncol = 2,
                           nrow = 2)
 PLOT
+
+ggsave("~/Nextcloud/project-fab-forschung/Publikationen/FLOA/tex/Grafiken/original_curves.png", device = "png", dpi = 300)
 ```
 
 Fig. 1 stellt die originalen Kurven beider Messsysteme in den vier verwendeten Datensätzen (A - D) dar:
@@ -219,7 +221,7 @@ Data from healthy subjects walking at 6 km/h on a treadmill without gradient rec
 
 Insgesamt wurde die Anzahl der Messkurven im Datensatz bewusst klein gehalten um dem typischen Stichprobenumfang vieler Validierungsstudien zu entsprechen. Die Kurven korrespondieren nicht mit realen Signalen und wurden teilweise bewusst überspitzt konstruiert um den Einfluss ausgewählter Fehlercharakteristika (nicht Gauss'sche Fehler, Heteroskedastizität, Phasenshift) auf das Verhalten der Bänder hervorzuheben.
 
-Der Code zum Erstellen der Kurven findet sich im Anhang und auf Github als R Code und txt Dateien.
+<!-- Der Code zum Erstellen der Kurven findet sich im Anhang und auf Github als R Code und txt Dateien. -->
 
 ### Calculation methods
 
@@ -323,7 +325,6 @@ H(x) =
 $$
 
 ### Uncertainty estimation
-
 Die Grenzen der Prädiktionsintervalle unterliegen einem stochastischen Prozess und variieren in Abhängigkeit vom Samplingprozess in den jeweiligen Verfahren (POINT, ROISLIEN, BOOT). Um diese Unsicherheit der Intervallgrenzen zu quantifizieren, wurde der Abstand zwischen einer oberen und unteren Unsicherheitsgrenze (Erläuterung und Berechnungsdetails im Folgenden) als kumulierter Flächeninhalt (Cumulated Uncertainty Measure) durch punktweises Aufsummieren der Differenzen berechnet (Oriwol, 2012):
 
 $$
@@ -359,14 +360,14 @@ data <- example_data(dat = "smooth_realistic", dir.data)
 
 floa.point <- floa_point(data)
 floa.roislien <- floa_roislien(data)
-floa.lenhoff.pred  <- floa_lenhoff(data,
-                                   k_reihe = 50,
-                                   n.boot = n.boot,
-                                   band = "prediction",
-                                   cp.begin = 0,
-                                   alpha = 0.05)
+floa.boot  <- floa_boot(data,
+                        k_reihe = 50,
+                        n.boot = n.boot,
+                        band = "prediction",
+                        cp.begin = 0,
+                        alpha = 0.05)
 
-PLOT.1 <- plot_loa(data, floa.point, floa.roislien, floa.lenhoff.pred, ylim = c(-3, 3))
+PLOT.1 <- plot_loa(data, floa.point, floa.roislien, floa.boot, ylim = c(-3, 3))
 
 
 # Simulated curves with non-normal, heteroskedastic differences (B)
@@ -374,14 +375,14 @@ data <- example_data(dat = "non_gaussian", dir.data)
 
 floa.point <- floa_point(data)
 floa.roislien <- floa_roislien(data)
-floa.lenhoff.pred  <- floa_lenhoff(data,
-                                   k_reihe = 50,
-                                   n.boot = n.boot,
-                                   band = "prediction",
-                                   cp.begin = 0,
-                                   alpha = 0.05)
+floa.boot  <- floa_boot(data,
+                        k_reihe = 50,
+                        n.boot = n.boot,
+                        band = "prediction",
+                        cp.begin = 0,
+                        alpha = 0.05)
 
-PLOT.2 <- plot_loa(data, floa.point, floa.roislien, floa.lenhoff.pred, ylim = c(-8, 8))
+PLOT.2 <- plot_loa(data, floa.point, floa.roislien, floa.boot, ylim = c(-8, 8))
 
 
 # Simulated curves curves with Gaussian error model created and phase shift in x-axis direction (C)
@@ -389,14 +390,14 @@ data <- example_data(dat = "shift", dir.data)
 
 floa.point <- floa_point(data)
 floa.roislien <- floa_roislien(data)
-floa.lenhoff.pred  <- floa_lenhoff(data,
-                                   k_reihe = 50,
-                                   n.boot = n.boot,
-                                   band = "prediction",
-                                   cp.begin = 0,
-                                   alpha = 0.05)
+floa.boot  <- floa_boot(data,
+                        k_reihe = 50,
+                        n.boot = n.boot,
+                        band = "prediction",
+                        cp.begin = 0,
+                        alpha = 0.05)
 
-PLOT.3 <- plot_loa(data, floa.point, floa.roislien, floa.lenhoff.pred, ylim = c(-5, 5))
+PLOT.3 <- plot_loa(data, floa.point, floa.roislien, floa.boot, ylim = c(-5, 5))
 
 
 # Real-world hip joint angle curves
@@ -404,14 +405,14 @@ data <- example_data(dat = "imu_mc", dir.data)
 
 floa.point <- floa_point(data)
 floa.roislien <- floa_roislien(data)
-floa.lenhoff.pred  <- floa_lenhoff(data,
-                                   k_reihe = 50,
-                                   n.boot = n.boot,
-                                   band = "prediction",
-                                   cp.begin = 0,
-                                   alpha = 0.05)
+floa.boot  <- floa_boot(data,
+                        k_reihe = 50,
+                        n.boot = n.boot,
+                        band = "prediction",
+                        cp.begin = 0,
+                        alpha = 0.05)
 
-PLOT.4 <- plot_loa(data, floa.point, floa.roislien, floa.lenhoff.pred, ylim = c(-20, 20))
+PLOT.4 <- plot_loa(data, floa.point, floa.roislien, floa.boot, ylim = c(-20, 20))
 ```
 
 ```{r echo = FALSE, warning = FALSE, message = FALSE, fig.cap = "Figure 2: Verlauf der Prädiktionsbänder von POINT (grüne, gepunktete Kurve), ROISLEN (blaue Linie) und BOOT (braune Linie) in den vier Datensätzen (A - Gaussian error model, B - Non-Gaussian errors and heteroskedasticity, C - Gaussian error model and phase shift in x-axis direction, D - Real-world hip joint angle curves). Differenzen zwischen beiden Messsystemen sind als schwarze Kurven Linien im Hintergrund dargestellt."}
@@ -421,6 +422,8 @@ PLOT <- ggpubr::ggarrange(PLOT.1, PLOT.2, PLOT.3, PLOT.4,
                           nrow = 2)
 
 PLOT
+
+ggsave("~/Nextcloud/project-fab-forschung/Publikationen/FLOA/tex/Grafiken/difference_intervals.png", device = "png", dpi = 300)
 ```
 
 
@@ -458,7 +461,12 @@ covered.curves.percent <- rbind(covered.curves.percent, apply(cover.cross.single
 
 
 rownames(covered.curves.percent) <- c("A. GAUSS", "B. NONGAUSS", "C. XSHIFT", "D. REAL")
-knitr::kable(covered.curves.percent, caption = "Table 1: Percentages of entirely covered curves for methods POINT, ROISLIEN and BOOT across data sets A - D (A - Gaussian error model, B - Non-Gaussian errors and heteroskedasticity, C - Gaussian error model and phase shift in x-axis direction, D - Real-world hip joint angle curves). Coverage values are presented as mean values across $D = 110$ leave-one-out test curves.")
+
+table.tmp <- knitr::kable(covered.curves.percent, caption = "Table 1: Percentages of entirely covered curves for methods POINT, ROISLIEN and BOOT across data sets A - D (A - Gaussian error model, B - Non-Gaussian errors and heteroskedasticity, C - Gaussian error model and phase shift in x-axis direction, D - Real-world hip joint angle curves). Coverage values are presented as mean values across $D = 110$ leave-one-out test curves.")
+
+table.tmp
+
+# writeLines(table.tmp, 'table1.tex')
 ```
 
 
@@ -573,10 +581,8 @@ Für viele andere Fragestellungen sind Prädiktionsintervalle allerdings eher un
 
 Eine Alternative zu den breiten Prädiktionsintervallen sind Intervalle auf Grundlage der within-subject Standardabweichung (Bland & Altman, 1999). Bei den Hüftgelenksdifferenzen (Fig. 2, D) lässt sich erkennen, dass die Streuung innerhalb einzelner Probanden erheblich geringer ausfällt (erkennbar an den probandenweisen Kurvenclustern). Diese Eigenschaft kann ausgenutzt werden um engere Intervalle auf Grundlage der intraindividuellen Streuung zu konstruieren wenn primär die Reproduzierbarkeit der neuen Methode von Bedeutung ist. Das ist z. B. von Interesse wenn Untersuchungen mit einem reinen within-subjects Design durchgeführt werden (z. B. intraindividuelle bei prä-post-Vergleiche). Neben der Tatsache dass diese Intervalle bereits für sich gesehen informativ sind, stellen sie auch eine Art Baseline zur Bewertung der between-method variability dar (Bland & Altman, 1999). Was leider keines der vorgestellten Verfahren vorsieht ist die Möglichkeit asymmetrischer Bänder um Unterschiede in der Ausprägung des zufälligen Messfehlers abzubilden. Vorstellbar wäre z. B. eine Methode in der anstatt der symmetrischen um einen zentralen Wert Perzentile als Intervallgrenzen definiert werden. Interessant erscheint auch der Ansatz diese Intervallgrenzen (ähnlich wie in BOOT) auf eine bestimmte coverage probability hin zu korrigieren.
 
-In den Fällen wo Messsysteme zunächst ohne klar definiertes Anwendungsgebiet validiert werden, empfehlen wir verschiedene Bänder für within und between-subject Designs zu konstruieren. Punktweise konstruierte Bänder stellen hierbei eine brauchbare Alternative dar. Hier sollten aber das in dieser Arbeit implementierte, komplexere Modell mit Messwiederholungen berücksichtigt werden um keine zu engen Intervallgrenzen zu erhalten. In jedem Fall aber sollten aus den in der Einleitung aufgeführten Gründen kontinuierliche Methoden den Vorzug gegenüber diskreten Verfahren erhalten. Wir spekulieren dass der spärliche Einsatz kontinuierlicher Verfahren in direktem Zusammenhang mit der Komplexität der Verfahren steht, die vermutlich eine hohe Hürde für viele Forscher mit weniger ausgeprägten Statistik- und Programmierkenntnissen darstellt. Um die Verbreitung kontinuierlicher Methoden zu katalysieren stellen wir daher die bei der Erstellung des Papers implementierten Methoden als R Code im Anhang und zusätzlich (inkl. aller Datensätze) auf Github zur Verfügung (). 
+In den Fällen wo Messsysteme zunächst ohne klar definiertes Anwendungsgebiet validiert werden, empfehlen wir verschiedene Bänder für within und between-subject Designs zu konstruieren. Punktweise konstruierte Bänder stellen hierbei eine brauchbare Alternative dar. Hier sollten aber das in dieser Arbeit implementierte, komplexere Modell mit Messwiederholungen berücksichtigt werden um keine zu engen Intervallgrenzen zu erhalten. In jedem Fall aber sollten aus den in der Einleitung aufgeführten Gründen kontinuierliche Methoden den Vorzug gegenüber diskreten Verfahren erhalten. Wir spekulieren dass der spärliche Einsatz kontinuierlicher Verfahren in direktem Zusammenhang mit der Komplexität der Verfahren steht, die vermutlich eine hohe Hürde für viele Forscher mit weniger ausgeprägten Statistik- und Programmierkenntnissen darstellt. Um die Verbreitung kontinuierlicher Methoden zu katalysieren stellen wir daher die bei der Erstellung des Papers implementierten Methoden als R Code im Anhang und zusätzlich (inkl. aller Datensätze) auf Github zur Verfügung (https://github.com/koda86/floa). 
 
 # Conclusion
-<!-- Obwohl wir in der Arbeit bei Weitem nicht alle Anwendungsfälle (Methoden, Intervalle, Datensätze) abdecken können, hoffen wir einen Impuls für die breitere Anwendung kontinuierlicher Methoden im Rahmen biomechanischer Validierungsstudien setzen zu können. In diesem Sinne stellen wir auch den zugehörigen R Code im Anhang zur freien Verfügung. Für die Zukunft ist auch ein R Paket geplant, dass dann womöglch auch andere Intervalle (Toleranzintervalle, Konfidenzintervalle) enthält. -->
-
 Punktweise Intervalle auf Grundlage parameterischer Modelle können durchaus brauchbare Ergebnisse liefern, auch bei Daten in denen die Voraussetzungen mitunter eheblich verletzt sind. ... Voraussetzung ist das sie in geeigneter Weise berechnet werden ... Dazu zählt u. a. die Berücksichtigung von messwiederholten Daten ... man könnte auch wie bei Lenhoff einen Korrekturfaktor reinbringen
 

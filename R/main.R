@@ -41,7 +41,7 @@ source("fdaDelta.R")
 source("pick_subwise_curves.R")
 source("draw_clusters.R")
 source("floa_rcb.R")
-source("lenhoff_doris.R")
+source("floa_boot.R")
 source("floa_point.R")
 source("floa_roislien.R")
 source("plot_loa.R")
@@ -54,7 +54,6 @@ source("crossval_coverage_fraction.R")
 source("singlecurve_coverage.R")
 source("singlecurve_coverage_fraction.R")
 source("plot_cov_ver.R")
-source("distance_2_floa.R")
 source("estimate_uncertainty_loa.R")
 
 # ********************************* Data sets **********************************
@@ -108,26 +107,25 @@ n.boot <- 400
 # v4 : Roislien approach (Get one random stride from each subject ONCE and boot-
 #      strap the resulting sample (of length (n=length(subjects))
 # floa <- floa_rcb(data, n.boot, ver = "v2")
-
 floa.point    <- floa_point(data)
 floa.roislien <- floa_roislien(data)
-floa.lenhoff.pred  <- floa_lenhoff(data,
-                                   k_reihe = 50,
-                                   n.boot = n.boot,
-                                   band = "prediction",
-                                   cp.begin = 0,
-                                   alpha = 0.05)
+floa.boot.pred  <- floa_boot(data,
+                             k_reihe = 50,
+                             n.boot = n.boot,
+                             band = "prediction",
+                             cp.begin = 0,
+                             alpha = 0.05)
 
-floa.lenhoff.conf  <- floa_lenhoff(data,
-                                   k_reihe = 50,
-                                   n.boot = n.boot,
-                                   band = "confidence",
-                                   cp.begin = 0,
-                                   alpha = 0.05)
+floa.boot.conf  <- floa_boot(data,
+                             k_reihe = 50,
+                             n.boot = n.boot,
+                             band = "confidence",
+                             cp.begin = 0,
+                             alpha = 0.05)
 
 
-plot_loa(data, floa.point, floa.roislien, floa.lenhoff.pred, ylim = c(-15, 15))
-plot_loa(data, floa.point, floa.roislien, floa.lenhoff.conf, ylim = c(-15, 15))
+plot_loa(data, floa.point, floa.roislien, floa.boot.pred, ylim = c(-15, 15))
+plot_loa(data, floa.point, floa.roislien, floa.boot.conf, ylim = c(-15, 15))
 
 
 # ********************************* Coverage ***********************************

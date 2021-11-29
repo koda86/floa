@@ -4,8 +4,8 @@ get_coverage_singlecurve <- function (curve, floa) {
 
   # Calculate coverage (entire curves within the percentile boundaries)
   # ----------------------------------------------------------------------------
-  lwr.bnd <- floa["lower", ]
-  upr.bnd <- floa["upper", ]
+  lwr.bnd <- floa[grep("low", rownames(floa)), ]
+  upr.bnd <- floa[grep("up", rownames(floa)), ]
 
   outside <- 0
 

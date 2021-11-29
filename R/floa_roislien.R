@@ -16,7 +16,7 @@ floa_roislien <- function(data) {
                          func.mean,
                          func.mean - 1.96 * func.sd)
 
-  rownames(floa.roislien) <- c("upper", "mean", "lower")
+  rownames(floa.roislien) <- c("upper.loa", "mean", "lower.loa")
 
   return(floa.roislien)
 }
