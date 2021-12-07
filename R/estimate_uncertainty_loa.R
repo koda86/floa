@@ -174,22 +174,7 @@ estimate_uncertainty_loa <- function (data, n.rep, n.boot) {
                    CUA.boot.iid.upper + CUA.boot.iid.lower
                    )
 
-  names(uncert.area) <- c("POINT", "ROISLIEN", "BOOT.all", "BOOT.lower")
-
-  # plot(pi95$floa.point.upper.97.5, ylim = c(-3, 3), col = "red")
-  # points(pi95$floa.point.upper.2.5, col = "red")
-  # points(pi95$floa.point.lower.97.5, col = "red")
-  # points(pi95$floa.point.lower.2.5, col = "red")
-  #
-  # points(pi95$floa.roislien.upper.97.5, ylim = c(-3, 3), col = "green")
-  # points(pi95$floa.roislien.upper.2.5, col = "green")
-  # points(pi95$floa.roislien.lower.97.5,col = "green")
-  # points(pi95$floa.roislien.lower.2.5, col = "green")
-  #
-  # points(pi95$floa.boot.upper.97.5, ylim = c(-3, 3), col = "blue")
-  # points(pi95$floa.boot.upper.2.5, col = "blue")
-  # points(pi95$floa.boot.lower.97.5,col = "blue")
-  # points(pi95$floa.boot.lower.2.5, col = "blue")
+  names(uncert.area) <- c("POINT", "ROISLIEN", "BOOT.all", "BOOT.iid")
 
   return(uncert.area)
 }
