@@ -29,7 +29,8 @@ singlecurve_coverage_fraction <- function (data, n.boot) {
                                n.boot = n.boot,
                                band = "prediction",
                                cp.begin = 0,
-                               alpha = 0.05)
+                               alpha = 0.05,
+                               iid = FALSE)
 
     # Plot left out curve vs. various methods ----------------------------
     data.subset <- subset(data, strideID == curve.idx)

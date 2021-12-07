@@ -15,13 +15,13 @@ singlecurve_coverage <- function (data, n.boot) {
 
     floa.point    <- floa_point(data.one.out)
     floa.roislien <- floa_roislien(data.one.out)
-    floa.boot  <- floa_boot(data,
-                            k_reihe = 50,
-                            n.boot = n.boot,
-                            band = "prediction",
-                            cp.begin = 0,
-                            alpha = 0.05,
-                            iid = FALSE)
+    floa.boot     <- floa_boot(data,
+                               k_reihe = 50,
+                               n.boot = n.boot,
+                               band = "prediction",
+                               cp.begin = 0,
+                               alpha = 0.05,
+                               iid = FALSE)
 
     # Plot left out curve vs. various FLoA methods -----------------------
     data.subset <- subset(data, strideID == curve.idx)
