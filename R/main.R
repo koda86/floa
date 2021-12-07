@@ -30,7 +30,7 @@ source("estimate_uncertainty_loa.R")
 # Wrapper function for example data sets. Function arguments:
 #
 # * Real world empirical validation data: "imu_mc"
-# * Realistic looking, smooth, wave data (normal error, no trend): "smooth_realistic"
+# * Smooth wave data (normal error, no trend): "smooth_realistic"
 # * Heteroscedastic errors (no trend): "heteroscedastic"
 # * Data with non-gaussian (Weibull distributed) error (no trend): "non_gaussian"
 # * Phase shifted data (x-axis direction): "shift"
