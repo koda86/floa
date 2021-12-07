@@ -1,31 +1,54 @@
-# Estimate uncertainty in different LoA approaches (95% percentile intervals for the LoA)
+estimate_uncertainty_loa <- function (data, n.rep, n.boot) {
 
-estimate_uncertainty_loa <- function (data, n.boot) {
+  # Estimate uncertainty in different methods (95% percentile intervals)
+  # ----------------------------------------------------------------------------
+  #
+  # Function arguments:
+  # data     : data
+  # n.rep    : Number of repeated calculations
+  # n.boot   : Number of bootstrap iterations
+  # ----------------------------------------------------------------------------
 
   floa.roislien.upper <- vector(mode = "list", length = n.boot)
   floa.roislien.lower <- vector(mode = "list", length = n.boot)
-  floa.boot.upper <- vector(mode = "list", length = n.boot)
-  floa.boot.lower <- vector(mode = "list", length = n.boot)
+  floa.boot.all.upper <- vector(mode = "list", length = n.boot)
+  floa.boot.all.lower <- vector(mode = "list", length = n.boot)
+  floa.boot.iid.upper <- vector(mode = "list", length = n.boot)
+  floa.boot.iid.lower <- vector(mode = "list", length = n.boot)
 
-  for (i in 1:n.boot) {
+  for (i in 1:n.rep) {
     floa.roislien <- floa_roislien(data)
-    floa.boot  <- floa_boot(data,
-                            k_reihe = 50,
-                            n.boot = n.boot,
-                            band = "prediction",
-                            cp.begin = 0,
-                            alpha = 0.05)
+
+    floa.boot.all  <- floa_boot(data,
+                                k_reihe = 50,
+                                n.boot = n.boot,
+                                band = "prediction",
+                                cp.begin = 0,
+                                alpha = 0.05,
+                                iid = FALSE)
+
+    floa.boot.iid  <- floa_boot(data,
+                                k_reihe = 50,
+                                n.boot = n.boot,
+                                band = "prediction",
+                                cp.begin = 0,
+                                alpha = 0.05,
+                                iid = TRUE)
 
     floa.roislien.upper[[i]] <- floa.roislien["upper.loa", ]
     floa.roislien.lower[[i]] <- floa.roislien["lower.loa", ]
-    floa.boot.upper[[i]]  <- floa.boot["upper.loa", ]
-    floa.boot.lower[[i]]  <- floa.boot["lower.loa", ]
+    floa.boot.all.upper[[i]]  <- floa.boot.all["upper.loa", ]
+    floa.boot.all.lower[[i]]  <- floa.boot.all["lower.loa", ]
+    floa.boot.iid.upper[[i]]  <- floa.boot.iid["upper.loa", ]
+    floa.boot.iid.lower[[i]]  <- floa.boot.iid["lower.loa", ]
   }
 
   floa.roislien.upper.unlist <- matrix(unlist(floa.roislien.upper), 101)
   floa.roislien.lower.unlist <- matrix(unlist(floa.roislien.lower), 101)
-  floa.boot.upper.unlist <- matrix(unlist(floa.boot.upper), 101)
-  floa.boot.lower.unlist <- matrix(unlist(floa.boot.lower), 101)
+  floa.boot.all.upper.unlist <- matrix(unlist(floa.boot.all.upper), 101)
+  floa.boot.all.lower.unlist <- matrix(unlist(floa.boot.all.lower), 101)
+  floa.boot.iid.upper.unlist <- matrix(unlist(floa.boot.iid.upper), 101)
+  floa.boot.iid.lower.unlist <- matrix(unlist(floa.boot.iid.lower), 101)
 
   # Pointwise LoA return the same estimate every time (all curves are included)
   floa.point <- data.frame(t(floa_point(data)))
@@ -34,8 +57,10 @@ estimate_uncertainty_loa <- function (data, n.boot) {
   pi95 <- rbind(
     apply(floa.roislien.upper.unlist, 1, quantile, probs = c(0.025, 0.975)),
     apply(floa.roislien.lower.unlist, 1, quantile, probs = c(0.025, 0.975)),
-    apply(floa.boot.upper.unlist, 1, quantile, probs = c(0.025, 0.975)),
-    apply(floa.boot.lower.unlist, 1, quantile, probs = c(0.025, 0.975)),
+    apply(floa.boot.all.upper.unlist, 1, quantile, probs = c(0.025, 0.975)),
+    apply(floa.boot.all.lower.unlist, 1, quantile, probs = c(0.025, 0.975)),
+    apply(floa.boot.iid.upper.unlist, 1, quantile, probs = c(0.025, 0.975)),
+    apply(floa.boot.iid.lower.unlist, 1, quantile, probs = c(0.025, 0.975)),
     # Pointwise limits are calculated differently (using CI, see floa_point())
     # but used in the same way here to facilitate plotting (plausibility control)
     floa.point$upper.ci.lower,
@@ -47,7 +72,8 @@ estimate_uncertainty_loa <- function (data, n.boot) {
   pi95 <- data.frame(t(pi95))
   colnames(pi95) <- c(
     "floa.roislien.upper.2.5", "floa.roislien.upper.97.5", "floa.roislien.lower.2.5", "floa.roislien.lower.97.5",
-    "floa.boot.upper.2.5", "floa.boot.upper.97.5", "floa.boot.lower.2.5", "floa.boot.lower.97.5",
+    "floa.boot.all.upper.2.5", "floa.boot.all.upper.97.5", "floa.boot.all.lower.2.5", "floa.all.boot.lower.97.5",
+    "floa.boot.iid.upper.2.5", "floa.boot.iid.upper.97.5", "floa.boot.iid.lower.2.5", "floa.iid.boot.lower.97.5",
     "floa.point.upper.2.5", "floa.point.upper.97.5", "floa.point.lower.2.5", "floa.point.lower.97.5"
     )
 
@@ -137,15 +163,18 @@ estimate_uncertainty_loa <- function (data, n.boot) {
   CUA.point.lower     <- round(sum(pi95$floa.point.lower.97.5 - pi95$floa.point.lower.2.5), 2)
   CUA.roislien.upper  <- round(sum(pi95$floa.roislien.upper.97.5 - pi95$floa.roislien.upper.2.5), 2)
   CUA.roislien.lower  <- round(sum(pi95$floa.roislien.lower.97.5 - pi95$floa.roislien.lower.2.5), 2)
-  CUA.boot.upper      <- round(sum(pi95$floa.boot.upper.97.5 - pi95$floa.boot.upper.2.5), 2)
-  CUA.boot.lower      <- round(sum(pi95$floa.boot.lower.97.5 - pi95$floa.boot.lower.2.5), 2)
+  CUA.boot.all.upper  <- round(sum(pi95$floa.boot.all.upper.97.5 - pi95$floa.boot.all.upper.2.5), 2)
+  CUA.boot.all.lower  <- round(sum(pi95$floa.boot.all.lower.97.5 - pi95$floa.boot.all.lower.2.5), 2)
+  CUA.boot.iid.upper  <- round(sum(pi95$floa.boot.iid.upper.97.5 - pi95$floa.boot.iid.upper.2.5), 2)
+  CUA.boot.iid.lower  <- round(sum(pi95$floa.boot.iid.lower.97.5 - pi95$floa.boot.iid.lower.2.5), 2)
 
   uncert.area <- c(CUA.point.upper + CUA.point.lower,
                    CUA.roislien.upper + CUA.roislien.upper,
-                   CUA.boot.upper + CUA.boot.lower
+                   CUA.boot.all.upper + CUA.boot.all.lower,
+                   CUA.boot.iid.upper + CUA.boot.iid.lower
                    )
 
-  names(uncert.area) <- c("POINT", "ROISLIEN", "BOOT")
+  names(uncert.area) <- c("POINT", "ROISLIEN", "BOOT.all", "BOOT.lower")
 
   # plot(pi95$floa.point.upper.97.5, ylim = c(-3, 3), col = "red")
   # points(pi95$floa.point.upper.2.5, col = "red")
