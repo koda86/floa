@@ -10,7 +10,7 @@ singlecurve_coverage <- function (data, n.boot) {
   cover.cross.boot <- vector(mode = "list", length = length(n.curves))
 
   for (curve.idx in n.curves) {
-    # Calculate LLoA with one curve left out ------------------------------
+    # Calculate LoA with one curve left out -------------------------------
     data.one.out <- subset(data, strideID != curve.idx)
 
     floa.point    <- floa_point(data.one.out)
@@ -20,7 +20,8 @@ singlecurve_coverage <- function (data, n.boot) {
                             n.boot = n.boot,
                             band = "prediction",
                             cp.begin = 0,
-                            alpha = 0.05)
+                            alpha = 0.05,
+                            iid = FALSE)
 
     # Plot left out curve vs. various FLoA methods -----------------------
     data.subset <- subset(data, strideID == curve.idx)
