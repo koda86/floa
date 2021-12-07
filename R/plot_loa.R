@@ -69,7 +69,7 @@ plot_loa <- function (data, floa.point, floa.roislien, floa.boot, ylim) {
               linetype = "dotted",
               size = 1.5,
               colour = "#009E73") +
-    # scale_y_continuous(limits = c(ylim[1], ylim[2])) +
+    scale_y_continuous(limits = c(ylim[1], ylim[2])) +
     labs(x = "Time-normalized signal [%]", y = "Difference")
     # theme_minimal() +
     # theme(axis.text.x = element_text(size = 20),
