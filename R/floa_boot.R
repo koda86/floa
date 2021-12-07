@@ -1,4 +1,4 @@
-floa_boot <- function(data, k_reihe, n.boot, band, cp.begin, alpha) {
+floa_boot <- function(data, k_reihe, n.boot, band, cp.begin, alpha, iid) {
 
   # Limit of Agreement calculation adapted from Lenhoff et al. (1999)
   # ----------------------------------------------------------------------------
@@ -9,33 +9,44 @@ floa_boot <- function(data, k_reihe, n.boot, band, cp.begin, alpha) {
   # band     : Type of interval (prediction or confidence)
   # cp.begin : Initial value quantile
   # alpha    : Significance level
+  # iid      : Independent (and identically distributed) data
+  #            If TRUE, only one curve per subject is selected
   # ----------------------------------------------------------------------------
 
   # ----------------------------------------------------------------------------
-  # Get difference curves
+  # Additional/initial step: Get difference curves
   # ----------------------------------------------------------------------------
-  devices <- unique(data$device)
+  if (iid == TRUE) {
+    # Pick only one curve per subject to satisfy iid assumption
+    data.diff <- pick_subwise_curves(data)
 
-  device.1 <- subset(data, device  == devices[1])$value
-  device.1.wide <- matrix(device.1, ncol = length(device.1) / 101)
-  device.2 <- subset(data, device == devices[2])$value
-  device.2.wide <- matrix(device.2, ncol = length(device.2) / 101)
+    # plot(data.diff[, 1], type = "l", ylim = c(-3, 3))
+    # apply(data.diff, 2, lines)
+  } else if (iid == FALSE) {
+    # Taking all curves would require some adjustment (e. g. block or cluster bootstrap)
+    devices <- unique(data$device)
 
-  data.diff <- device.1.wide - device.2.wide
+    device.1 <- subset(data, device  == devices[1])$value
+    device.1.wide <- matrix(device.1, ncol = length(device.1) / 101)
+    device.2 <- subset(data, device == devices[2])$value
+    device.2.wide <- matrix(device.2, ncol = length(device.2) / 101)
+
+    data.diff <- device.1.wide - device.2.wide
+  }
 
   # Dimensions
   n_time    <- dim(data.diff)[1]
-  n_kurven  <- dim(data.diff)[2]
-  time <- seq(0, (n_time-1)) # 0:(n_time-1)
+  n_curves  <- dim(data.diff)[2]
+  time <- seq(0, (n_time-1))
 
   # ----------------------------------------------------------------------------
   # Approximate time series (differences) using Fourier functions
   # ----------------------------------------------------------------------------
-  fourier.koeffi    = matlab::zeros(c(k_reihe*2 + 1, n_kurven))
-  fourier.real      = matlab::zeros(n_time, n_kurven)
+  fourier.koeffi    = matlab::zeros(c(k_reihe*2 + 1, n_curves))
+  fourier.real      = matlab::zeros(n_time, n_curves)
   fourier.mean      = matlab::zeros(k_reihe*2 + 1)
   fourier.real_mw   = matlab::zeros(n_time, 1)
-  fourier.std1      = matlab::zeros(k_reihe*2 + 1, k_reihe*2 + 1, n_kurven)
+  fourier.std1      = matlab::zeros(k_reihe*2 + 1, k_reihe*2 + 1, n_curves)
   fourier.kovarianz = matlab::zeros(k_reihe*2 + 1, k_reihe*2 + 1)
   fourier.std_all   = matlab::zeros(n_time, n_time)
   fourier.std       = matlab::zeros(n_time, 1)
@@ -48,7 +59,7 @@ floa_boot <- function(data, k_reihe, n.boot, band, cp.begin, alpha) {
     fourier.s <- cbind(fourier.s, sin(2*pi*(k/2)*time/(n_time-1)))
   }
 
-  for (i in 1:n_time) {
+  for (i in 1:n_curves) {
     # Least squares Regression
     fourier.koeffi[, i] = pracma::mldivide(fourier.s, data.diff[, i])
     # Fourier curve
@@ -60,7 +71,7 @@ floa_boot <- function(data, k_reihe, n.boot, band, cp.begin, alpha) {
   fourier.real_mw[, 1] = fourier.s %*% fourier.mean[, 1]
 
   # Standard deviation of the Fourier curve
-  for (i in 1:n_kurven) {
+  for (i in 1:n_curves) {
     # variance-covariance matrix
     fourier.std1[, , i] <- (fourier.koeffi[, i] - fourier.mean[, 1]) %*% t(fourier.koeffi[, i] - fourier.mean[, 1])
   }
@@ -81,18 +92,18 @@ floa_boot <- function(data, k_reihe, n.boot, band, cp.begin, alpha) {
   bootstrap_sample        = matlab::zeros(n_time, 4)
   bootstrap.mean          = matlab::zeros(k_reihe*2 + 1, n.boot)
   bootstrap.real_mw       = matlab::zeros(n_time, n.boot)
-  bootstrap.zz            = matlab::zeros(n_kurven, n.boot)
-  bootstrap.pseudo_koeffi = matlab::zeros(k_reihe*2 + 1, n_kurven, n.boot)
-  bootstrap.real          = matlab::zeros(n_time, n_kurven, n.boot)
-  bootstrap.std1          = matlab::zeros(k_reihe*2 + 1, k_reihe*2 + 1, n_kurven)
+  bootstrap.zz            = matlab::zeros(n_curves, n.boot)
+  bootstrap.pseudo_koeffi = matlab::zeros(k_reihe*2 + 1, n_curves, n.boot)
+  bootstrap.real          = matlab::zeros(n_time, n_curves, n.boot)
+  bootstrap.std1          = matlab::zeros(k_reihe*2 + 1, k_reihe*2 + 1, n_curves)
   bootstrap.kovarianz     = matlab::zeros(k_reihe*2 + 1, k_reihe*2 + 1, n.boot)
   bootstrap.std_all       = matlab::zeros(n_time, n_time, n.boot)
   bootstrap.std           = matlab::zeros(n_time, n.boot)
 
   for (i in 1:n.boot) {
     # Create new bootstrap sample
-    for (k in 1:n_kurven) {
-      bootstrap.zz[k, i] = sample(n_kurven, 1)
+    for (k in 1:n_curves) {
+      bootstrap.zz[k, i] = sample(n_curves, 1)
       bootstrap.pseudo_koeffi[, k, i] = fourier.koeffi[, bootstrap.zz[k, i]]
       bootstrap.real[, k, i] = fourier.s %*% bootstrap.pseudo_koeffi[, k, i]
     }
@@ -101,7 +112,7 @@ floa_boot <- function(data, k_reihe, n.boot, band, cp.begin, alpha) {
     bootstrap.mean[, i] <- rowMeans(bootstrap.pseudo_koeffi[, , 1])
     bootstrap.real_mw[, i] <- fourier.s %*% bootstrap.mean[, i]
 
-    for (k in 1:n_kurven) {
+    for (k in 1:n_curves) {
       bootstrap.std1[, , k] <- (bootstrap.pseudo_koeffi[, k, i] - bootstrap.mean[, i]) %*% t(bootstrap.pseudo_koeffi[, k, i] - bootstrap.mean[, i])
     }
 
@@ -117,8 +128,8 @@ floa_boot <- function(data, k_reihe, n.boot, band, cp.begin, alpha) {
   # ----------------------------------------------------------------------------
   # Prediction band
   # ----------------------------------------------------------------------------
-  cp.data   <- matlab::zeros(n_kurven, n.boot)
-  cp.data_i <- matlab::zeros(n_kurven, n.boot)
+  cp.data   <- matlab::zeros(n_curves, n.boot)
+  cp.data_i <- matlab::zeros(n_curves, n.boot)
 
   # Determine the quantile for alpha
   cp.mean <- 0
@@ -127,7 +138,7 @@ floa_boot <- function(data, k_reihe, n.boot, band, cp.begin, alpha) {
 
   while (cp.mean < (1 - alpha)) {
     for (i in 1:n.boot) {
-      for (k in 1:n_kurven) {
+      for (k in 1:n_curves) {
         # Lenhoff, Appendix A, Eq. (0.6)
         cp.data[k, i] <- max(abs(fourier.real[, k] - bootstrap.real_mw[, i]) / bootstrap.std[, i])
         cp.data_i[k, i] <- cp.data[k, i] < cp.grenze
@@ -144,8 +155,8 @@ floa_boot <- function(data, k_reihe, n.boot, band, cp.begin, alpha) {
   # ----------------------------------------------------------------------------
   # Confidence band
   # ----------------------------------------------------------------------------
-  cc.data   <- matlab::zeros(n_kurven, n.boot)
-  cc.data_i <- matlab::zeros(n_kurven, n.boot)
+  cc.data   <- matlab::zeros(n_curves, n.boot)
+  cc.data_i <- matlab::zeros(n_curves, n.boot)
 
   # Determine the quantile for alpha
   cc.mean <- 0
@@ -154,7 +165,7 @@ floa_boot <- function(data, k_reihe, n.boot, band, cp.begin, alpha) {
 
   while (cc.mean < (1 - alpha)) {
     for (i in 1:n.boot) {
-      for (k in 1:n_kurven) {
+      for (k in 1:n_curves) {
         # Lenhoff, Appendix A, Eq. (0.7)
         cc.data[k, i] <- max(abs(bootstrap.real_mw[, i] - fourier.real_mw) / bootstrap.std[, i])
         cc.data_i[k, i] <- cc.data[k, i] < cc.grenze
