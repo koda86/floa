@@ -22,6 +22,13 @@ The paper presents for three methods for constructing continuous prediction inte
 
 The parent script is 'main.R'. Here, all subscripts are loaded and called.
 
+### Working directories
+
+Two different paths have to be specified:
+
+- dir.script: Path to directory in which R scripts are stored.
+- dir.data <- Path to directory in which the example data sets are stored.
+
 #### Data sets
 
 Data sets are generated in 'simulate_data.R' and stored in .../R/examples. Data sets are selected/loaded in 'examples.R'. 
