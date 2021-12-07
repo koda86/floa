@@ -1,32 +1,4 @@
-# Main script Functional Limits of Agreement (FLoA)
-# ------------------------------------------------------------------------------
-#
-# FLoA derived by different methods are compared
-#   * Randomized Cluster Bootstrap      (floa.rcb)
-#     * Different strategies
-#   * Point-by-point Gaussian intervals (floa.point)
-#
-#
-# For demonstration, different (synthetic) data sets can be chosen
-# (see subsection data sets)
-#
-# TODO:
-#   + Preallocation in floa_rcb()
-#   + Implement balanced data in floa_rcb.R
-#
-# TODO READ:
-#   + https://bmcmedresmethodol.biomedcentral.com/articles/10.1186/s12874-020-01022-x
-#   + Ratkowsky - Handbook of nonlinear regression models
-#   + Robinson et al. (2021)
-#   + https://cran.r-project.org/web/packages/smooth/vignettes/simulate.html
-#
-# TODO STYLE:
-#   + Add namespaces (package names ::)
-#   + Vectorize wherever possible
-#   + Make variable names more universal (e.g. "device.1" instead "mc")
-#   + Rename n.strides to n.curves()
-#   + No line between header and body in loops
-# ******************************************************************************
+# Main script prediction bands
 rm(list = ls())
 
 library(ggplot2)
@@ -67,7 +39,7 @@ source("estimate_uncertainty_loa.R")
 # * Data with non-gaussian (Weibull distributed) error (no trend): "non_gaussian"
 # * Data with shock peaks (no bias, no trend): "shock"
 # * Phase shifted data (x-axis direction): "shift"
-data <- example_data(dat = "smooth_realistic", dir.data)
+data <- example_data(dat = "shift", dir.data)
 
 # Plot data --------------------------------------------------------------------
 # uncommment when subject differences need to be plotted
@@ -89,32 +61,18 @@ PLOT <- ggplot(data = data.single.mc, aes(x = frame, y = value, group = strideID
 PLOT
 
 
-# ****************************** Calculate FLoA ********************************
-n.boot <- 400
+# ***************************** Prediction bands *******************************
+n.boot <- 5
 
-# Randomized Cluster Bootstrap -------------------------------------------------
-#
-# * In the first stage, n=length(subjects) random strides are sampled
-# from all strides (with replacement). Strides are selected from the entire set
-# of curves (NOT! one curve per subject).
-# * The process is repeated n.boot times.
-# From the resulting distribution, percentiles (2.5%, 50%, 97.5%) are calculated.
-#
-# In current implementation: Specify version number (ver):
-# v1 : n = length(subjects) random strides from all strides
-# v2 : One random stride per subject
-# v3 : Fetch a SINGLE random stride from all strides
-# v4 : Roislien approach (Get one random stride from each subject ONCE and boot-
-#      strap the resulting sample (of length (n=length(subjects))
-# floa <- floa_rcb(data, n.boot, ver = "v2")
-floa.point    <- floa_point(data)
-floa.roislien <- floa_roislien(data)
-floa.boot.pred  <- floa_boot(data,
-                             k_reihe = 50,
-                             n.boot = n.boot,
-                             band = "prediction",
-                             cp.begin = 0,
-                             alpha = 0.05)
+floa.point     <- floa_point(data)
+floa.roislien  <- floa_roislien(data)
+floa.boot.pred <- floa_boot(data,
+                            k_reihe = 50,
+                            n.boot = n.boot,
+                            band = "prediction",
+                            cp.begin = 0,
+                            alpha = 0.05,
+                            iid = FALSE)
 
 floa.boot.conf  <- floa_boot(data,
                              k_reihe = 50,
@@ -124,7 +82,7 @@ floa.boot.conf  <- floa_boot(data,
                              alpha = 0.05)
 
 
-plot_loa(data, floa.point, floa.roislien, floa.boot.pred, ylim = c(-15, 15))
+plot_loa(data, floa.point, floa.roislien, floa.boot.pred, ylim = c(-5, 5))
 plot_loa(data, floa.point, floa.roislien, floa.boot.conf, ylim = c(-15, 15))
 
 
@@ -181,7 +139,7 @@ plot_cov_ver(cover.cross.fraction.singlecurve)
 
 # Estimate the uncertainty across several iterations
 # Returns results for all implemented methods
-estimate_uncertainty_loa(data, n.boot)
+estimate_uncertainty_loa(data, n.rep, n.boot)
 
 
 # Average distance to the outer point of the curve set
