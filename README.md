@@ -1,18 +1,12 @@
 # floa
-
-This repository accompanies this paper: DOI
+This repository accompanies this publication: DOI
 
 **Please cite:**
-Koska, D., Oriwol, D. & Maiwald, C. (2022) Methodische Aspekte der Konstruktion von Pradiktionsbändern in Methodenvergleichen
+Koska, D., Oriwol, D. & Maiwald, C. (2022) Methodische Aspekte der Konstruktion von Pradiktionsbändern in Methodenvergleiche.
 
 
 ### Documentation
-
-For a detailled description please see the man folder.
-
-Contained are:
-
-- ...
+For a detailled description please see the markdown documentation file (floa_doc.md) in the man folder.
 
 
 ### Issues
