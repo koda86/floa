@@ -20,6 +20,8 @@ The paper presents for three methods for constructing continuous prediction inte
 
 ### Structure
 
+The parent script is 'main.R'. Here, all subscripts are loaded and called.
+
 #### Data sets
 
 Data sets are generated in 'simulate_data.R' and stored in .../R/examples. Data sets are selected/loaded in 'examples.R'. 
