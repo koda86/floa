@@ -22,7 +22,7 @@ The paper presents for three methods for constructing continuous prediction inte
 
 #### Data sets
 
-Data sets are generated in 'script examples.R' and stored in .../R/examples
+Data sets are generated in the script examples.R' and stored in .../R/examples
 
 Contains 4 data sets (3 synthetic and 1 real-world) given as both .txt (ASCII) or .rds (binary) files:
 
