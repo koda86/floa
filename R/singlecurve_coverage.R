@@ -10,17 +10,17 @@ singlecurve_coverage <- function (data, n.boot) {
   cover.cross.boot <- vector(mode = "list", length = length(n.curves))
 
   for (curve.idx in n.curves) {
-    # Calculate FLoA with one curve left out -----------------------------
+    # Calculate LLoA with one curve left out ------------------------------
     data.one.out <- subset(data, strideID != curve.idx)
 
     floa.point    <- floa_point(data.one.out)
     floa.roislien <- floa_roislien(data.one.out)
     floa.boot  <- floa_boot(data,
-                                  k_reihe = 50,
-                                  n.boot = n.boot,
-                                  band = "prediction",
-                                  cp.begin = 0,
-                                  alpha = 0.05)
+                            k_reihe = 50,
+                            n.boot = n.boot,
+                            band = "prediction",
+                            cp.begin = 0,
+                            alpha = 0.05)
 
     # Plot left out curve vs. various FLoA methods -----------------------
     data.subset <- subset(data, strideID == curve.idx)
@@ -32,7 +32,7 @@ singlecurve_coverage <- function (data, n.boot) {
     # Get coverage for the left out (difference) curve -------------------
     cover.cross.point[curve.idx]      <- get_coverage_singlecurve(device.diff, floa.point)
     cover.cross.roislien[curve.idx]   <- get_coverage_singlecurve(device.diff, floa.roislien)
-    cover.cross.boot[curve.idx]    <- get_coverage_singlecurve(device.diff, floa.boot)
+    cover.cross.boot[curve.idx]       <- get_coverage_singlecurve(device.diff, floa.boot)
   }
 
   cover.cross <- cbind(
