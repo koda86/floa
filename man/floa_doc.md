@@ -22,12 +22,18 @@ The paper presents for three methods for constructing continuous prediction inte
 
 The parent script is 'main.R'. Here, all subscripts are loaded and called.
 
-### Working directories
+In 'main.R' a couple of folder directories and function parameters have to be specified:
 
++ **1. Working directories**
 Two different paths have to be specified:
 
 - dir.script: Path to directory in which R scripts are stored.
 - dir.data <- Path to directory in which the example data sets are stored.
+
++ **2. Function parameters:**
+
+- n.boot: The number of bootstrap iterations (default = 400)
+- n.rep: The number of repeated calculations in the uncertainty estimation (default = 100)
 
 #### Data sets
 
