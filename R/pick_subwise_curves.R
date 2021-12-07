@@ -1,7 +1,6 @@
 pick_subwise_curves <- function (data) {
 
   # Select a single random stride from every subject in data
-
   n.subj <- length(unique(data$subjectID))
 
   curve.idx <- c()
