@@ -32,24 +32,95 @@ source("estimate_uncertainty_loa.R")
 # * Phase shifted data (x-axis direction): "shift"
 data <- example_data(dat = "shift", dir.data)
 
-# Plot data --------------------------------------------------------------------
-# uncommment when subject differences need to be plotted
-# data$subjectID <- as.factor(data$subjectID)
+# Plot original data --------------------------------------------------------------------
+data <- example_data(dat = "smooth_realistic", dir.data)
 data.single.mc <- subset(data, device == "MC")
 data.single.imu <- subset(data, device == "IMU")
 
-PLOT <- ggplot(data = data.single.mc, aes(x = frame, y = value, group = strideID)) + # , colour = subjectID
-  geom_line(alpha = 0.7) +
-  geom_line(data = data.single.imu, aes(x = frame, y = value, group = strideID, col = "red"), alpha = 0.3) + #, colour = subjectID
-  labs(x = "Time-normalized signal [%]", y = "Difference") +
+PLOT.1 <- ggplot(data = data.single.mc, aes(x = frame, y = value, group = strideID)) +
+  geom_line() +
+  scale_color_grey(start = 0.6, end = 0.9) +
+  geom_line(data = data.single.imu, aes(x = frame, y = value, group = strideID, colour = as.factor(subjectID)), alpha = 0.3) +
+  labs(x = "Time-normalized signal [%]", y = "Angle [°]") +
   theme_minimal() +
-  theme(axis.text.x = element_text(size = 20),
-        axis.title.x = element_text(size = 22),
-        axis.text.y = element_text(size = 20),
-        axis.title.y = element_text(size = 22),
+  theme(axis.text.x = element_text(size = 14),
+        axis.title.x = element_text(size = 14),
+        axis.text.y = element_text(size = 14),
+        axis.title.y = element_text(size = 14),
         legend.position = "none")
 
+
+data <- example_data(dat = "non_gaussian", dir.data)
+data.single.mc <- subset(data, device == "MC")
+data.single.imu <- subset(data, device == "IMU")
+
+PLOT.2 <- ggplot(data = data.single.mc, aes(x = frame, y = value, group = strideID)) +
+  geom_line() +
+  scale_color_grey(start = 0.6, end = 0.9) +
+  geom_line(data = data.single.imu, aes(x = frame, y = value, group = strideID, colour = as.factor(subjectID)), alpha = 0.3) +
+  labs(x = "Time-normalized signal [%]", y = "Angle [°]") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(size = 14),
+        axis.title.x = element_text(size = 14),
+        axis.text.y = element_text(size = 14),
+        axis.title.y = element_text(size = 14),
+        legend.position = "none")
+
+
+data <- example_data(dat = "shift", dir.data)
+data.single.mc <- subset(data, device == "MC")
+data.single.imu <- subset(data, device == "IMU")
+
+PLOT.3 <- ggplot(data = data.single.mc, aes(x = frame, y = value, group = strideID)) +
+  geom_line() +
+  scale_color_grey(start = 0.6, end = 0.9) +
+  geom_line(data = data.single.imu, aes(x = frame, y = value, group = strideID, colour = as.factor(subjectID)), alpha = 0.3) +
+  labs(x = "Time-normalized signal [%]", y = "Angle [°]") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(size = 14),
+        axis.title.x = element_text(size = 14),
+        axis.text.y = element_text(size = 14),
+        axis.title.y = element_text(size = 14),
+        legend.position = "none")
+
+
+data <- example_data(dat = "imu_mc", dir.data)
+data.single.mc <- subset(data, device == "MC")
+data.single.imu <- subset(data, device == "IMU")
+
+PLOT.4 <- ggplot(data = data.single.mc, aes(x = frame, y = value, group = strideID)) +
+  geom_line() +
+  scale_color_grey(start = 0.6, end = 0.9) +
+  geom_line(data = data.single.imu, aes(x = frame, y = value, group = strideID, colour = as.factor(subjectID)), alpha = 0.3) +
+  labs(x = "Time-normalized signal [%]", y = "Angle [°]") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(size = 14),
+        axis.title.x = element_text(size = 14),
+        axis.text.y = element_text(size = 14),
+        axis.title.y = element_text(size = 14),
+        legend.position = "none")
+
+
+# Create plot matrix
+PLOT <- ggpubr::ggarrange(PLOT.1, PLOT.2, PLOT.3, PLOT.4,
+                          labels = c("A", "B", "C", "D"),
+                          ncol = 2,
+                          nrow = 2)
 PLOT
+
+# ggsave("~/Nextcloud/project-fab-forschung/Publikationen/FLOA/tex/Grafiken/original_curves.png", device = "png", dpi = 300)
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 # ***************************** Prediction bands *******************************
