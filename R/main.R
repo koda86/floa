@@ -33,11 +33,8 @@ source("estimate_uncertainty_loa.R")
 #
 # * Real world empirical validation data: "imu_mc"
 # * Realistic looking, smooth, wave data (normal error, no trend): "smooth_realistic"
-# * Smooth, wave data (normal error, no trend): "smooth"
-# * Smooth wave data with nonlinear trend (constant variance): "smooth_trend"
 # * Heteroscedastic errors (no trend): "heteroscedastic"
 # * Data with non-gaussian (Weibull distributed) error (no trend): "non_gaussian"
-# * Data with shock peaks (no bias, no trend): "shock"
 # * Phase shifted data (x-axis direction): "shift"
 data <- example_data(dat = "shift", dir.data)
 
