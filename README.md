@@ -21,7 +21,7 @@ We have not invente o own any of the presented methods ... der restliche Code st
 All code is freely available because it is already
 
 
-  Copyright (C) 2020  Daniel Koska
+  Copyright (C) 2021  Daniel Koska
   
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
