@@ -1,5 +1,13 @@
 # ------------------------------------------------------------------------------
 # -----------------    Main script prediction bands    -------------------------
+#
+# Author: Daniel Koska
+# December 2021
+#
+# This script accompanies the publication: DOI
+#
+# Please cite: Koska, D., Oriwol, D. & Maiwald, C. (2022) Methodische Aspekte der
+# Konstruktion von Pradiktionsbändern in Methodenvergleich
 # ------------------------------------------------------------------------------
 
 rm(list = ls())
@@ -44,7 +52,7 @@ n.boot <- 400
 floa.point     <- floa_point(data)
 floa.roislien  <- floa_roislien(data)
 floa.boot      <- floa_boot(data,
-                            k_reihe = 50,
+                            k.coef = 50,
                             n.boot = n.boot,
                             band = "prediction",
                             cp.begin = 0,

@@ -1,12 +1,12 @@
 floa_point <- function(data) {
 
-  # ****************************************************************************
-  #  Pointwise FLoA (FLoA_Point)
   # ----------------------------------------------------------------------------
+  #  -----------   Pointwise continuous Limits of Agreement   ------------------
   #
-  # For implementation details, see Bland & Altman, 2007
+  # Calculation described in Bland & Altman (2007) and Bland & Altman (1999)
   # Design currently implemented for balanced data
-  # ****************************************************************************
+  # ----------------------------------------------------------------------------
+
   n.frames <- length(unique(data$frame))
   n.subjects <- length(unique(data$subjectID))
   n.strides <- length(unique(data$strideID))
@@ -14,10 +14,13 @@ floa_point <- function(data) {
 
   mean.diff <- vector(mode = "list", length = n.frames)
   total.sd <- vector(mode = "list", length = n.frames)
+
   for (frame.idx in 0:100){
+
     data.by.frame <- subset(data, frame == frame.idx)
 
-    # Get variance from ANOVA (see Bland & Altman, 2007)
+
+    # Get variance from ANOVA (see Bland & Altman, 2007) ---------------------
 
     # Prepare data for ANOVA
     data.by.frame.wide <- reshape2::dcast(data = data.by.frame, subjectID + strideID ~ device, value.var = "value")
@@ -39,8 +42,9 @@ floa_point <- function(data) {
   floa.point <- data.frame(unlist(mean.diff), unlist(total.sd))
   names(floa.point) <- c("mean.diff", "total.sd")
 
-  # Calculate mean, upper and lower limits of agreement (floa.point.loa) to
-  # get the same structure as returned by the other methods (i. e. floa_rcb)
+
+  # Calculate mean, upper and lower limits of agreement to get the same
+  # structure as returned by the other methods -----------------------------
   z0.975 <- qnorm(0.975, mean = 0, sd = 1) # Quantile of the standard normal distribution
 
   floa.point.loa <- rbind(floa.point$mean.diff + z0.975 * floa.point$total.sd,
@@ -48,7 +52,9 @@ floa_point <- function(data) {
                           floa.point$mean.diff - z0.975 * floa.point$total.sd
                           )
 
-  # PRECISION OF ESTIMATED LIMITS OF AGREEMENT
+
+  # PRECISION OF ESTIMATED LIMITS OF AGREEMENT -----------------------------
+
   # Confidence intervals for the 95% limits of agreement (Bland & Altman, 1999)
   n.curves <- length(unique(data$strideID))
   # Formula from Francq et al. (2020)
@@ -57,7 +63,8 @@ floa_point <- function(data) {
   # t-score of the 95th quantile of the Student t distribution with df = (n - 1)
   t <- qt(.975, df = n.curves - 1)
 
-  # Upper and lower uncertainty limits
+  # Upper and lower uncertainty limits -------------------------------------
+
   upper.ci.upper <- floa.point$mean.diff + z0.975*floa.point$total.sd + t*standard.error.d2s
   upper.ci.lower <- floa.point$mean.diff + z0.975*floa.point$total.sd - t*standard.error.d2s
   lower.ci.upper <- floa.point$mean.diff - z0.975*floa.point$total.sd + t*standard.error.d2s
