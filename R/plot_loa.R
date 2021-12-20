@@ -8,7 +8,7 @@ plot_loa <- function (data, floa.point, floa.roislien, floa.boot, ylim) {
   # floa.point: point-wise limits of agreement (Bland & Altman, 2007)
   # floa.roislien: limits of agreement as in Roislien et al. (2012)
   # floa.boot: limits of agreement as in Lenhoff et al. (1999)
-  # ylim: y-axis limits (2 element numeric object)
+  # ylim: y-axis limits (2 element numeric ob  ject)
   # ----------------------------------------------------------------------------
 
   floa.point <- data.frame(t(floa.point))
