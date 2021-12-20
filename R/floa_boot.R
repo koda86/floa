@@ -1,6 +1,9 @@
 floa_boot <- function(data, k.coef, n.boot, band, cp.begin, alpha, iid) {
 
   # Calculation method adapted from Lenhoff et al. (1999)
+  #
+  # The script is a translation of the MATLAB script by Doris Oriwol
+  # (TU Chemnitz, 12.05.2010)
   # ----------------------------------------------------------------------------
   #
   # Function arguments:
