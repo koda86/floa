@@ -36,48 +36,48 @@ plot_loa <- function (data, floa.point, floa.roislien, floa.boot, ylim) {
   # When more variables are used and multiple lines are drawn, the grouping for lines is usually done by variable.
   PLOT.DIFF <- ggplot(data = device.diff, aes(x = frame, y = value)) +
     geom_line(aes(group = strideID),
-              alpha = 0.11) +
+              alpha = 0.1) +
     scale_color_grey(start = 0.8, end = 0.2) +
     # Plot lower limit of agreement
     geom_line(data = floa.boot,
               aes(x = seq(0, 100), y = upper.loa, col = "red", group = 1),
               linetype = "solid",
-              size = 1.5,
-              colour = "deeppink", # #D55E00
+              size = 1.2,
+              colour = "royalblue1", # #D55E00 # royalblue1 # deeppink
               alpha = 0.8) +
     geom_line(data = floa.boot,
               aes(x = seq(0, 100), y = lower.loa, col = "red", group = 1),
               linetype = "solid",
-              size = 1.5,
-              colour = "deeppink",
+              size = 1.2,
+              colour = "royalblue1",
               alpha = 0.9) +
-    geom_line(data = floa.point,
-              aes(x = seq(0, 100), y = upper.loa),
-              linetype = "solid",
-              size = 1.5,
-              colour = "royalblue3", # steelblue4
-              alpha = 0.8) + # #009E73 #slateblue1
-    geom_line(data = floa.point,
-              aes(x = seq(0, 100), y = lower.loa),
-              linetype = "solid",
-              size = 1.5,
-              colour = "royalblue3", # steelblue4
-              alpha = 0.8) + # #009E73
     geom_line(data = floa.roislien,
               aes(x = seq(0, 100), y = upper.loa),
               linetype = "solid",
-              size = 1.5,
-              colour = "yellow",
-              alpha = 0.95) + # #56B4E9
+              size = 1.2,
+              colour = "deeppink", # #56B4E9
+              alpha = 1) +
     geom_line(data = floa.roislien,
               aes(x = seq(0, 100), y = lower.loa),
               linetype = "solid",
-              size = 1.5,
-              colour = "yellow",
-              alpha = 0.95) + # #56B4E9
+              size = 1.2,
+              colour = "deeppink", # gold # #56B4E9
+              alpha = 1) +
+    geom_line(data = floa.point,
+              aes(x = seq(0, 100), y = upper.loa),
+              linetype = "dotted",
+              size = 1.2,
+              colour = "grey10", # #009E73
+              alpha = 0.8) +
+    geom_line(data = floa.point,
+              aes(x = seq(0, 100), y = lower.loa),
+              linetype = "dotted",
+              size = 1.2,
+              colour = "grey10",
+              alpha = 0.8) +
     scale_y_continuous(limits = c(ylim[1], ylim[2])) +
-    labs(x = "Time-normalized signal [%]", y = "Difference")
-    # theme_minimal()
+    labs(x = "Time-normalized signal [%]", y = "Difference") +
+    theme_minimal()
     # theme(axis.text.x = element_text(size = 20),
     #       axis.title.x = element_text(size = 22),
     #       axis.text.y = element_text(size = 20),
