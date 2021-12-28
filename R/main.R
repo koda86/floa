@@ -1,13 +1,19 @@
 # ------------------------------------------------------------------------------
 # -----------------    Main script prediction bands    -------------------------
+# ------------------------------------------------------------------------------
 #
 # Author: Daniel Koska
 # December 2021
 #
 # This script accompanies the publication: DOI
 #
-# Please cite: Koska, D., Oriwol, D. & Maiwald, C. (2022) Methodische Aspekte der
-# Konstruktion von Pradiktionsbändern in Methodenvergleich
+# Please cite: Koska, D., Oriwol, D. & Maiwald, C. (2022) Methodological aspects
+# for the construction of continuous prediction intervals in method comparisons.
+#
+# There are two important parameters that deserve attention before running the
+# script:
+# 1. The data set in example_data(dat = "") function and
+# 2. the number of bootstrap iterations desired (n.boot)
 # ------------------------------------------------------------------------------
 
 rm(list = ls())
@@ -33,16 +39,18 @@ source("singlecurve_coverage.R")
 source("singlecurve_coverage_fraction.R")
 source("estimate_uncertainty_loa.R")
 
+
+
 # Data sets --------------------------------------------------------------------
 
 # Wrapper function for example data sets. Function arguments:
 #
-# * Real world empirical validation data: "imu_mc"
-# * Smooth wave data (normal error, no trend): "smooth_realistic"
-# * Heteroscedastic errors (no trend): "heteroscedastic"
-# * Data with non-gaussian (Weibull distributed) error (no trend): "non_gaussian"
-# * Phase shifted data (x-axis direction): "shift"
+# - Real world empirical validation data: "imu_mc"
+# - Smooth wave data (normal error, no trend): "smooth_realistic"
+# - Data with non-gaussian (Weibull distributed) error (no trend): "non_gaussian"
+# - Phase shifted data (x-axis direction): "shift"
 data <- example_data(dat = "smooth_realistic", dir.data)
+
 
 
 # Prediction bands -------------------------------------------------------------
@@ -60,6 +68,7 @@ floa.boot      <- floa_boot(data,
                             iid = FALSE)
 
 plot_loa(data, floa.point, floa.roislien, floa.boot, ylim = c(-5, 5))
+
 
 
 # Coverage ---------------------------------------------------------------------
@@ -81,6 +90,7 @@ n.strides <- length(unique(data$strideID))
 
 cover.cross.fraction.singlecurve <- singlecurve_coverage_fraction(data, n.boot)
 covered.curves.fraction.percent <- apply(cover.cross.singlecurve, 2, calculate_percent)
+
 
 
 # Uncertainty estimation -------------------------------------------------------
