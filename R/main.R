@@ -44,7 +44,7 @@ source("estimate_uncertainty_loa.R")
 
 # Data sets --------------------------------------------------------------------
 
-# Data sets are created in 'simulate_data.R'
+# Data sets originally created in 'simulate_data.R'
 #
 # Wrapper function for example data sets. Function arguments:
 #
