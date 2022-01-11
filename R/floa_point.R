@@ -1,7 +1,7 @@
 floa_point <- function(data) {
 
   # Pointwise continuous Limits of Agreement
-
+  #
   # Calculation described in Bland & Altman (2007) and Bland & Altman (1999)
   # Design currently implemented for balanced data
 
