@@ -21,6 +21,4 @@ pick_subwise_curves <- function (data) {
   curve1 <- matrix(curve1, ncol = length(curve1) / 100)
 
   diff.curves <- curve0 - curve1
-
-  return(diff.curves)
 }
