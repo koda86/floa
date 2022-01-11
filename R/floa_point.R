@@ -1,11 +1,9 @@
 floa_point <- function(data) {
 
-  # ----------------------------------------------------------------------------
-  #  -----------   Pointwise continuous Limits of Agreement   ------------------
-  #
+  # Pointwise continuous Limits of Agreement
+
   # Calculation described in Bland & Altman (2007) and Bland & Altman (1999)
   # Design currently implemented for balanced data
-  # ----------------------------------------------------------------------------
 
   n.frames <- length(unique(data$frame))
   n.subjects <- length(unique(data$subjectID))
@@ -45,7 +43,7 @@ floa_point <- function(data) {
 
   # Calculate mean, upper and lower limits of agreement to get the same
   # structure as returned by the other methods -----------------------------
-  z0.975 <- qnorm(0.975, mean = 0, sd = 1) # Quantile of the standard normal distribution
+  z0.975 <- qnorm(0.975, mean = 0, sd = 1)
 
   floa.point.loa <- rbind(floa.point$mean.diff + z0.975 * floa.point$total.sd,
                           floa.point$mean.diff,
