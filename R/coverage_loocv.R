@@ -16,12 +16,14 @@ coverage_loocv <- function (data, n.boot) {
 
   n.curves <- unique(data$strideID)
 
+  # Calculate LoA with one curve left out ------------------------------
   coverage.point    <- vector(mode = "list", length = length(n.curves))
   coverage.roislien <- vector(mode = "list", length = length(n.curves))
   coverage.boot.rep <- vector(mode = "list", length = length(n.curves))
   coverage.boot.iid <- vector(mode = "list", length = length(n.curves))
-  # Calculate LoA with one curve left out ------------------------------
+
   for (curve.idx in n.curves) {
+
     data.one.out <- subset(data, strideID != curve.idx)
 
     floa.point    <- floa_point(data.one.out)
