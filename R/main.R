@@ -1,6 +1,6 @@
 # ******************************************************************************
 # *****************    Main script prediction bands    *************************
-# ******************************************************************************
+# ------------------------------------------------------------------------------
 #
 # Author: Daniel Koska
 # Date: December 2021
@@ -20,12 +20,12 @@
 
 rm(list = ls())
 
-library(ggplot2)
-
 dir.script <- "~/floa/R"
 dir.data <- "~/floa/R/examples"
 
 setwd(dir.script)
+
+library(ggplot2)
 
 source("example_data.R")
 source("pick_subwise_curves.R")
@@ -33,16 +33,15 @@ source("floa_boot.R")
 source("floa_point.R")
 source("floa_roislien.R")
 source("plot_loa.R")
-source("get_coverage_fraction.R")
-source("get_coverage_singlecurve.R")
-source("get_coverage_singlecurve_fraction.R")
-source("singlecurve_coverage.R")
-source("singlecurve_coverage_fraction.R")
+source("points_within_limits.R")
+source("coverage_loocv.R")
+source("coverage_curves.R")
 source("estimate_uncertainty_loa.R")
 
 
-
-# Data sets --------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+# Data sets
+# ------------------------------------------------------------------------------
 
 # Data sets originally created in 'simulate_data.R'
 #
@@ -52,11 +51,12 @@ source("estimate_uncertainty_loa.R")
 # - Data with non-gaussian (Weibull distributed) error: "non_gaussian"
 # - Phase shifted data (x-axis direction): "shift"
 # - Real world empirical validation data: "imu_mc"
-data <- example_data(dat = "smooth_realistic", dir.data)
+data <- example_data(dat = "imu_mc", dir.data)
 
 
-
-# Prediction bands -------------------------------------------------------------
+# ------------------------------------------------------------------------------
+# Plot prediction bands from four methods
+# ------------------------------------------------------------------------------
 
 n.boot <- 400
 
@@ -81,35 +81,34 @@ plot_loa(data, floa.point, floa.roislien, floa.boot.rep, floa.boot.iid, ylim = c
 
 
 
-# Coverage ---------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+# Leave-one out cross validation to estimate coverage propoerties
+# ------------------------------------------------------------------------------
 
-#### 1. Percentage of fully covered curves
-cover.cross.singlecurve <- singlecurve_coverage(data, n.boot)
-
-calculate_percent <- function(data) {
-  # Calculate percentage from counts
-  percentage <- (sum(data) / length(data))
-  percentage <- round(percentage, digits = 2)
-}
-
-# Order of output: POINT, ROISLIEN, BOOTrep, BOOTiid
-covered.curves.percent <- apply(cover.cross.singlecurve, 2, calculate_percent)
-
-#### 2. Percentage of covered points
+# Percentage of covered points
+# 100% means that curve is fully contained within the band limits
 n.strides <- length(unique(data$strideID))
+# Order of output: POINT, ROISLIEN, BOOTrep, BOOTiid
+cover.cross.fraction.singlecurve <- coverage_loocv(data, n.boot)
 
-cover.cross.fraction.singlecurve <- singlecurve_coverage_fraction(data, n.boot)
+# Proportion of bands that contain p.cover percent of the T=101 curve points
+apply(cover.cross.fraction.singlecurve, 2, coverage_curves, p.cover = 1)
+apply(cover.cross.fraction.singlecurve, 2, coverage_curves, p.cover = 0.95)
+apply(cover.cross.fraction.singlecurve, 2, coverage_curves, p.cover = 0.9)
+apply(cover.cross.fraction.singlecurve, 2, coverage_curves, p.cover = 0.5)
 
 # Get percentile to summarize the distribution
-apply(cover.cross.fraction.singlecurve, 2, quantile, probs = c(0, 0.025, 0.1, 0.25, 0.5))
+# apply(cover.cross.fraction.singlecurve, 2, quantile, probs = c(0, 0.025, 0.1, 0.25, 0.5))
 
 
 
-# Uncertainty estimation -------------------------------------------------------
+# ------------------------------------------------------------------------------
+# Uncertainty estimation
+# ------------------------------------------------------------------------------
 
 n.rep <- 100
 
 # Order of output: POINT, ROISLIEN, BOOT.all, BOOT.iid
-uncertainty <- estimate_uncertainty_loa(data, n.rep, n.boot)
+uncertainty.area <- estimate_uncertainty_loa(data, n.rep, n.boot)
 
 
