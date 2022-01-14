@@ -1,40 +1,51 @@
 plot_loa <- function (data, floa.point, floa.roislien, floa.boot.rep, floa.boot.iid, ylim) {
 
+  # ****************************************************************************
   # Plots the limits across the respective methods against all difference curves
   # in the data set
   # ----------------------------------------------------------------------------
   #
-  # Arguments:
-  # floa.point: point-wise limits of agreement (Bland & Altman, 2007)
-  # floa.roislien: limits of agreement as in Roislien et al. (2012)
-  # floa.boot: limits of agreement as in Lenhoff et al. (1999)
-  # ylim: y-axis limits (2 element numeric ob  ject)
-  # ----------------------------------------------------------------------------
+  # Function arguments:
+  # - floa.point: point-wise limits of agreement (Bland & Altman, 2007)
+  # - floa.roislien: limits of agreement as in Roislien et al. (2012)
+  # - floa.boot: limits of agreement as in Lenhoff et al. (1999)
+  # - ylim: y-axis limits (2 element numeric ob  ject)
+  # ****************************************************************************
 
+  # Prepare data for (gg)plotting
   floa.point <- data.frame(t(floa.point))
   floa.roislien <- data.frame(t(floa.roislien))
   floa.boot.rep <- data.frame(t(floa.boot.rep))
   floa.boot.iid <- data.frame(t(floa.boot.iid))
 
-  # Difference curves -------------------------------------------------
+  n.frames <- length(unique(data$frame))
+  n.strides <- length(unique(data$strideID))
+  n.subjects <- length(unique(data$subjectID))
+  strides.per.subject <- length(unique(data$strideID)) / n.subjects
+
+  # ----------------------------------------------------------------------------
+  # Difference curves
+  # ----------------------------------------------------------------------------
+
   device1 <- subset(data, device == "IMU", select = value)
   device2 <- subset(data, device == "MC", select = value)
 
   device.diff <- device1 - device2
+
   colnames(device.diff)[1] <- "value"
 
   device.diff$frame <- seq(0, 100)
-  n.frames <- length(unique(data$frame))
-  n.strides <- 110 # length(unique(data$strideID))
-  n.subjects <- length(unique(data$subjectID))
-  strides.per.subject <- round(length(unique(data$strideID)) / n.subjects) # round() needed because one of the data sets ("imu_mc") is unbalanced and will result in error later on
-  # strides.per.subject <- length(unique(data$strideID)) / n.subjects
-  device.diff$strideID <- as.factor(rep(1:n.strides, each = 101))
+  device.diff$strideID <- as.factor(rep(1:n.strides, each = n.frames))
   device.diff$subjectID <- as.factor(rep(1:n.subjects, each = strides.per.subject * n.frames))
+
+  # ----------------------------------------------------------------------------
+  # Plot data
+  # ----------------------------------------------------------------------------
 
   # For line graphs, the data points must be grouped so that it knows which points to connect.
   # In this case, it is simple -- all points should be connected, so group=1.
-  # When more variables are used and multiple lines are drawn, the grouping for lines is usually done by variable.
+  # When more variables are used and multiple lines are drawn,
+  # the grouping for lines is usually done by variable.
   PLOT.DIFF <- ggplot(data = device.diff, aes(x = frame, y = value)) +
     geom_line(aes(group = strideID),
               alpha = 0.1) +
@@ -98,5 +109,4 @@ plot_loa <- function (data, floa.point, floa.roislien, floa.boot.rep, floa.boot.
     #       legend.position = "none")
 
   PLOT.DIFF
-
 }
