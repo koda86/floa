@@ -1,10 +1,12 @@
 floa_boot <- function(data, k.coef, n.boot, band, cp.begin, alpha, iid) {
 
-  # Calculation method adapted from Lenhoff et al. (1999)
+  # ****************************************************************************
+  # In this script, functional prediction bands are calculated by adapting the
+  # method described in Lenhoff et al. (1999).
+  # ----------------------------------------------------------------------------
   #
   # The script is an adapted an slightly modified version of the MATLAB script
   # by Doris Oriwol, TU Chemnitz, 12.05.2010
-  # ----------------------------------------------------------------------------
   #
   # Function arguments:
   # k.coef   : Number of coefficients
@@ -14,17 +16,15 @@ floa_boot <- function(data, k.coef, n.boot, band, cp.begin, alpha, iid) {
   # alpha    : Significance level
   # iid      : Independent (and identically distributed) data
   #            If TRUE, only one curve per subject is selected
-  # ----------------------------------------------------------------------------
+  # ****************************************************************************
 
   # ----------------------------------------------------------------------------
   # Additional/initial step: Get difference curves
   # ----------------------------------------------------------------------------
   if (iid == TRUE) {
-    # Pick only one curve per subject to satisfy iid assumption
+    # Pick only one curve per subject to satisfy the iid assumption
     data.diff <- pick_subwise_curves(data)
 
-    # plot(data.diff[, 1], type = "l", ylim = c(-3, 3))
-    # apply(data.diff, 2, lines)
   } else if (iid == FALSE) {
     # Draw all curves
     devices <- unique(data$device)
@@ -81,7 +81,7 @@ floa_boot <- function(data, k.coef, n.boot, band, cp.begin, alpha, iid) {
 
   fourier.kovarianz <- apply(fourier.std1, c(1, 2), mean)
   # Lenhoff, Appendix A, Eq. (0.5)
-  fourier.std_all <- sqrt(fourier.s %*% fourier.kovarianz %*% t(fourier.s))
+  fourier.std_all <- suppressWarnings(sqrt(fourier.s %*% fourier.kovarianz %*% t(fourier.s)))
 
   for (i in 1:n.time) {
     # Values are on the diagonal of the square matrix fourier.std_all
@@ -120,7 +120,7 @@ floa_boot <- function(data, k.coef, n.boot, band, cp.begin, alpha, iid) {
     }
 
     bootstrap.kovarianz[, , i] <- apply(bootstrap.std1, c(1, 2), mean)
-    bootstrap.std_all[, , i] = sqrt(fourier.s %*% bootstrap.kovarianz[, , i] %*% t(fourier.s))
+    bootstrap.std_all[, , i] <- suppressWarnings(sqrt(fourier.s %*% bootstrap.kovarianz[, , i] %*% t(fourier.s)))
 
     for (k in 1:n.time) {
       bootstrap.std[k, i] <- bootstrap.std_all[k, k, i]
@@ -153,7 +153,6 @@ floa_boot <- function(data, k.coef, n.boot, band, cp.begin, alpha, iid) {
   }
 
   cp_out <- cp.bound
-
 
   # ----------------------------------------------------------------------------
   # Correction factor (quantile) for the confidence interval
