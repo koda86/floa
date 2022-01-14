@@ -2,7 +2,7 @@
 This repository accompanies this publication: DOI
 
 **Please cite:**
-Koska, D., Oriwol, D. & Maiwald, C. (2022) Methodische Aspekte der Konstruktion von Pradiktionsbändern in Methodenvergleiche.
+
 
 
 ### Documentation
@@ -14,9 +14,7 @@ Please report software bugs or other problems by searching existing issues or cr
 
 
 ### Licence
-The code represents 
-
-We have not invente o own any of the presented methods ... der restliche Code steht unter GNU General Public License v3.0
+We have not invented or own any of the presented methods ... der restliche Code steht unter GNU General Public License v3.0
 
 All code is freely available because it is already
 
