@@ -13,9 +13,11 @@
 # for the construction of continuous prediction intervals in method comparisons.
 # DOI: ...
 #
-# Two important variables should be adjusted before running the script:
-# 1. The data set (in example_data()
-# 2. The number of bootstrap iterations (n.boot)
+# Variables that should be adjusted before running the script:
+# - The data and script directories ('dir.data', 'dir.script')
+# - The data set (in example_data())
+# - The number of bootstrap iterations (n.boot)
+# - The number of repeated calculations for the uncertainty estimation (n.rep)
 # ******************************************************************************
 
 rm(list = ls())
