@@ -1,4 +1,4 @@
-plot_loa <- function (data, floa.point, floa.roislien, floa.boot, ylim) {
+plot_loa <- function (data, floa.point, floa.roislien, floa.boot.rep, floa.boot.iid, ylim) {
 
   # Plots the limits across the respective methods against all difference curves
   # in the data set
@@ -13,7 +13,8 @@ plot_loa <- function (data, floa.point, floa.roislien, floa.boot, ylim) {
 
   floa.point <- data.frame(t(floa.point))
   floa.roislien <- data.frame(t(floa.roislien))
-  floa.boot <- data.frame(t(floa.boot))
+  floa.boot.rep <- data.frame(t(floa.boot.rep))
+  floa.boot.iid <- data.frame(t(floa.boot.iid))
 
   # Difference curves -------------------------------------------------
   device1 <- subset(data, device == "IMU", select = value)
@@ -39,13 +40,25 @@ plot_loa <- function (data, floa.point, floa.roislien, floa.boot, ylim) {
               alpha = 0.1) +
     scale_color_grey(start = 0.8, end = 0.2) +
     # Plot lower limit of agreement
-    geom_line(data = floa.boot,
+    geom_line(data = floa.boot.iid,
               aes(x = seq(0, 100), y = upper.loa, col = "red", group = 1),
               linetype = "solid",
               size = 1.2,
-              colour = "royalblue1", # #D55E00 # royalblue1 # deeppink
+              colour = "#E69F00",
               alpha = 0.8) +
-    geom_line(data = floa.boot,
+    geom_line(data = floa.boot.iid,
+              aes(x = seq(0, 100), y = lower.loa, col = "red", group = 1),
+              linetype = "solid",
+              size = 1.2,
+              colour = "#E69F00",
+              alpha = 0.9) +
+    geom_line(data = floa.boot.rep,
+              aes(x = seq(0, 100), y = upper.loa, col = "red", group = 1),
+              linetype = "solid",
+              size = 1.2,
+              colour = "royalblue1",
+              alpha = 0.8) +
+    geom_line(data = floa.boot.rep,
               aes(x = seq(0, 100), y = lower.loa, col = "red", group = 1),
               linetype = "solid",
               size = 1.2,
@@ -55,19 +68,19 @@ plot_loa <- function (data, floa.point, floa.roislien, floa.boot, ylim) {
               aes(x = seq(0, 100), y = upper.loa),
               linetype = "solid",
               size = 1.2,
-              colour = "deeppink", # #56B4E9
+              colour = "deeppink",
               alpha = 1) +
     geom_line(data = floa.roislien,
               aes(x = seq(0, 100), y = lower.loa),
               linetype = "solid",
               size = 1.2,
-              colour = "deeppink", # gold # #56B4E9
+              colour = "deeppink",
               alpha = 1) +
     geom_line(data = floa.point,
               aes(x = seq(0, 100), y = upper.loa),
               linetype = "dotted",
               size = 1.2,
-              colour = "grey10", # #009E73
+              colour = "grey10",
               alpha = 0.8) +
     geom_line(data = floa.point,
               aes(x = seq(0, 100), y = lower.loa),
