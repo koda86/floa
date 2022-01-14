@@ -13,6 +13,9 @@
 # for the construction of continuous prediction intervals in method comparisons.
 # DOI: ...
 #
+# IMPORTANT: Currently, the script is designed for balanced data sets. Unbalanced
+# designs (unequal number of observations) may lead to errors!
+#
 # Variables that should be adjusted before running the script:
 # - The data and script directories ('dir.data', 'dir.script')
 # - The data set (in example_data())
@@ -53,7 +56,7 @@ source("estimate_uncertainty_loa.R")
 # - Data with non-gaussian (Weibull distributed) error: "non_gaussian"
 # - Phase shifted data (x-axis direction): "shift"
 # - Real world empirical validation data: "imu_mc"
-data <- example_data(dat = "imu_mc", dir.data)
+data <- example_data(dat = "smooth_realistic", dir.data)
 
 
 # ------------------------------------------------------------------------------
