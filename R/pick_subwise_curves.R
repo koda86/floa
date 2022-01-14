@@ -7,7 +7,9 @@ pick_subwise_curves <- function (data) {
   n.subj <- length(unique(data$subjectID))
 
   curve.idx <- c()
+
   for (subj.idx in 1:n.subj) {
+
     if (subj.idx %in% unique(data$subjectID)) {
       tmp <- data[data$subjectID == subj.idx, ]
 
