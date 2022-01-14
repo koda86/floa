@@ -1,7 +1,8 @@
 example_data <- function(dat, dir.data) {
 
-  # Select a data set
-  # Actual data preparation in script 'simulate_data.R'
+  # ****************************************************************************
+  # Select one of the data sets prepared in 'simulate_data.R'
+  # ****************************************************************************
 
   if (dat == "imu_mc") {
     data <- readRDS(paste0(dir.data, "/", "imu_mc.rds"))
