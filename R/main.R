@@ -59,6 +59,7 @@ source("estimate_uncertainty_loa.R")
 data <- example_data(dat = "smooth_realistic", dir.data)
 
 
+
 # ------------------------------------------------------------------------------
 # Plot prediction bands from four methods
 # ------------------------------------------------------------------------------
