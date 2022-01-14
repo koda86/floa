@@ -1,5 +1,8 @@
 # floa
 
+### Author
+Daniel Koska https://github.com/koda86/
+
 ### Citing
 If you make use of any of these datasets, tools, or examples in a scientific publication, please consider citing astroML. You may reference the following paper:
 
