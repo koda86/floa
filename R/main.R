@@ -53,7 +53,7 @@ source("estimate_uncertainty_loa.R")
 # Wrapper function for example data sets. Function arguments:
 #
 # - Smooth wave data (normal error): "smooth_realistic"
-# - Data with non-gaussian (Weibull distributed) error: "non_gaussian"
+# - Data with non-gaussian error: "non_gaussian"
 # - Phase shifted data (x-axis direction): "shift"
 # - Real world empirical validation data: "imu_mc"
 data <- example_data(dat = "smooth_realistic", dir.data)
