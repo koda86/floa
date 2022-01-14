@@ -1,23 +1,24 @@
 get_coverage_singlecurve_fraction <- function (curve, floa) {
-  # Curve is a numerical vector
-  # floa is a "matrix" "array" containing "lower" and "upper" limits
 
-  # Calculate coverage (curve points within the percentile boundaries)
+  # ****************************************************************************
+  # Calculate coverage (points of a single curve within the band limits)
   # ----------------------------------------------------------------------------
-  lwr.bnd <- floa["lower.loa", ] # grep("low", rownames(floa))
-  upr.bnd <- floa["upper.loa", ] # grep("up", rownames(floa))
+  #
+  # 'curve' is a (single curve) numerical vector
+  # 'floa' is a "matrix" "array" containing "lower" and "upper" limits
+  # ****************************************************************************
+
+  lwr.limit <- floa["lower.loa", ]
+  upr.limit <- floa["upper.loa", ]
 
   outside <- 0
 
   # Compare difference curves with upper and lower boundaries
-  below.thresh <- curve < lwr.bnd
-  above.thresh <- curve > upr.bnd
+  below.thresh <- curve < lwr.limit
+  above.thresh <- curve > upr.limit
 
   points.outside <- sum(above.thresh) + sum(below.thresh)
 
-  # Divide by 101 to adjust for 101 data points
-  coverage <- 1 - (points.outside / 101)
+  coverage <- 1 - (points.outside / length(curve))
   coverage <- round(coverage, digits = 2)
-
-  return(coverage)
 }
