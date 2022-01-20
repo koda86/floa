@@ -6,8 +6,6 @@ https://github.com/koda86/floa
 
 This repository accompanies this publication: DOI
 
-Please cite: Koska, D., Oriwol, D. & Maiwald, C. (2022) Methodische Aspekte der Konstruktion von Pradiktionsbändern in Methodenvergleiche.
-
 
 The paper presents for three methods for constructing continuous prediction intervals (bands):
 
@@ -35,6 +33,7 @@ Two different paths have to be specified:
 - n.boot: The number of bootstrap iterations (default = 400)
 - n.rep: The number of repeated calculations in the uncertainty estimation (default = 100)
 
+
 #### Data sets
 
 Data sets are generated in 'simulate_data.R' and stored in .../R/examples. Data sets are selected/loaded in 'examples.R'. 
@@ -53,7 +52,6 @@ Each file contains long data format with 6 columns: row numer, "device", "subjec
 
 
 ### Flowchart
-
 
 ```{=html}
 <div id="htmlwidget-f84af788624b61ab0729" style="width:672px;height:480px;" class="grViz html-widget"></div>
