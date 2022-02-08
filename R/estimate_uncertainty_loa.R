@@ -137,6 +137,9 @@ estimate_uncertainty_loa <- function (data, n.rep, n.boot) {
                     ymax = floa.boot.iid.lower.97.5),
                 fill = "#E69F00",
                 alpha = 0.5) +
+    geom_line(data = device.diff,
+              aes(group = strideID),
+              alpha = 0.15) +
     theme_minimal() +
     theme(axis.text.x = element_text(size = 15),
           axis.title.x = element_text(size = 17),
@@ -148,6 +151,9 @@ estimate_uncertainty_loa <- function (data, n.rep, n.boot) {
 
 
   PLOT.BOOTrep <- ggplot(data = device.diff, aes(x = frame, y = value)) +
+    geom_line(data = device.diff,
+              aes(group = strideID),
+              alpha = 0.05) +
     geom_ribbon(aes(ymin = floa.boot.rep.upper.2.5,
                     ymax = floa.boot.rep.upper.97.5),
                 fill = "royalblue1",
@@ -156,6 +162,9 @@ estimate_uncertainty_loa <- function (data, n.rep, n.boot) {
                     ymax = floa.boot.rep.lower.97.5),
                 fill = "royalblue1",
                 alpha = 0.5) +
+    geom_line(data = device.diff,
+              aes(group = strideID),
+              alpha = 0.15) +
     theme_minimal() +
     theme(axis.text.x = element_text(size = 15),
           axis.title.x = element_text(size = 17),
@@ -167,6 +176,9 @@ estimate_uncertainty_loa <- function (data, n.rep, n.boot) {
 
 
   PLOT.POINT <- ggplot(data = device.diff, aes(x = frame, y = value)) +
+    geom_line(data = device.diff,
+              aes(group = strideID),
+              alpha = 0.05) +
     geom_line(data = floa.point,
               aes(x = seq(0, 100), y = upper.loa),
               linetype = "dotted",
@@ -175,6 +187,9 @@ estimate_uncertainty_loa <- function (data, n.rep, n.boot) {
               aes(x = seq(0, 100), y = lower.loa),
               linetype = "dotted",
               size = 1) +
+    geom_line(data = device.diff,
+              aes(group = strideID),
+              alpha = 0.15) +
     theme_minimal() +
     theme(axis.text.x = element_text(size = 15),
           axis.title.x = element_text(size = 17),
@@ -186,6 +201,9 @@ estimate_uncertainty_loa <- function (data, n.rep, n.boot) {
 
 
   PLOT.ROISLIEN <- ggplot(data = device.diff, aes(x = frame, y = value)) +
+    geom_line(data = device.diff,
+              aes(group = strideID),
+              alpha = 0.05) +
     geom_ribbon(aes(ymin = floa.roislien.upper.2.5,
                     ymax = floa.roislien.upper.97.5),
                 fill = "deeppink",
@@ -194,6 +212,9 @@ estimate_uncertainty_loa <- function (data, n.rep, n.boot) {
                     ymax = floa.roislien.lower.97.5),
                 fill = "deeppink",
                 alpha = 0.5) +
+    geom_line(data = device.diff,
+              aes(group = strideID),
+              alpha = 0.15) +
     theme_minimal() +
     theme(axis.text.x = element_text(size = 15),
           axis.title.x = element_text(size = 17),
