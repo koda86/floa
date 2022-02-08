@@ -87,7 +87,8 @@ estimate_uncertainty_loa <- function (data, n.rep, n.boot) {
   # ----------------------------------------------------------------------------
   # Plot uncertainty areas
   # ----------------------------------------------------------------------------
-  # Prepare data for ggploting
+
+  # Prepare data for ggploting -------------------------------------------------
   device1 <- data.frame(subset(data, device == "IMU")$value)
   device2 <- data.frame(subset(data, device == "MC")$value)
   device.diff <- device1 - device2
@@ -122,13 +123,12 @@ estimate_uncertainty_loa <- function (data, n.rep, n.boot) {
   device.diff$floa.point.lower.2.5 <- rep(pi95$floa.point.lower.2.5, length.out = nrow(device.diff))
   device.diff$floa.point.lower.97.5 <- rep(pi95$floa.point.lower.97.5, length.out = nrow(device.diff))
 
+  # Plot Matrix ----------------------------------------------------------------
+
   # For line graphs, the data points must be grouped so that it knows which points to connect.
   # In this case, it is simple -- all points should be connected, so group=1.
   # When more variables are used and multiple lines are drawn, the grouping for lines is usually done by variable.
-  PLOT.DIFF <- ggplot(data = device.diff, aes(x = frame, y = value)) +
-    # geom_line(data = device.diff,
-    #           aes(group = strideID),
-    #           alpha = 0.05) +
+  PLOT.BOOTiid <- ggplot(data = device.diff, aes(x = frame, y = value)) +
     geom_ribbon(aes(ymin = floa.boot.iid.upper.2.5,
                     ymax = floa.boot.iid.upper.97.5),
                 fill = "#E69F00",
@@ -137,14 +137,36 @@ estimate_uncertainty_loa <- function (data, n.rep, n.boot) {
                     ymax = floa.boot.iid.lower.97.5),
                 fill = "#E69F00",
                 alpha = 0.5) +
+    theme_minimal() +
+    theme(axis.text.x = element_text(size = 15),
+          axis.title.x = element_text(size = 17),
+          axis.text.y = element_text(size = 15),
+          axis.title.y = element_text(size = 17),
+          legend.position = "none") +
+    ylim(-5, 5) +
+    labs(x = "Time-normalized signal [%]", y = "Difference")
+
+
+  PLOT.BOOTrep <- ggplot(data = device.diff, aes(x = frame, y = value)) +
     geom_ribbon(aes(ymin = floa.boot.rep.upper.2.5,
-                  ymax = floa.boot.rep.upper.97.5),
-              fill = "royalblue1",
-              alpha = 0.5) +
+                    ymax = floa.boot.rep.upper.97.5),
+                fill = "royalblue1",
+                alpha = 0.5) +
     geom_ribbon(aes(ymin = floa.boot.rep.lower.2.5,
                     ymax = floa.boot.rep.lower.97.5),
                 fill = "royalblue1",
                 alpha = 0.5) +
+    theme_minimal() +
+    theme(axis.text.x = element_text(size = 15),
+          axis.title.x = element_text(size = 17),
+          axis.text.y = element_text(size = 15),
+          axis.title.y = element_text(size = 17),
+          legend.position = "none") +
+    ylim(-5, 5) +
+    labs(x = "Time-normalized signal [%]", y = "Difference")
+
+
+  PLOT.POINT <- ggplot(data = device.diff, aes(x = frame, y = value)) +
     geom_line(data = floa.point,
               aes(x = seq(0, 100), y = upper.loa),
               linetype = "dotted",
@@ -153,6 +175,17 @@ estimate_uncertainty_loa <- function (data, n.rep, n.boot) {
               aes(x = seq(0, 100), y = lower.loa),
               linetype = "dotted",
               size = 1) +
+    theme_minimal() +
+    theme(axis.text.x = element_text(size = 15),
+          axis.title.x = element_text(size = 17),
+          axis.text.y = element_text(size = 15),
+          axis.title.y = element_text(size = 17),
+          legend.position = "none") +
+    ylim(-5, 5) +
+    labs(x = "Time-normalized signal [%]", y = "Difference")
+
+
+  PLOT.ROISLIEN <- ggplot(data = device.diff, aes(x = frame, y = value)) +
     geom_ribbon(aes(ymin = floa.roislien.upper.2.5,
                     ymax = floa.roislien.upper.97.5),
                 fill = "deeppink",
@@ -167,13 +200,71 @@ estimate_uncertainty_loa <- function (data, n.rep, n.boot) {
           axis.text.y = element_text(size = 15),
           axis.title.y = element_text(size = 17),
           legend.position = "none") +
-    ylim(-7, 7) +
+    ylim(-5, 5) +
     labs(x = "Time-normalized signal [%]", y = "Difference")
 
-  PLOT.DIFF
 
-  # ggsave("~/Nextcloud/project-fab-forschung/Publikationen/FLOA/tex/Grafiken/uncertainty_estimation.png", device = "png", dpi = 300)
+  PLOT <- ggpubr::ggarrange(PLOT.BOOTiid, PLOT.BOOTrep, PLOT.POINT, PLOT.ROISLIEN,
+                            labels = c("A", "B", "C", "D"),
+                            ncol = 2,
+                            nrow = 2)
 
+  PLOT
+
+  ggsave("~/Nextcloud/project-fab-forschung/Publikationen/FLOA/tex/Grafiken/uncertainty_estimation_matrix.png", device = "png", dpi = 300)
+
+
+  # # Plot all in one ------------------------------------------------------------
+  #
+  # # For line graphs, the data points must be grouped so that it knows which points to connect.
+  # # In this case, it is simple -- all points should be connected, so group=1.
+  # # When more variables are used and multiple lines are drawn, the grouping for lines is usually done by variable.
+  # PLOT.DIFF <- ggplot(data = device.diff, aes(x = frame, y = value)) +
+  #   # geom_line(data = device.diff,
+  #   #           aes(group = strideID),
+  #   #           alpha = 0.05) +
+  #   geom_ribbon(aes(ymin = floa.boot.iid.upper.2.5,
+  #                   ymax = floa.boot.iid.upper.97.5),
+  #               fill = "#E69F00",
+  #               alpha = 0.5) +
+  #   geom_ribbon(aes(ymin = floa.boot.iid.lower.2.5,
+  #                   ymax = floa.boot.iid.lower.97.5),
+  #               fill = "#E69F00",
+  #               alpha = 0.5) +
+  #   geom_ribbon(aes(ymin = floa.boot.rep.upper.2.5,
+  #                 ymax = floa.boot.rep.upper.97.5),
+  #             fill = "royalblue1",
+  #             alpha = 0.5) +
+  #   geom_ribbon(aes(ymin = floa.boot.rep.lower.2.5,
+  #                   ymax = floa.boot.rep.lower.97.5),
+  #               fill = "royalblue1",
+  #               alpha = 0.5) +
+  #   geom_line(data = floa.point,
+  #             aes(x = seq(0, 100), y = upper.loa),
+  #             linetype = "dotted",
+  #             size = 1) +
+  #   geom_line(data = floa.point,
+  #             aes(x = seq(0, 100), y = lower.loa),
+  #             linetype = "dotted",
+  #             size = 1) +
+  #   geom_ribbon(aes(ymin = floa.roislien.upper.2.5,
+  #                   ymax = floa.roislien.upper.97.5),
+  #               fill = "deeppink",
+  #               alpha = 0.5) +
+  #   geom_ribbon(aes(ymin = floa.roislien.lower.2.5,
+  #                   ymax = floa.roislien.lower.97.5),
+  #               fill = "deeppink",
+  #               alpha = 0.5) +
+  #   theme_minimal() +
+  #   theme(axis.text.x = element_text(size = 15),
+  #         axis.title.x = element_text(size = 17),
+  #         axis.text.y = element_text(size = 15),
+  #         axis.title.y = element_text(size = 17),
+  #         legend.position = "none") +
+  #   ylim(-7, 7) +
+  #   labs(x = "Time-normalized signal [%]", y = "Difference")
+  #
+  # PLOT.DIFF
 
 
   # ----------------------------------------------------------------------------
