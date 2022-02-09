@@ -14,7 +14,8 @@ The paper presents for three methods for constructing continuous prediction inte
 - BOOT: Bootstrapped functional prediction bands (Lenhoff et al., 1999; Olshen, Biden, Wyatt, & Sutherland, 1989; Sutherland et al., 1988)
 
 
-### Structure
+
+### How to run the sript
 
 The parent script is 'main.R'. Here, all subscripts are loaded and called.
 
