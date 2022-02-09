@@ -6,21 +6,21 @@
 # Date: December 2021
 # R version: 4.0.5
 # Platform: x86_64-pc-linux-gnu
-#
+# ------------------------------------------------------------------------------
 # This script accompanies the publication:
 
-# Please cite: Koska, D., Oriwol, D. & Maiwald, C. (2022) Methodological aspects
-# for the construction of continuous prediction intervals in method comparisons.
-# DOI: ...
+# Please cite: ...
+#
+#
+# Values of 4 variables should be set/initialized before running the script:
+# 1. The data and script directories ('dir.data', 'dir.script')
+# 2. The example data set (in example_data())
+# 3. The number of bootstrap iterations (n.boot)
+# 4. The number of repeated calculations for the uncertainty estimation (n.rep)
+#
 #
 # IMPORTANT: Currently, the script is designed for balanced data sets. Unbalanced
 # designs (unequal number of observations) may lead to errors!
-#
-# Variables that should be adjusted before running the script:
-# - The data and script directories ('dir.data', 'dir.script')
-# - The data set (in example_data())
-# - The number of bootstrap iterations (n.boot)
-# - The number of repeated calculations for the uncertainty estimation (n.rep)
 # ******************************************************************************
 
 rm(list = ls())
@@ -48,9 +48,10 @@ source("estimate_uncertainty_loa.R")
 # Data sets
 # ------------------------------------------------------------------------------
 
-# Data sets originally created in 'simulate_data.R'
+# Wrapper function for example data sets (data sets were originally created in
+# 'simulate_data.R')
 #
-# Wrapper function for example data sets. Function arguments:
+# Function arguments:
 #
 # - Smooth wave data (normal error): "smooth_realistic"
 # - Data with non-gaussian error: "non_gaussian"
