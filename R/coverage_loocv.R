@@ -1,7 +1,7 @@
 coverage_loocv <- function (data, n.boot) {
 
   # ****************************************************************************
-  # Leave-one (curve) out method to estimate the uncertainty across methods
+  # Leave-one (curve) out method to estimate the coverage probability
   # ****************************************************************************
 
   # Convert continuous strideID to identical strideID's for repeated measures
