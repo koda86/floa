@@ -18,3 +18,4 @@ For a detailled description please see the markdown documentation file (floa_doc
 Please report software bugs or other problems by searching existing issues or creating a new issue [here](https://github.com/koda86/floa/issues).
 
 ### Licence
+BSD-2-Clause License
