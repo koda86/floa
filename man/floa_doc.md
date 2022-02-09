@@ -2,16 +2,14 @@
 
 https://github.com/koda86/floa
 
-**Author:** Daniel Koska
-
 This repository accompanies this publication: DOI
 
 
-The paper presents for three methods for constructing continuous prediction intervals (bands):
+The paper presents for three methods for constructing continuous prediction intervals:
 
-- POINT: Punktweise Limits of Agreement (Bland & Altman, 1999, 2007)
+- POINT: Pointwise Limits of Agreement by (Bland & Altman, 1999, 2007)
 
-- ROISLIEN: Limits of Agreement according to Røislien et al. (2012)
+- ROISLIEN: Functional/Pointwise Limits of Agreement (Røislien et al., 2012)
 
 - BOOT: Bootstrapped functional prediction bands (Lenhoff et al., 1999; Olshen, Biden, Wyatt, & Sutherland, 1989; Sutherland et al., 1988)
 
@@ -28,7 +26,10 @@ Two different paths have to be specified:
 - dir.script: Path to directory in which R scripts are stored.
 - dir.data <- Path to directory in which the example data sets are stored.
 
-+ **2. Function parameters:**
++ **2. Data set**
+Two different paths have to be specified:
+
++ **3. Function parameters:**
 
 - n.boot: The number of bootstrap iterations (default = 400)
 - n.rep: The number of repeated calculations in the uncertainty estimation (default = 100)
