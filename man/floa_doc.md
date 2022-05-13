@@ -30,23 +30,25 @@ Two different paths have to be specified:
 + **2. Data set**
 When using own data sets, the structure of the data set has to match the structure of the provided sample data sets.
 
-This structure consists of a long format data.frame with 6 columns:
+This structure consists of a long format data.frame with 5 columns:
 
 1. device (character, has to be named "ONE" and "TWO")
 2. subjectID (integer, 1 to number of subjects)
-3. strideID(integer, 1 to number strides, should be balanced between measurement systems)
+3. strideID (integer, 1 to number strides, should be balanced between measurement systems)
+4. value (numeric, actual measurement data)
+5. frame (integer, e.g. 0 to 100, curves should have the same length)
 
 + **3. Function parameters:**
 
 - n.boot: The number of bootstrap iterations (default = 400)
-- n.rep: The number of repeated calculations in the uncertainty estimation (default = 100)
+(- n.rep: The number of repeated calculations in the uncertainty estimation (default = 100))
 
 
-#### Data sets
+#### Example data sets
 
-Data sets are generated in 'simulate_data.R' and stored in .../R/examples. Data sets are selected/loaded in 'examples.R'. 
+Data sets are generated in 'simulate_data.R' and stored in .../R/examples.
 
-Contains 4 data sets (3 synthetic and 1 real-world) given as both .txt (ASCII) or .rds (binary) files:
+Contains 4 data sets (3 synthetic and 1 real-world) given as both .txt (ASCII) and .rds (binary) files:
 
 - 'smooth_realistic': Simulated curves with Gaussian error model
 
@@ -56,13 +58,13 @@ Contains 4 data sets (3 synthetic and 1 real-world) given as both .txt (ASCII) o
 
 - 'imu_mc': Real-world hip joint angle curves
 
-Each file contains long data format with 6 columns: row numer, "device", "subjectID", "strideID", "value", "frame".
+Each file contains long format data with 5 columns ("device", "subjectID", "strideID", "value", "frame").
 
 
 
 #### Functions
 
-In main.R, three major functions are called:
+In main.R, the following functions are called:
 
 - plot_loa(): Returns a plot of (differently colored) prediction bands vs. the original difference curves.
 - coverage_loocv(): Leave-one (curve) out method to estimate the coverage probability
