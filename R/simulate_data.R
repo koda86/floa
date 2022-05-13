@@ -8,7 +8,6 @@
 #
 # Simulated data sets:
 #
-# 0. Real-world validation data: "imu_mc"
 # 1. Realistic smooth wave data (normal error, constant variance, no trend)
 # 2. Same model as in (1), but almost no variation in one of the devices: "smooth"
 # 3. Heteroscedastic error
@@ -18,33 +17,14 @@
 # 7. Shift data (data phase shifted (x-axis direction))
 ################################################################################
 
-# 0. Real-world validation data: "imu_mc" --------------------------------------
-# Prepare (balance) data for the main script
-imu.mc <- readRDS(paste0(dir.data, "/", "data.rds"))
-
-# Pick 10 random strides from each of the 11 subjects
-stride.idx <- imu.mc %>% dplyr:::group_by(subjectID) %>% dplyr::summarize(sample_n(data.frame(strideID), 10, replace = FALSE))
-stride.idx <- stride.idx$strideID
-stride.idx <- as.numeric(stride.idx)
-
-# Detect and change all duplicated strides
-double.idx <- which(duplicated(stride.idx))
-stride.idx[double.idx] <- double.idx + 1
-imu.mc.balanced <- imu.mc[imu.mc$strideID %in% stride.idx, ]
-
-if (sum(duplicated(stride.idx))) {
-  saveRDS(imu.mc.balanced, file = paste0("~/floa/R/examples/", "imu_mc.rds"))
-  # write.table(imu.mc.balanced, "~/floa/R/examples/imu_mc.txt", sep="\t")
-}
-
-
-
 n.subj <- 11
 n.strides <- 10
 n.devices <- 2
 n.frames <- 101
 
-# 1. Realistic smooth wave data (constant variance, no trend) ------------------
+# ------------------------------------------------------------------------------
+# 1. Realistic smooth wave data (constant variance, no trend)
+# ------------------------------------------------------------------------------
 set.seed(3)
 
 device <- c()
@@ -108,8 +88,11 @@ saveRDS(data, file = paste0("~/floa/R/examples/", "smooth_realistic.rds"))
 
 
 
-# 2. Smooth wave data (constant variance, no trend) with subjectwise bias ------
-# Same model as in (1), but almost no variation in one of the devices
+# ------------------------------------------------------------------------------
+# 2. Smooth wave data (constant variance, no trend) with subjectwise bias
+#
+# - Same model as in (1), but almost no variation in one of the devices
+# ------------------------------------------------------------------------------
 set.seed(3)
 
 device <- c()
@@ -176,7 +159,9 @@ saveRDS(data, file = paste0("~/floa/R/examples/", "smooth.rds"))
 
 
 
-# 3. Heteroscedasticity (no trend) ---------------------------------------------
+# ------------------------------------------------------------------------------
+# 3. Heteroscedasticity (no trend)
+# ------------------------------------------------------------------------------
 set.seed(2)
 
 device <- c()
@@ -243,7 +228,9 @@ saveRDS(data, file = paste0("~/floa/R/examples/", "heteroscedastic.rds"))
 
 
 
-# 4. Smooth wave data with nonlinear trend --------------------------------------
+# ------------------------------------------------------------------------------
+# 4. Smooth wave data with nonlinear trend
+# ------------------------------------------------------------------------------
 set.seed(3)
 
 device <- c()
@@ -310,7 +297,9 @@ saveRDS(data, file = paste0("~/floa/R/examples/", "smooth_trend.rds"))
 
 
 
-# 5. Non-gaussian (Weibull distributed) error (no trend) -----------------------
+# ------------------------------------------------------------------------------
+# 5. Non-gaussian (Weibull distributed) error (no trend)
+# ------------------------------------------------------------------------------
 set.seed(3)
 
 device <- c()
@@ -379,7 +368,9 @@ saveRDS(data, file = paste0("~/floa/R/examples/", "non_gaussian.rds"))
 
 
 
-# 6. Shock (spike) data --------------------------------------------------------
+# ------------------------------------------------------------------------------
+# 6. Shock (spike) data
+# ------------------------------------------------------------------------------
 set.seed(6)
 
 device <- c()
@@ -452,8 +443,11 @@ saveRDS(data, file = paste0("~/floa/R/examples/", "shock.rds"))
 
 
 
-# 7. Shift data ----------------------------------------------------------------
-# Inspired by the toy example from https://mjskay.github.io/ggdist/articles/lineribbon.html
+# ------------------------------------------------------------------------------
+# 7. Shift data
+# ------------------------------------------------------------------------------
+# Inspired by the toy example from:
+# https://mjskay.github.io/ggdist/articles/lineribbon.html
 set.seed(3)
 
 device <- c()
