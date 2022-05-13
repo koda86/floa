@@ -162,7 +162,8 @@ estimate_uncertainty_loa <- function (data, n.rep, n.boot) {
           axis.text.y = element_text(size = 15),
           axis.title.y = element_text(size = 17),
           legend.position = "none") +
-    ylim(-5, 5) +
+    ylim(-4, 4) +
+    # ylim(-5, 5) +
     labs(x = "Time-normalized signal [%]", y = "Difference")
 
 
@@ -187,7 +188,8 @@ estimate_uncertainty_loa <- function (data, n.rep, n.boot) {
           axis.text.y = element_text(size = 15),
           axis.title.y = element_text(size = 17),
           legend.position = "none") +
-    ylim(-5, 5) +
+    ylim(-4, 4) +
+    # ylim(-5, 5) +
     labs(x = "Time-normalized signal [%]", y = "Difference")
 
 
@@ -212,7 +214,8 @@ estimate_uncertainty_loa <- function (data, n.rep, n.boot) {
           axis.text.y = element_text(size = 15),
           axis.title.y = element_text(size = 17),
           legend.position = "none") +
-    ylim(-5, 5) +
+    ylim(-4, 4) +
+    # ylim(-5, 5) +
     labs(x = "Time-normalized signal [%]", y = "Difference")
 
   # Plot version with ribbon
@@ -262,7 +265,8 @@ estimate_uncertainty_loa <- function (data, n.rep, n.boot) {
           axis.text.y = element_text(size = 15),
           axis.title.y = element_text(size = 17),
           legend.position = "none") +
-    ylim(-5, 5) +
+    ylim(-4, 4) +
+    # ylim(-5, 5) +
     labs(x = "Time-normalized signal [%]", y = "Difference")
 
 
@@ -273,7 +277,7 @@ estimate_uncertainty_loa <- function (data, n.rep, n.boot) {
 
   PLOT
 
-  ggsave("~/Nextcloud/project-fab-forschung/Publikationen/FLOA/tex/Grafiken/uncertainty_estimation_matrix.png", device = "png", dpi = 300)
+  # ggsave("~/Nextcloud/project-fab-forschung/Publikationen/FLOA/tex/Grafiken/uncertainty_estimation_matrix.png", device = "png", dpi = 300)
 
 
   # # Plot all in one ------------------------------------------------------------
