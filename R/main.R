@@ -35,7 +35,6 @@ dir.data <- "~/floa/R/examples" # Directory in which the data are stored
 
 setwd(dir.script)
 
-source("example_data.R")
 source("pick_subwise_curves.R")
 source("floa_boot.R")
 source("floa_point.R")
@@ -47,7 +46,8 @@ source("coverage_curves.R")
 source("estimate_uncertainty_loa.R")
 
 # Load installed packages and install missing packages (automatically)
-packages = c("ggplot2",  # Packages needed for floa
+# Packages needed for floa
+packages = c("tidyverse",
              "reshape2",
              "matlab")
 

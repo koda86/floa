@@ -13,7 +13,7 @@ plot_loa <- function (data, floa.point, floa.roislien, floa.boot.rep, floa.boot.
   # ****************************************************************************
 
   # Prepare data for (gg)plotting
-  floa.point <- data.frame(t(floa.point))
+  floa.point    <- data.frame(t(floa.point))
   floa.roislien <- data.frame(t(floa.roislien))
   floa.boot.rep <- data.frame(t(floa.boot.rep))
   floa.boot.iid <- data.frame(t(floa.boot.iid))
@@ -27,16 +27,18 @@ plot_loa <- function (data, floa.point, floa.roislien, floa.boot.rep, floa.boot.
   # Difference curves
   # ----------------------------------------------------------------------------
 
-  device1 <- subset(data, device == "IMU", select = value)
-  device2 <- subset(data, device == "MC", select = value)
+  device1 <- subset(data, device == "TWO", select = value)
+  device2 <- subset(data, device == "ONE", select = value)
 
   device.diff <- device1 - device2
 
   colnames(device.diff)[1] <- "value"
 
   device.diff$frame <- seq(0, 100)
-  device.diff$strideID <- as.factor(rep(1:n.strides, each = n.frames))
-  device.diff$subjectID <- as.factor(rep(1:n.subjects, each = strides.per.subject * n.frames))
+  device.diff$strideID <- as.factor(rep(1:n.strides,
+                                        each = n.frames))
+  device.diff$subjectID <- as.factor(rep(1:n.subjects,
+                                         each = strides.per.subject * n.frames))
 
   # ----------------------------------------------------------------------------
   # Plot data

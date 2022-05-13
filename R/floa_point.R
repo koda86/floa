@@ -24,7 +24,7 @@ floa_point <- function(data) {
 
     # Prepare data for ANOVA
     data.by.frame.wide <- reshape2::dcast(data = data.by.frame, subjectID + strideID ~ device, value.var = "value")
-    data.by.frame.wide$device.diff <- data.by.frame.wide$IMU - data.by.frame.wide$MC
+    data.by.frame.wide$device.diff <- data.by.frame.wide$TWO - data.by.frame.wide$ONE
     data.by.frame.wide$subjectID <- as.factor(data.by.frame.wide$subjectID)
 
     LMEM.2 <- aov(device.diff ~ subjectID, data = data.by.frame.wide)

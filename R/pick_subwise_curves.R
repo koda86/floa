@@ -19,9 +19,9 @@ pick_subwise_curves <- function (data) {
   }
 
   curve <- data[data$strideID %in% curve.idx, ]
-  curve0 <- subset(curve, device  == "IMU")$value
+  curve0 <- subset(curve, device  == "TWO")$value
   curve0 <- matrix(curve0, ncol = length(curve0) / 100)
-  curve1 <- subset(curve, device  == "MC")$value
+  curve1 <- subset(curve, device  == "ONE")$value
   curve1 <- matrix(curve1, ncol = length(curve1) / 100)
 
   diff.curves <- curve0 - curve1

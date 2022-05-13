@@ -46,8 +46,8 @@ coverage_loocv <- function (data, n.boot) {
     # Get coverage for the left out (difference) curve -------------------
     data.subset <- subset(data, strideID == curve.idx)
 
-    device1     <- data.frame(subset(data.subset, device == "IMU"))
-    device2     <- data.frame(subset(data.subset, device == "MC"))
+    device1     <- data.frame(subset(data.subset, device == "TWO"))
+    device2     <- data.frame(subset(data.subset, device == "ONE"))
     device.diff <- device1$value - device2$value
 
     coverage.point[curve.idx]      <- points_within_limits(device.diff, floa.point)

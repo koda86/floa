@@ -89,8 +89,8 @@ estimate_uncertainty_loa <- function (data, n.rep, n.boot) {
   # ----------------------------------------------------------------------------
 
   # Prepare data for ggploting -------------------------------------------------
-  device1 <- data.frame(subset(data, device == "IMU")$value)
-  device2 <- data.frame(subset(data, device == "MC")$value)
+  device1 <- data.frame(subset(data, device == "TWO")$value)
+  device2 <- data.frame(subset(data, device == "ONE")$value)
   device.diff <- device1 - device2
   colnames(device.diff)[1] <- "value"
 
@@ -131,13 +131,13 @@ estimate_uncertainty_loa <- function (data, n.rep, n.boot) {
                                               length.out = nrow(device.diff))
   # POINT (based on confidence intervals around the band limits)
   device.diff$floa.point.upper.2.5     <- rep(pi95$floa.point.upper.2.5,
-                                          length.out = nrow(device.diff))
+                                              length.out = nrow(device.diff))
   device.diff$floa.point.upper.97.5    <- rep(pi95$floa.point.upper.97.5,
-                                           length.out = nrow(device.diff))
+                                              length.out = nrow(device.diff))
   device.diff$floa.point.lower.2.5     <- rep(pi95$floa.point.lower.2.5,
-                                          length.out = nrow(device.diff))
+                                              length.out = nrow(device.diff))
   device.diff$floa.point.lower.97.5    <- rep(pi95$floa.point.lower.97.5,
-                                           length.out = nrow(device.diff))
+                                              length.out = nrow(device.diff))
 
   # Plot Matrix ----------------------------------------------------------------
 
@@ -276,8 +276,6 @@ estimate_uncertainty_loa <- function (data, n.rep, n.boot) {
                             nrow = 2)
 
   PLOT
-
-  # ggsave("~/Nextcloud/project-fab-forschung/Publikationen/FLOA/tex/Grafiken/uncertainty_estimation_matrix.png", device = "png", dpi = 300)
 
 
   # # Plot all in one ------------------------------------------------------------
