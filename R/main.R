@@ -94,8 +94,8 @@ plot_loa(data, floa.point, floa.roislien, floa.boot.rep, floa.boot.iid, ylim = c
 
 # Percentage of covered points
 # 100% means that curve is fully contained within the band limits
-n.strides <- length(unique(data$strideID))
 # Order of output: POINT, ROISLIEN, BOOTrep, BOOTiid
+n.strides <- length(unique(data$strideID))
 cover.cross.fraction.singlecurve <- coverage_loocv(data, n.boot)
 
 # Proportion of bands that contain p.cover percent of the T=101 curve points
