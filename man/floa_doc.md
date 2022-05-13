@@ -5,7 +5,7 @@ https://github.com/koda86/floa
 This repository accompanies this publication: DOI
 
 
-The paper presents for three methods for constructing continuous prediction intervals:
+The paper compares three methods for constructing continuous prediction intervals:
 
 - POINT: Pointwise Limits of Agreement by (Bland & Altman, 1999, 2007)
 
@@ -19,16 +19,22 @@ The paper presents for three methods for constructing continuous prediction inte
 
 The parent script is 'main.R'. Here, all subscripts are loaded and called.
 
-In 'main.R' a couple of folder directories and function parameters have to be specified:
+To run 'main.R', a couple of folder directories and function parameters have to be specified:
 
 + **1. Working directories**
 Two different paths have to be specified:
 
-- dir.script: Path to directory in which R scripts are stored.
-- dir.data <- Path to directory in which the example data sets are stored.
+- dir.script: Path to directory in which the R scripts are stored.
+- dir.data  : Path to directory in which the data set is stored.
 
 + **2. Data set**
-Two different paths have to be specified:
+When using own data sets, the structure of the data set has to match the structure of the provided sample data sets.
+
+This structure consists of a long format data.frame with 6 columns:
+
+1. device (character, has to be named "ONE" and "TWO")
+2. subjectID (integer, 1 to number of subjects)
+3. strideID(integer, 1 to number strides, should be balanced between measurement systems)
 
 + **3. Function parameters:**
 
