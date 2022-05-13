@@ -19,18 +19,21 @@
 # 4. The number of repeated calculations for the uncertainty estimation (n.rep)
 #
 #
-# IMPORTANT: Currently, the script is designed for balanced data sets. Unbalanced
-# designs (unequal number of observations) may lead to errors!
+# IMPORTANT: Currently, the script is designed for balanced data sets.
+# Unbalanced designs (unequal number of observations) may lead to errors!
 # ******************************************************************************
 
 rm(list = ls())
 
-dir.script <- "~/floa/R"
-dir.data <- "~/floa/R/examples"
+# ------------------------------------------------------------------------------
+# Set up the R environment (working, directory, packages, scripts)
+# ------------------------------------------------------------------------------
+
+# Please specify the correct paths
+dir.script <- "~/floa/R"        # All R scripts of the package are stored here
+dir.data <- "~/floa/R/examples" # Directory in which the data are stored
 
 setwd(dir.script)
-
-library(ggplot2)
 
 source("example_data.R")
 source("pick_subwise_curves.R")
@@ -42,6 +45,22 @@ source("points_within_limits.R")
 source("coverage_loocv.R")
 source("coverage_curves.R")
 source("estimate_uncertainty_loa.R")
+
+# Load installed packages and install missing packages (automatically)
+packages = c("ggplot2",  # Packages needed for floa
+             "reshape2",
+             "matlab")
+
+package.setup <- lapply(
+  packages,
+  FUN = function(x) {
+    if (!require(x, character.only = TRUE)) {
+      install.packages(x, dependencies = TRUE)
+      library(x, character.only = TRUE)
+    }
+  }
+)
+
 
 
 # ------------------------------------------------------------------------------
@@ -84,12 +103,19 @@ floa.boot.iid  <- floa_boot(data,
                             alpha = 0.05,
                             iid = TRUE) # Draw only a single curve per subject
 
-plot_loa(data, floa.point, floa.roislien, floa.boot.rep, floa.boot.iid, ylim = c(-5, 5))
+# Plot prediction bands and difference curves
+# POINT (dotted), RØISLIEN (pink), BOOTrep (blue), BOOTiid (yellow)
+plot_loa(data,
+         floa.point,
+         floa.roislien,
+         floa.boot.rep,
+         floa.boot.iid,
+         ylim = c(-5, 5))
 
 
 
 # ------------------------------------------------------------------------------
-# Leave-one out cross validation to estimate coverage propoerties
+# Leave-one out cross validation to estimate coverage properties
 # ------------------------------------------------------------------------------
 
 # Percentage of covered points
