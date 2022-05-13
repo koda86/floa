@@ -60,14 +60,14 @@ for (subj.idx in 1:n.subj) {
     sine.3 <- a1.2 * sin(b1.2 * t) ^ (c + 3)
     sine.4 <- a2.2 * sin(b2.1 * t)
 
-    mc <- rnorm(1, offset.mean, 0.05) + sine.1 + sine.2
-    imu <- rnorm(1, offset.mean, 0.05) + sine.3 + sine.4
+    one <- rnorm(1, offset.mean, 0.05) + sine.1 + sine.2
+    two <- rnorm(1, offset.mean, 0.05) + sine.3 + sine.4
 
-    value.subj <- c(value.subj, c(imu, mc))
+    value.subj <- c(value.subj, c(two, one))
 
-    device.imu <- rep("IMU", n.frames)
-    device.mc <- rep("MC", n.frames)
-    device.subj <- c(device.subj, c(device.imu, device.mc))
+    device.two <- rep("TWO", n.frames)
+    device.one <- rep("ONE", n.frames)
+    device.subj <- c(device.subj, c(device.two, device.one))
 
     subjectID.subj <- c(subjectID.subj, rep(subj.idx, 2 * n.frames))
   }
@@ -131,14 +131,14 @@ for (subj.idx in 1:n.subj) {
 
     offset <- rnorm(1, offset.mean, 0.05)
 
-    mc <- sine.1 + sine.2
-    imu <- offset + sine.3 + sine.4
+    one <- sine.1 + sine.2
+    two <- offset + sine.3 + sine.4
 
-    value.subj <- c(value.subj, c(imu, mc))
+    value.subj <- c(value.subj, c(two, one))
 
-    device.imu <- rep("IMU", n.frames)
-    device.mc <- rep("MC", n.frames)
-    device.subj <- c(device.subj, c(device.imu, device.mc))
+    device.two <- rep("TWO", n.frames)
+    device.one <- rep("ONE", n.frames)
+    device.subj <- c(device.subj, c(device.two, device.one))
 
     subjectID.subj <- c(subjectID.subj, rep(subj.idx, 2 * n.frames))
   }
@@ -200,14 +200,14 @@ for (subj.idx in 1:n.subj) {
 
     offset <- rnorm(1, offset.mean, 0.05)
 
-    mc <- sine.1 + sine.2
-    imu <- offset + sine.3 + sine.4
+    one <- sine.1 + sine.2
+    two <- offset + sine.3 + sine.4
 
-    value.subj <- c(value.subj, c(imu, mc))
+    value.subj <- c(value.subj, c(two, one))
 
-    device.imu <- rep("IMU", n.frames)
-    device.mc <- rep("MC", n.frames)
-    device.subj <- c(device.subj, c(device.imu, device.mc))
+    device.two <- rep("TWO", n.frames)
+    device.one <- rep("ONE", n.frames)
+    device.subj <- c(device.subj, c(device.two, device.one))
 
     subjectID.subj <- c(subjectID.subj, rep(subj.idx, 2 * n.frames))
   }
@@ -269,14 +269,14 @@ for (subj.idx in 1:n.subj) {
     # Create nonlinear trend
     trend <- (1/100000) * seq(0.5, 50.5, 0.5) ^ 3
 
-    mc <- rnorm(1, offset.mean, 0.05) + sine.1 + sine.2
-    imu <- rnorm(1, offset.mean, 0.05) + sine.3 + sine.4 + trend
+    one <- rnorm(1, offset.mean, 0.05) + sine.1 + sine.2
+    two <- rnorm(1, offset.mean, 0.05) + sine.3 + sine.4 + trend
 
-    value.subj <- c(value.subj, c(imu, mc))
+    value.subj <- c(value.subj, c(two, one))
 
-    device.imu <- rep("IMU", n.frames)
-    device.mc <- rep("MC", n.frames)
-    device.subj <- c(device.subj, c(device.imu, device.mc))
+    device.two <- rep("TWO", n.frames)
+    device.one <- rep("ONE", n.frames)
+    device.subj <- c(device.subj, c(device.two, device.one))
 
     subjectID.subj <- c(subjectID.subj, rep(subj.idx, 2 * n.frames))
   }
@@ -340,14 +340,14 @@ for (subj.idx in 1:n.subj) {
 
     offset <- rnorm(1, offset.mean, 0.05)
 
-    mc <- rnorm(1, offset.mean, 0.05) + sine.1 + sine.2
-    imu <- rnorm(1, offset.mean, 0.05) + sine.3 + sine.4
+    one <- rnorm(1, offset.mean, 0.05) + sine.1 + sine.2
+    two <- rnorm(1, offset.mean, 0.05) + sine.3 + sine.4
 
-    value.subj <- c(value.subj, c(imu, mc))
+    value.subj <- c(value.subj, c(two, one))
 
-    device.imu <- rep("IMU", n.frames)
-    device.mc <- rep("MC", n.frames)
-    device.subj <- c(device.subj, c(device.imu, device.mc))
+    device.two <- rep("TWO", n.frames)
+    device.one <- rep("ONE", n.frames)
+    device.subj <- c(device.subj, c(device.two, device.one))
 
     subjectID.subj <- c(subjectID.subj, rep(subj.idx, 2 * n.frames))
   }
@@ -408,21 +408,21 @@ for (subj.idx in 1:n.subj) {
 
     offset <- rnorm(1, offset.mean, 0.01)
 
-    mc <- sine.1 + sine.2
-    imu <- sine.3 + sine.4 + offset
+    one <- sine.1 + sine.2
+    two <- sine.3 + sine.4 + offset
 
     # Add shock to the curves of a subject
     spike.idx <- round(runif(1, min = 6, max = 7))
-    # spike.idx.mc <- round(runif(1, min = 5, max = 7))
+    # spike.idx.one <- round(runif(1, min = 5, max = 7))
 
-    imu[spike.idx] <- abs(imu[spike.idx] + abs(rnorm(1, mean = 0, sd = 0.1)))
-    mc[spike.idx] <- abs(mc[spike.idx] + abs(rnorm(1, mean = 0.02, sd = 0.7)))
+    two[spike.idx] <- abs(two[spike.idx] + abs(rnorm(1, mean = 0, sd = 0.1)))
+    one[spike.idx] <- abs(one[spike.idx] + abs(rnorm(1, mean = 0.02, sd = 0.7)))
 
-    value.subj <- c(value.subj, c(imu, mc))
+    value.subj <- c(value.subj, c(two, one))
 
-    device.imu <- rep("IMU", n.frames)
-    device.mc <- rep("MC", n.frames)
-    device.subj <- c(device.subj, c(device.imu, device.mc))
+    device.two <- rep("TWO", n.frames)
+    device.one <- rep("ONE", n.frames)
+    device.subj <- c(device.subj, c(device.two, device.one))
 
     subjectID.subj <- c(subjectID.subj, rep(subj.idx, 2 * n.frames))
   }
@@ -485,14 +485,14 @@ for (subj.idx in 1:n.subj) {
     sine.3 <- a1.2 * sin(b1.2 * t + x.offset) ^ (c + 3)
     sine.4 <- a2.2 * sin(b2.1 * t)
 
-    mc <- x.offset + sine.1 + sine.2
-    imu <- x.offset + sine.3 + sine.4
+    one <- x.offset + sine.1 + sine.2
+    two <- x.offset + sine.3 + sine.4
 
-    value.subj <- c(value.subj, c(imu, mc))
+    value.subj <- c(value.subj, c(two, one))
 
-    device.imu <- rep("IMU", n.frames)
-    device.mc <- rep("MC", n.frames)
-    device.subj <- c(device.subj, c(device.imu, device.mc))
+    device.two <- rep("TWO", n.frames)
+    device.one <- rep("ONE", n.frames)
+    device.subj <- c(device.subj, c(device.two, device.one))
 
     subjectID.subj <- c(subjectID.subj, rep(subj.idx, 2 * n.frames))
   }
