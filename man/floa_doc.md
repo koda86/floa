@@ -15,7 +15,7 @@ The paper presents for three methods for constructing continuous prediction inte
 
 
 
-### How to run the sript
+### Script structure
 
 The parent script is 'main.R'. Here, all subscripts are loaded and called.
 
@@ -53,9 +53,20 @@ Contains 4 data sets (3 synthetic and 1 real-world) given as both .txt (ASCII) o
 Each file contains long data format with 6 columns: row numer, "device", "subjectID", "strideID", "value", "frame".
 
 
+
+#### Functions
+
+In main.R, three major functions are called:
+
+- plot_loa(): Returns a plot of (differently colored) prediction bands vs. the original difference curves.
+- coverage_loocv(): Leave-one (curve) out method to estimate the coverage probability
+- estimate_uncertainty_loa(): Estimates the uncertainty in different methods across 'n.rep' repeated calculations
+
+<!---
 ### Flowchart
 
 ```{=html}
 <div id="htmlwidget-f84af788624b61ab0729" style="width:672px;height:480px;" class="grViz html-widget"></div>
 <script type="application/json" data-for="htmlwidget-f84af788624b61ab0729">{"x":{"diagram":"digraph flowchart {\n\n      # node definitions with substituted label text\n      node [fontname = Helvetica, shape = rectangle]\n      \n      tab1 [label = \"Time normalize curves of IMU - MC\"]\n      tab2 [label = \"Create difference curves IMU - MC\"]\n      tab3 [label = \"Convert difference curves to function data objects using Fourier series\"]\n      tab4 [label = \"floa_rcb \"]\n      tab5 [label = \"FLOAboot_2SD \"]\n      tab6 [label = \"floa_point\"]\n      tab7 [label = \"First stage:\n draw_clusters\n All strides from 11 subjects (randomly permuted)\n are drawn with replacement\"]\n      tab8 [label = \"Functional mean for each cluster\"]\n      tab9 [label = \"Second stage:\n Repeat the first stage 1000 times\"]\n      tab10 [label = \"Quantile\"]\n\n      # edge definitions with the node IDs\n      tab1 -> tab2\n      tab2 -> tab3\n      tab3 -> tab4\n      tab3 -> tab5\n      tab3 -> tab6\n      tab4 -> tab7\n      tab7 -> tab8\n      tab8 -> tab9\n      tab9 -> tab10\n      }","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
 ```
+--->
