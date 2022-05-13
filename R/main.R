@@ -67,16 +67,15 @@ package.setup <- lapply(
 # Data sets
 # ------------------------------------------------------------------------------
 
-# Wrapper function for example data sets (data sets were originally created in
-# 'simulate_data.R')
+# Specify the name of your data object (data sets in the paper were created in
+# 'simulate_data.R'). Own data sets need to have the same structure as those
+# (long format data.frame with 6 columns: device, subjectID, strideID, value, frame).
 #
-# Function arguments:
-#
-# - Smooth wave data (normal error): "smooth_realistic"
-# - Data with non-gaussian error: "non_gaussian"
+# - Smooth wave data (normal error):       "smooth_realistic"
+# - Data with non-gaussian error:          "non_gaussian"
 # - Phase shifted data (x-axis direction): "shift"
-# - Real world empirical validation data: "imu_mc"
-data <- example_data(dat = "smooth_realistic", dir.data)
+# - Real world empirical validation data:  "imu_mc"
+data <- readRDS(paste0(dir.data, "/", "smooth_realistic.rds"))
 
 
 
@@ -106,10 +105,7 @@ floa.boot.iid  <- floa_boot(data,
 # Plot prediction bands and difference curves
 # POINT (dotted), RØISLIEN (pink), BOOTrep (blue), BOOTiid (yellow)
 plot_loa(data,
-         floa.point,
-         floa.roislien,
-         floa.boot.rep,
-         floa.boot.iid,
+         floa.point, floa.roislien, floa.boot.rep, floa.boot.iid,
          ylim = c(-5, 5))
 
 
