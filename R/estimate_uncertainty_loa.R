@@ -103,25 +103,41 @@ estimate_uncertainty_loa <- function (data, n.rep, n.boot) {
   device.diff$subjectID <- as.factor(rep(1:n.subjects, each = strides.per.subject * n.frames))
 
   # ROISLIEN
-  device.diff$floa.roislien.upper.2.5 <- rep(pi95$floa.roislien.upper.2.5, length.out = nrow(device.diff))
-  device.diff$floa.roislien.upper.97.5 <- rep(pi95$floa.roislien.upper.97.5, length.out = nrow(device.diff))
-  device.diff$floa.roislien.lower.2.5 <- rep(pi95$floa.roislien.lower.2.5, length.out = nrow(device.diff))
-  device.diff$floa.roislien.lower.97.5 <- rep(pi95$floa.roislien.lower.97.5, length.out = nrow(device.diff))
+  device.diff$floa.roislien.upper.2.5  <- rep(pi95$floa.roislien.upper.2.5,
+                                             length.out = nrow(device.diff))
+  device.diff$floa.roislien.upper.97.5 <- rep(pi95$floa.roislien.upper.97.5,
+                                              length.out = nrow(device.diff))
+  device.diff$floa.roislien.lower.2.5  <- rep(pi95$floa.roislien.lower.2.5,
+                                             length.out = nrow(device.diff))
+  device.diff$floa.roislien.lower.97.5 <- rep(pi95$floa.roislien.lower.97.5,
+                                              length.out = nrow(device.diff))
   # BOOTrep
-  device.diff$floa.boot.rep.upper.2.5 <- rep(pi95$floa.boot.rep.upper.2.5, length.out = nrow(device.diff))
-  device.diff$floa.boot.rep.upper.97.5 <- rep(pi95$floa.boot.rep.upper.97.5, length.out = nrow(device.diff))
-  device.diff$floa.boot.rep.lower.2.5 <- rep(pi95$floa.boot.rep.lower.2.5, length.out = nrow(device.diff))
-  device.diff$floa.boot.rep.lower.97.5 <- rep(pi95$floa.boot.rep.lower.97.5, length.out = nrow(device.diff))
+  device.diff$floa.boot.rep.upper.2.5  <- rep(pi95$floa.boot.rep.upper.2.5,
+                                             length.out = nrow(device.diff))
+  device.diff$floa.boot.rep.upper.97.5 <- rep(pi95$floa.boot.rep.upper.97.5,
+                                              length.out = nrow(device.diff))
+  device.diff$floa.boot.rep.lower.2.5  <- rep(pi95$floa.boot.rep.lower.2.5,
+                                             length.out = nrow(device.diff))
+  device.diff$floa.boot.rep.lower.97.5 <- rep(pi95$floa.boot.rep.lower.97.5,
+                                              length.out = nrow(device.diff))
   # BOOTiid
-  device.diff$floa.boot.iid.upper.2.5 <- rep(pi95$floa.boot.iid.upper.2.5, length.out = nrow(device.diff))
-  device.diff$floa.boot.iid.upper.97.5 <- rep(pi95$floa.boot.iid.upper.97.5, length.out = nrow(device.diff))
-  device.diff$floa.boot.iid.lower.2.5 <- rep(pi95$floa.boot.iid.lower.2.5, length.out = nrow(device.diff))
-  device.diff$floa.boot.iid.lower.97.5 <- rep(pi95$floa.boot.iid.lower.97.5, length.out = nrow(device.diff))
+  device.diff$floa.boot.iid.upper.2.5  <- rep(pi95$floa.boot.iid.upper.2.5,
+                                             length.out = nrow(device.diff))
+  device.diff$floa.boot.iid.upper.97.5 <- rep(pi95$floa.boot.iid.upper.97.5,
+                                              length.out = nrow(device.diff))
+  device.diff$floa.boot.iid.lower.2.5  <- rep(pi95$floa.boot.iid.lower.2.5,
+                                             length.out = nrow(device.diff))
+  device.diff$floa.boot.iid.lower.97.5 <- rep(pi95$floa.boot.iid.lower.97.5,
+                                              length.out = nrow(device.diff))
   # POINT (based on confidence intervals around the band limits)
-  device.diff$floa.point.upper.2.5 <- rep(pi95$floa.point.upper.2.5, length.out = nrow(device.diff))
-  device.diff$floa.point.upper.97.5 <- rep(pi95$floa.point.upper.97.5, length.out = nrow(device.diff))
-  device.diff$floa.point.lower.2.5 <- rep(pi95$floa.point.lower.2.5, length.out = nrow(device.diff))
-  device.diff$floa.point.lower.97.5 <- rep(pi95$floa.point.lower.97.5, length.out = nrow(device.diff))
+  device.diff$floa.point.upper.2.5     <- rep(pi95$floa.point.upper.2.5,
+                                          length.out = nrow(device.diff))
+  device.diff$floa.point.upper.97.5    <- rep(pi95$floa.point.upper.97.5,
+                                           length.out = nrow(device.diff))
+  device.diff$floa.point.lower.2.5     <- rep(pi95$floa.point.lower.2.5,
+                                          length.out = nrow(device.diff))
+  device.diff$floa.point.lower.97.5    <- rep(pi95$floa.point.lower.97.5,
+                                           length.out = nrow(device.diff))
 
   # Plot Matrix ----------------------------------------------------------------
 
@@ -179,14 +195,14 @@ estimate_uncertainty_loa <- function (data, n.rep, n.boot) {
     geom_line(data = device.diff,
               aes(group = strideID),
               alpha = 0.05) +
-    geom_line(data = floa.point,
-              aes(x = seq(0, 100), y = upper.loa),
-              linetype = "dotted",
-              size = 1) +
-    geom_line(data = floa.point,
-              aes(x = seq(0, 100), y = lower.loa),
-              linetype = "dotted",
-              size = 1) +
+    geom_ribbon(aes(ymin = floa.point.upper.2.5,
+                    ymax = floa.point.upper.97.5),
+                fill = "grey50",
+                alpha = 0.5) +
+    geom_ribbon(aes(ymin = floa.point.lower.2.5,
+                    ymax = floa.point.lower.97.5),
+                fill = "grey50",
+                alpha = 0.5) +
     geom_line(data = device.diff,
               aes(group = strideID),
               alpha = 0.15) +
@@ -198,6 +214,31 @@ estimate_uncertainty_loa <- function (data, n.rep, n.boot) {
           legend.position = "none") +
     ylim(-5, 5) +
     labs(x = "Time-normalized signal [%]", y = "Difference")
+
+  # Plot version with ribbon
+  # PLOT.POINT <- ggplot(data = device.diff, aes(x = frame, y = value)) +
+  #   geom_line(data = device.diff,
+  #             aes(group = strideID),
+  #             alpha = 0.05) +
+  #   geom_line(data = floa.point,
+  #             aes(x = seq(0, 100), y = upper.loa),
+  #             linetype = "dotted",
+  #             size = 1) +
+  #   geom_line(data = floa.point,
+  #             aes(x = seq(0, 100), y = lower.loa),
+  #             linetype = "dotted",
+  #             size = 1) +
+  #   geom_line(data = device.diff,
+  #             aes(group = strideID),
+  #             alpha = 0.15) +
+  #   theme_minimal() +
+  #   theme(axis.text.x = element_text(size = 15),
+  #         axis.title.x = element_text(size = 17),
+  #         axis.text.y = element_text(size = 15),
+  #         axis.title.y = element_text(size = 17),
+  #         legend.position = "none") +
+  #   ylim(-5, 5) +
+  #   labs(x = "Time-normalized signal [%]", y = "Difference")
 
 
   PLOT.ROISLIEN <- ggplot(data = device.diff, aes(x = frame, y = value)) +
