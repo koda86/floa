@@ -1,6 +1,4 @@
-# floa
-
-**f**unctional **l**imits **o**f **a**greement
+# floa - **f**unctional **l**imits **o**f **a**greement
 
 This repository accompanies the publication: 
 
