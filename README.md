@@ -8,7 +8,7 @@ DOI
 
 In the paper, three methods for constructing continuous prediction intervals (bands) are compared.
 
----
+### Structure of the directory
 
 The corresponding code to reproduce the results of the paper or calculate and visualize prediction bands with any of the three methods can be found in the folder **floa/R**.
 
@@ -19,6 +19,9 @@ If you make use of any of the code or datasets, please cite the paper and/or the
 
 ### Issues
 Please report software bugs or other problems by searching existing issues or creating a new issue [here](https://github.com/koda86/floa/issues).
+
+### Contributing
+If you find issues and want to fix them yourself, please do, and submit a pull request so it can be reviewed and merged.
 
 ### Licence
 BSD-2-Clause License
