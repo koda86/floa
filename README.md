@@ -10,8 +10,6 @@ The main script and recommended starting point is 'main.R'. In 'main.R', 3 varia
   3. The number of bootstrap iterations (n.boot)
   (4. The number of repeated calculations for the uncertainty estimation (n.rep))
 
-If you intend to only use certain (sub)scripts, please make sure to provide the data format used in the main script (i.e. long data format).
-
 For a detailled description of the script please see the markdown documentation file (floa_doc.md) in /floa/man.
 
 ### Issues
