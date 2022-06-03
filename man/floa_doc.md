@@ -10,7 +10,7 @@ There are two ways to use the code in this repository. You can either:
   - https://github.com/rstats-tln/fork-and-clone-repo
   - https://docs.github.com/en/get-started/quickstart/fork-a-repo
 
-- Another good place to git and GitHub is http://happygitwithr.com.
+- Another excellent place for learning git and GitHub is http://happygitwithr.com.
 
 or
 
