@@ -15,7 +15,8 @@ The paper compares three methods for constructing continuous prediction interval
 
 
 
-### Script structure
+### Main script
+
 The parent script is 'main.R'. Here, all subscripts are loaded and called. To run 'main.R', a number of folder directories and function parameters have to be pre-specified:
 
 **1. Working directories**
@@ -45,18 +46,15 @@ For the scripts to run out of the box, data objects need to have five columns:
 
 Data sets are generated in 'simulate_data.R' and stored in .../R/examples.
 
-Contains 4 data sets (3 synthetic and 1 real-world) given as both .txt (ASCII) and .rds (binary) files:
+The provided data consists of four (3 synthetic and 1 real-world) data sets given as both .txt (ASCII) and .rds (binary) files:
 
 - 'smooth_realistic': Simulated curves with Gaussian error model
 
-- 'non_gaussian': Simulated curves with non-Gaussian errors and heteroskedasticity
+- 'non_gaussian'    : Simulated curves with non-Gaussian errors and heteroskedasticity
 
-- 'shift.rds': Simulated curves curves with Gaussian error model and phase shift in x-axis direction
+- 'shift.rds'       : Simulated curves curves with Gaussian error model and phase shift in x-axis direction
 
-- 'imu_mc': Real-world hip joint angle curves
-
-Each file contains long format data with 5 columns ("device", "subjectID", "strideID", "value", "frame").
-
+- 'imu_mc'          : Real-world hip joint angle curves
 
 
 #### Functions
