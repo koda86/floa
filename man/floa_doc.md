@@ -20,17 +20,15 @@ or
 
 ---
 
-If you aim to reproduce the results of the paper, please open the parent script 'main.R' and read the instructions in the section **Main script** below. If you only want to use subscripts (e.g. to calculate prediction bands using one of the three methods), ...
+If you aim to reproduce the results of the paper, please open the parent script 'main.R' and read the instructions in the section **Main script** below.
 
-The calculation, visualization and statistical properties of the prediction bands are subdivided into various subscripts. In order for these to run succesfully, the data needs to be organized in the long data format with five columns named:
+If you want run subscripts only (e.g. to calculate prediction on your own data bands using one of the three methods), make sure to organize your data in the long data format with five columns named:
 
 1. device (character, has to be named "ONE" and "TWO")
 2. subjectID (integer, 1 to number of subjects)
 3. strideID (integer, 1 to number strides, should be balanced between measurement systems)
 4. value (numeric, actual measurement data)
 5. frame (integer, e.g. 0 to 100, curves should have the same length)
-
-In 'main.R', it is possible to choose between four predefined data sets ("smooth_realistic", "non_gaussian", "shift", "imu_MC"). Of cause, you may also your own data. Just make sure that a data set with the required (long) format is assigned to a variable named 'data'.
 
 ### Main script
 
@@ -51,6 +49,7 @@ Make sure that a data set with the required (long) format is assigned to a varia
 
 - (n.rep: The number of repeated calculations in the uncertainty estimation (default = 100))
 
+In 'main.R', it is possible to choose between four predefined data sets ("smooth_realistic", "non_gaussian", "shift", "imu_MC"). Of cause, you may also your own data. Just make sure that a data set with the required (long) format is assigned to a variable named 'data'.
 
 #### Example data sets
 
