@@ -8,23 +8,12 @@ This repository accompanies our publication: DOI
 The paper compares three methods for constructing continuous prediction intervals:
 
 - POINT : Pointwise Limits of Agreement by Bland & Altman (1999, 2007)
-
 - ROISLIEN : Pointwise Limits of Agreement by Røislien et al. (2012)
-
 - BOOT : Bootstrapped functional prediction bands (Lenhoff et al., 1999; Olshen, Biden, Wyatt, & Sutherland, 1989; Sutherland et al., 1988)
 
 
+In order for the subscripts/functions to run succesfully, 
 
-### Main script
-
-The parent script is 'main.R'. Here, all subscripts are loaded and called. To run 'main.R', a number of folder directories and function parameters have to be pre-specified:
-
-**1. Working directories**
-
-- dir.script: Path to directory in which the R scripts are stored.
-- dir.data : Path to directory in which the data set is stored.
-
-**2. Data set**
 
 The precast sample data sets are provided as long data formats. When using own data sets, please make sure to provide the same data format.
 
@@ -35,6 +24,22 @@ For the scripts to run out of the box, data objects need to have five columns:
 3. strideID (integer, 1 to number strides, should be balanced between measurement systems)
 4. value (numeric, actual measurement data)
 5. frame (integer, e.g. 0 to 100, curves should have the same length)
+
+
+If you are interested in reproducing the results of the paper, please open the parent script 'main.R' and read the instruction in the section **Main script** below.
+
+### Main script
+
+In 'main.R', all subscripts are loaded and called. To run the script, a number of folder directories and function parameters have to be pre-specified:
+
+**1. Working directories**
+
+- dir.script: Path to directory in which the R scripts are stored.
+- dir.data : Path to directory in which the data set is stored.
+
+**2. Data set**
+
+Make sure that a data set with the required (long) format is assigned to a variable named 'data'.
 
 **3. Function parameters:**
 
@@ -59,8 +64,6 @@ The provided data consists of four (3 synthetic and 1 real-world) data sets give
 
 
 ### Functions in main()
-
-If you are interested in reproducing the results in the 
 
 In main.R, the following functions are called:
 
