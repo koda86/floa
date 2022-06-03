@@ -4,7 +4,7 @@ floa - **f**unctional **l**imits **o**f **a**greement.
 
 https://github.com/koda86/floa
 
-### Citing
+### Citation
 This repository accompanies the publication: 
 
 DOI
