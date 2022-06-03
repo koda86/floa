@@ -2,13 +2,15 @@
 
 ### How to use the directory
 
-In case you are not familiar with Github, there are two ways to work with the repository (Link zur Infoseite):
+There are two ways to use files in the repository (Link zur Infoseite). You can either:
 
 1. Fork the repository
 
 You can also connect R Studio with Github
 
-2. Download the repository as a zip file and work locally
+2. or download the repository as a zip file and work locally
+
+---
 
 If you aim to reproduce the results of the paper, please open the parent script 'main.R' and read the instructions in the section **Main script** below. If you only want to use subscripts (e.g. to calculate prediction bands using one of the three methods), ...
 
