@@ -4,19 +4,15 @@ https://github.com/koda86/floa
 
 floa stands for **f**unctional **l**imits **o**f **a**greement. This repository accompanies our publication: DOI
 
-The paper compares three methods for constructing continuous prediction intervals:
+The paper compares three methods for constructing continuous prediction intervals (bands):
 
 - POINT : Pointwise Limits of Agreement by Bland & Altman (1999, 2007)
 - ROISLIEN : Pointwise Limits of Agreement by Røislien et al. (2012)
 - BOOT : Bootstrapped functional prediction bands (Lenhoff et al., 1999; Olshen, Biden, Wyatt, & Sutherland, 1989; Sutherland et al., 1988)
 
-The limits in each method are calculated 
-
 If you are interested in reproducing the results of the paper, please open the parent script 'main.R' and read the instruction in the section **Main script** below.
 
-
-
-In order for the subscripts/functions to run succesfully, data sets need to be long format data obejcts with five columns:
+The calculation, visualization and statistical properties of the prediction bands are calculated in various subscripts. In order for these subscripts/functions to run succesfully, the data needs to be organized in long format data objects with five columns:
 
 1. device (character, has to be named "ONE" and "TWO")
 2. subjectID (integer, 1 to number of subjects)
@@ -24,7 +20,7 @@ In order for the subscripts/functions to run succesfully, data sets need to be l
 4. value (numeric, actual measurement data)
 5. frame (integer, e.g. 0 to 100, curves should have the same length)
 
-You can either use one of the four provided data sets ("smooth_realistic", "non_gaussian", "shift", "imu_MC") or use your own data.
+In 'main.R', it is possible to choose between four predefined data sets ("smooth_realistic", "non_gaussian", "shift", "imu_MC"). Of cause, you may also your own data. Just make sure that a data set with the required (long) format is assigned to a variable named 'data'.
 
 ### Main script
 
