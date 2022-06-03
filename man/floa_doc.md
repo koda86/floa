@@ -1,8 +1,10 @@
 # Documentation Github repo koda86/floa
 
+floa - **f**unctional **l**imits **o**f **a**greement. 
+
 https://github.com/koda86/floa
 
-floa stands for **f**unctional **l**imits **o**f **a**greement. This repository accompanies the publication: DOI
+This repository accompanies the publication: DOI
 
 The paper compares three methods for constructing continuous prediction intervals (bands):
 
