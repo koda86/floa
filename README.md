@@ -6,7 +6,7 @@ If you make use of any of the code or datasets, please cite the following paper:
 ### Documentation
 The main script and recommended starting point is 'main.R'.
 
-In 'main.R' Here, 3 variables should be initialized:
+In 'main.R', 3 variables have to be initialized:
   1. The data and script directories ('dir.data', 'dir.script')
   2. The data set
   3. The number of bootstrap iterations (n.boot)
