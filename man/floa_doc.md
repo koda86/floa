@@ -1,14 +1,16 @@
 # Documentation Github repo koda86/floa
 
-The paper compares three methods for constructing continuous prediction intervals (bands):
+### How to use the directory
 
-- POINT : Pointwise Limits of Agreement by Bland & Altman (1999, 2007)
-- ROISLIEN : Pointwise Limits of Agreement by Røislien et al. (2012)
-- BOOT : Bootstrapped functional prediction bands (Lenhoff et al., 1999; Olshen, Biden, Wyatt, & Sutherland, 1989; Sutherland et al., 1988)
+In case you are not familiar with Github, there are two ways to work with the repository (Link zur Infoseite):
 
-Disclaimer: None of these methods were invented by us ... we just implemented the algorithms.
+1. Fork the repository
 
-If you aim to reproduce the results of the paper, please open the parent script 'main.R' and read the instructions in the section **Main script** below. If you only want to use single subscript (e.g. to calculate prediction bands using one of the three methods), 
+You can also connect R Studio with Github
+
+2. Download the repository as a zip file and work locally
+
+If you aim to reproduce the results of the paper, please open the parent script 'main.R' and read the instructions in the section **Main script** below. If you only want to use subscripts (e.g. to calculate prediction bands using one of the three methods), ...
 
 The calculation, visualization and statistical properties of the prediction bands are subdivided into various subscripts. In order for these to run succesfully, the data needs to be organized in the long data format with five columns named:
 
@@ -64,6 +66,11 @@ In main.R, the following functions are called:
 - coverage_loocv(): Leave-one (curve) out method to estimate the coverage probability
 
 - estimate_uncertainty_loa(): Estimates the uncertainty in different methods across 'n.rep' repeated calculations
+
+
+- POINT : Pointwise Limits of Agreement by Bland & Altman (1999, 2007)
+- ROISLIEN : Pointwise Limits of Agreement by Røislien et al. (2012)
+- BOOT : Bootstrapped functional prediction bands (Lenhoff et al., 1999; Olshen, Biden, Wyatt, & Sutherland, 1989; Sutherland et al., 1988)
 
 <!---
 ### Flowchart
