@@ -57,12 +57,16 @@ The provided data consists of four (3 synthetic and 1 real-world) data sets give
 - 'imu_mc'          : Real-world hip joint angle curves
 
 
-#### Functions
+### Functions in main()
+
+If you are interested in reproducing the results in the 
 
 In main.R, the following functions are called:
 
 - plot_loa(): Returns a plot of (differently colored) prediction bands vs. the original difference curves.
+
 - coverage_loocv(): Leave-one (curve) out method to estimate the coverage probability
+
 - estimate_uncertainty_loa(): Estimates the uncertainty in different methods across 'n.rep' repeated calculations
 
 <!---
