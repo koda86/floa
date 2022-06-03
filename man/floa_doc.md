@@ -2,8 +2,9 @@
 
 https://github.com/koda86/floa
 
-This repository accompanies our publication: DOI
+floa stands for **f**unctional **l**imits **o**f **a**greement.
 
+This repository accompanies our publication: DOI
 
 The paper compares three methods for constructing continuous prediction intervals:
 
@@ -11,13 +12,13 @@ The paper compares three methods for constructing continuous prediction interval
 - ROISLIEN : Pointwise Limits of Agreement by Røislien et al. (2012)
 - BOOT : Bootstrapped functional prediction bands (Lenhoff et al., 1999; Olshen, Biden, Wyatt, & Sutherland, 1989; Sutherland et al., 1988)
 
+The limits in each method are calculated 
 
-In order for the subscripts/functions to run succesfully, 
+If you are interested in reproducing the results of the paper, please open the parent script 'main.R' and read the instruction in the section **Main script** below.
 
 
-The precast sample data sets are provided as long data formats. When using own data sets, please make sure to provide the same data format.
 
-For the scripts to run out of the box, data objects need to have five columns:
+In order for the subscripts/functions to run succesfully, data sets need to be long format data obejcts with five columns:
 
 1. device (character, has to be named "ONE" and "TWO")
 2. subjectID (integer, 1 to number of subjects)
@@ -25,8 +26,7 @@ For the scripts to run out of the box, data objects need to have five columns:
 4. value (numeric, actual measurement data)
 5. frame (integer, e.g. 0 to 100, curves should have the same length)
 
-
-If you are interested in reproducing the results of the paper, please open the parent script 'main.R' and read the instruction in the section **Main script** below.
+You can either use one of the four provided data sets ("smooth_realistic", "non_gaussian", "shift", "imu_MC") or use your own data.
 
 ### Main script
 
