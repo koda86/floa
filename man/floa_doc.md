@@ -7,11 +7,11 @@ This repository accompanies our publication: DOI
 
 The paper compares three methods for constructing continuous prediction intervals:
 
-- POINT: Pointwise Limits of Agreement by Bland & Altman (1999, 2007)
+- POINT   : Pointwise Limits of Agreement by Bland & Altman (1999, 2007)
 
-- ROISLIEN:Pointwise Limits of Agreement by Røislien et al. (2012)
+- ROISLIEN: Pointwise Limits of Agreement by Røislien et al. (2012)
 
-- BOOT: Bootstrapped functional prediction bands (Lenhoff et al., 1999; Olshen, Biden, Wyatt, & Sutherland, 1989; Sutherland et al., 1988)
+- BOOT    : Bootstrapped functional prediction bands (Lenhoff et al., 1999; Olshen, Biden, Wyatt, & Sutherland, 1989; Sutherland et al., 1988)
 
 
 
