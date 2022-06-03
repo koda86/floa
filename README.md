@@ -9,7 +9,7 @@ DOI
 
 If you make use of any of the code or datasets, please cite the paper and/or the Github repository.
 
-### Repository
+### Paper
 
 In floa/R 
 
