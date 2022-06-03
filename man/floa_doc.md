@@ -16,11 +16,9 @@ The paper compares three methods for constructing continuous prediction interval
 
 
 ### Script structure
-The parent script is 'main.R'. Here, all subscripts are loaded and called. To run 'main.R', a number of folder directories and function parameters have to be specified:
+The parent script is 'main.R'. Here, all subscripts are loaded and called. To run 'main.R', a number of folder directories and function parameters have to be pre-specified:
 
 **1. Working directories**
-
-Two paths have to be specified:
 
 - dir.script: Path to directory in which the R scripts are stored.
 - dir.data  : Path to directory in which the data set is stored.
@@ -37,7 +35,7 @@ For the scripts to run out of the box, data objects need to have five columns:
 4. value (numeric, actual measurement data)
 5. frame (integer, e.g. 0 to 100, curves should have the same length)
 
-+ **3. Function parameters:**
+**3. Function parameters:**
 
 - n.boot: The number of bootstrap iterations (default = 400)
 (- n.rep: The number of repeated calculations in the uncertainty estimation (default = 100))
