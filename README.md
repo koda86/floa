@@ -1,7 +1,7 @@
 # Functional Limits of Agreement (FLoA)
 
 ### Citing
-If you make use of any of the code or datasets in a scientific publication, please consider citing the following paper:
+If you make use of any of the code or datasets, please cite the following paper:
 
 ### Documentation
 The main script and recommended starting point is 'main.R'.
