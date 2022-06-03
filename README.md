@@ -12,7 +12,7 @@ In the paper, three methods for constructing continuous prediction intervals (ba
 
 The corresponding code to reproduce the results of the paper or calculate and visualize prediction bands with any of the three methods can be found in the folder **floa/R**.
 
-For a detailled description on how to use this repository and the provided scripts please see the documentation (floa_doc.md) in **floa/man**.
+For a detailled description on the repository and the code please see the documentation (floa_doc.md) in **floa/man**.
 
 ### Citation
 If you make use of any of the code or datasets, please cite the paper and/or the Github repository.
