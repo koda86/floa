@@ -4,8 +4,6 @@ This repository accompanies the publication:
 
 DOI
 
----
-
 In the paper, three methods for constructing continuous prediction intervals (bands) are compared.
 
 ---
