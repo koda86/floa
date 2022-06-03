@@ -1,4 +1,6 @@
-# Functional Limits of Agreement (floa)
+# floa
+
+**f**unctional **l**imits **o**f **a**greement 
 
 https://github.com/koda86/floa
 
