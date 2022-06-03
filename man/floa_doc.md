@@ -4,13 +4,19 @@
 
 There are two ways to use the code in this repository. You can either:
 
-**1. Fork the repository**
+**1. Fork and clone the repository**
 
-- If you haven't done that before, here's a good starting point: https://github.com/rstats-tln/fork-and-clone-repo
+- If you haven't done that before, these are good starting points:
+  - https://github.com/rstats-tln/fork-and-clone-repo
+  - https://docs.github.com/en/get-started/quickstart/fork-a-repo
 
 - Another good place to git and GitHub is http://happygitwithr.com.
 
-**2. or download the repository as a zip file and work locally**
+or
+
+**2. Download the repository**
+
+- Download the repository as a zip file and work locally
 
 ---
 
