@@ -10,9 +10,9 @@ The paper compares three methods for constructing continuous prediction interval
 - ROISLIEN : Pointwise Limits of Agreement by Røislien et al. (2012)
 - BOOT : Bootstrapped functional prediction bands (Lenhoff et al., 1999; Olshen, Biden, Wyatt, & Sutherland, 1989; Sutherland et al., 1988)
 
-If you aim to reproduce the results of the paper, please open the parent script 'main.R' and read the instruction in the section **Main script** below.
+If you aim to reproduce the results of the paper, please open the parent script 'main.R' and read the instructions in the section **Main script** below.
 
-The calculation, visualization and statistical properties of the prediction bands are calculated in various subscripts. In order for these subscripts/functions to run succesfully, the data needs to be organized in long format data objects with five columns:
+The calculation, visualization and statistical properties of the prediction bands are subdivided into various subscripts. In order for these to run succesfully, the data needs to be organized in the long data format with five columns named:
 
 1. device (character, has to be named "ONE" and "TWO")
 2. subjectID (integer, 1 to number of subjects)
