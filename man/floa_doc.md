@@ -2,7 +2,7 @@
 
 https://github.com/koda86/floa
 
-This repository accompanies this publication: DOI
+This repository accompanies our publication: DOI
 
 
 The paper compares three methods for constructing continuous prediction intervals:
