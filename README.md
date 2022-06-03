@@ -1,12 +1,17 @@
-# Functional Limits of Agreement (FLoA)
-
-floa - **f**unctional **l**imits **o**f **a**greement. 
+# Functional Limits of Agreement (floa)
 
 https://github.com/koda86/floa
 
+### Citation
 This repository accompanies the publication: 
 
 DOI
+
+If you make use of any of the code or datasets, please cite the paper and/or the Github repository.
+
+### Repository
+
+In floa/R 
 
 The paper compares three methods for constructing continuous prediction intervals (bands):
 
@@ -16,8 +21,7 @@ The paper compares three methods for constructing continuous prediction interval
 
 Disclaimer: None of these methods were invented by us ... we just implemented the algorithms.
 
-### Citation
-If you make use of any of the code or datasets, please cite the paper and/or this repository.
+
 
 ### Documentation
 For a detailled description of the script please see the documentation (floa_doc.md) in /floa/man.
