@@ -2,8 +2,6 @@
 
 **f**unctional **l**imits **o**f **a**greement 
 
-https://github.com/koda86/floa
-
 ### Citation
 This repository accompanies the publication: 
 
