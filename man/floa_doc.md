@@ -16,7 +16,6 @@ The paper compares three methods for constructing continuous prediction interval
 
 
 ### Script structure
-
 The parent script is 'main.R'. Here, all subscripts are loaded and called. To run 'main.R', a couple of folder directories and function parameters have to be specified:
 
 + **1. Working directories**
@@ -26,9 +25,9 @@ Two paths have to be specified:
 - dir.data  : Path to directory in which the data set is stored.
 
 + **2. Data set**
-When using own data sets, the structure of the data set has to match the structure of the provided sample data sets.
+The precast sample data sets are provided as long data formats. When using own data sets, please make sure to provide the same data format.
 
-This structure consists of a long format data.frame with 5 columns:
+For the scripts to run out of the box, data objects need to have five columns:
 
 1. device (character, has to be named "ONE" and "TWO")
 2. subjectID (integer, 1 to number of subjects)
