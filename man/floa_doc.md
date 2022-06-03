@@ -39,7 +39,8 @@ For the scripts to run out of the box, data objects need to have five columns:
 **3. Function parameters:**
 
 - n.boot: The number of bootstrap iterations (default = 400)
-(- n.rep: The number of repeated calculations in the uncertainty estimation (default = 100))
+
+- (n.rep: The number of repeated calculations in the uncertainty estimation (default = 100))
 
 
 #### Example data sets
