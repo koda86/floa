@@ -2,13 +2,15 @@
 
 ### How to use the directory
 
-There are two ways to use files in the repository (Link zur Infoseite). You can either:
+There are two ways to use the code in this repository. You can either:
 
-1. Fork the repository
+**1. Fork the repository**
 
-You can also connect R Studio with Github
+- If you haven't done that before, here's a good starting point: https://github.com/rstats-tln/fork-and-clone-repo
 
-2. or download the repository as a zip file and work locally
+- Another good place to git and GitHub is http://happygitwithr.com.
+
+**2. or download the repository as a zip file and work locally**
 
 ---
 
