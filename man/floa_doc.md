@@ -76,15 +76,17 @@ In 'main.R', the following functions are called:
 
 - estimate_uncertainty_loa(): Estimates the uncertainty in different methods across 'n.rep' repeated calculations
 
-Within these functions, other functions are nested:
+Within these functions, other functions are nested. If your aim is to calculate prediction bands in one of the methods from the paper (POINT, ROISLIEN, BOOT), use one of the the follwing three scripts: 
+
+- floa_point.R(): Pointwise continuous Limits of Agreement according to Bland & Altman (1999) (POINT)
+
+- floa_roislien.R(): Functional limits of agreement according to Roislien et al. (2012) (ROISLIEN)
+
+- floa_boot.R(): Implementation of the method described in Lenhoff et al. (1999) (BOOT)
+
+Other nested functions are:
 
 - pick_subwise_curves(): Select a single random stride from every subject in data
-
-- floa_boot.R(): Implementation of the method described in Lenhoff et al. (1999)
-
-- floa_point.R(): Pointwise continuous Limits of Agreement according to Bland & Altman (2007) and Bland & Altman (1999)
-
-- floa_roislien.R(): Functional limits of agreement according to Roislien et al. (2012)
 
 - points_within_limits.R(): Calculate coverage (points of a single curve within the band limits)
 
