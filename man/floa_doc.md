@@ -84,7 +84,12 @@ Within these functions, other functions are nested. If your aim is to calculate 
 
 - floa_boot.R(): Implementation of the method described in Lenhoff et al. (1999) (BOOT)
   - Requires other function arguments besides 'data':
-    - test
+    + k.coef: Number of bootstrap iterations
+    + n.boot: Number of bootstrap iterations
+    + band: Type of interval (prediction or confidence)
+    + cp.begin: Initial value quantile
+    + alpha: Significance level
+    + iid: If iid==TRUE, only one curve per subject is drawn, otherwise repated measurement (several curves per subject) are allowed
 
 Other nested functions are:
 
