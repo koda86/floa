@@ -84,11 +84,11 @@ Within these functions, other functions are nested:
 
 - floa_point.R(): Pointwise continuous Limits of Agreement according to Bland & Altman (2007) and Bland & Altman (1999)
 
-- floa_roislien.R()
+- floa_roislien.R(): Functional limits of agreement according to Roislien et al. (2012)
 
-- points_within_limits.R()
+- points_within_limits.R(): Calculate coverage (points of a single curve within the band limits)
 
-- coverage_curves.R()
+- coverage_curves.R(): Calculates the proportion of bands that contain a specified proportion of curve points
 
 
 <!---
