@@ -22,7 +22,7 @@ or
 
 If you aim to reproduce the results of the paper, please open the parent script 'main.R' and read the instructions in the section **Main script** below.
 
-If you want run subscripts only (e.g. to calculate prediction on your own data bands using one of the three methods), make sure to organize your data in the long data format with five columns named:
+If you want run subscripts only (e.g. to calculate prediction bands from your own data using one of the three methods), make sure to organize your data in long data format with five columns named:
 
 1. device (character, has to be named "ONE" and "TWO")
 2. subjectID (integer, 1 to number of subjects)
