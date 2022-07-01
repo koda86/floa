@@ -83,7 +83,8 @@ Within these functions, other functions are nested. If your aim is to calculate 
 - floa_roislien.R(): Functional limits of agreement according to Roislien et al. (2012) (ROISLIEN)
 
 - floa_boot.R(): Implementation of the method described in Lenhoff et al. (1999) (BOOT)
-  - test
+  - Requires other function arguments besides 'data':
+    - test
 
 Other nested functions are:
 
