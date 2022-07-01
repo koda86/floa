@@ -78,17 +78,17 @@ In 'main.R', the following functions are called:
 
 Within these functions, other functions are nested:
 
-+ pick_subwise_curves() ... 
+- pick_subwise_curves() ... 
 
-floa_boot.R()
+- floa_boot.R()
 
-floa_point.R()
+- floa_point.R()
 
-floa_roislien.R()
+- floa_roislien.R()
 
-points_within_limits.R()
+- points_within_limits.R()
 
-coverage_curves.R()
+- coverage_curves.R()
 
 
 - POINT : Pointwise Limits of Agreement by Bland & Altman (1999, 2007)
