@@ -78,7 +78,7 @@ In 'main.R', the following functions are called:
 
 Within these functions, other functions are nested:
 
-pick_subwise_curves() ... 
++ pick_subwise_curves() ... 
 
 floa_boot.R()
 
