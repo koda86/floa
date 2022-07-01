@@ -9,12 +9,13 @@ floa_boot <- function(data, k.coef, n.boot, band, cp.begin, alpha, iid) {
   # by Doris Oriwol, TU Chemnitz, 12.05.2010
   #
   # Function arguments:
-  # k.coef   : Number of coefficients
+  # k.coef   : Number of (Fourier) coefficients
   # n.boot   : Number of bootstrap iterations
   # band     : Type of interval (prediction or confidence)
   # cp.begin : Initial value quantile
   # alpha    : Significance level
-  # iid      : Independent (and identically distributed) data
+  # iid      : If iid==TRUE, only one curve per subject is drawn, otherwise rep-
+  #            ated measurement (several curves per subject) are allowed
   #            If TRUE, only one curve per subject is selected
   # ****************************************************************************
 
