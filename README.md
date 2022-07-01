@@ -2,9 +2,9 @@
 
 This repository provides code to calculate continuous prediction intervals (prediction bands) using several methods.
 
-The code accompanies the publication: 
+The repository accompanies this publication: 
 
-DOI
+DOI /* to be added */
 
 For a detailled description please see the documentation (floa_doc.md) in **floa/man**.
 
