@@ -76,7 +76,9 @@ In 'main.R', the following functions are called:
 
 - estimate_uncertainty_loa(): Estimates the uncertainty in different methods across 'n.rep' repeated calculations
 
-Within these functions, other functions are nested. If your aim is to calculate prediction bands in one of the methods from the paper (POINT, ROISLIEN, BOOT), use one of the the follwing three scripts: 
+Within these functions, other functions are nested.
+
+If you aim to calculate prediction bands in one of the methods from the paper (POINT, ROISLIEN, BOOT), use one of the following three scripts: 
 
 - floa_point.R(): Pointwise continuous Limits of Agreement according to Bland & Altman (1999) (POINT)
 
