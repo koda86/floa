@@ -68,7 +68,7 @@ The provided data consists of four (3 synthetic and 1 real-world) data sets give
 
 ### Functions in main()
 
-In main.R, the following functions are called:
+In 'main.R', the following functions are called:
 
 - plot_loa(): Returns a plot of (differently colored) prediction bands vs. the original difference curves.
 
