@@ -79,10 +79,15 @@ In 'main.R', the following functions are called:
 Within these functions, other functions are nested:
 
 pick_subwise_curves() ... 
+
 floa_boot.R()
+
 floa_point.R()
+
 floa_roislien.R()
+
 points_within_limits.R()
+
 coverage_curves.R()
 
 
