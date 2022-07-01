@@ -80,9 +80,9 @@ Within these functions, other functions are nested:
 
 - pick_subwise_curves(): Select a single random stride from every subject in data
 
-- floa_boot.R()
+- floa_boot.R(): Implementation of the method described in Lenhoff et al. (1999)
 
-- floa_point.R()
+- floa_point.R(): Pointwise continuous Limits of Agreement according to Bland & Altman (2007) and Bland & Altman (1999)
 
 - floa_roislien.R()
 
@@ -90,10 +90,6 @@ Within these functions, other functions are nested:
 
 - coverage_curves.R()
 
-
-- POINT : Pointwise Limits of Agreement by Bland & Altman (1999, 2007)
-- ROISLIEN : Pointwise Limits of Agreement by Røislien et al. (2012)
-- BOOT : Bootstrapped functional prediction bands (Lenhoff et al., 1999; Olshen, Biden, Wyatt, & Sutherland, 1989; Sutherland et al., 1988)
 
 <!---
 ### Flowchart
