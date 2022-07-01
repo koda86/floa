@@ -1,66 +1,106 @@
 # Documentation Github repo koda86/floa
 
-https://github.com/koda86/floa
+### How to use the directory
 
-This repository accompanies this publication: DOI
+There are two ways to use the code in this repository. You can either:
 
+**1. Fork and clone the repository**
 
-The paper presents for three methods for constructing continuous prediction intervals:
+- If you haven't done that before, these are good starting points:
+  - https://github.com/rstats-tln/fork-and-clone-repo
+  - https://docs.github.com/en/get-started/quickstart/fork-a-repo
 
-- POINT: Pointwise Limits of Agreement by (Bland & Altman, 1999, 2007)
+- Another excellent place for learning git and GitHub is http://happygitwithr.com.
 
-- ROISLIEN: Functional/Pointwise Limits of Agreement (Røislien et al., 2012)
+or
 
-- BOOT: Bootstrapped functional prediction bands (Lenhoff et al., 1999; Olshen, Biden, Wyatt, & Sutherland, 1989; Sutherland et al., 1988)
+**2. Download the repository**
 
+- Download the repository as a zip file and work locally
 
+---
 
-### Script structure
+If you aim to reproduce the results of the paper, please open the parent script 'main.R' and read the instructions in the section **Main script** below.
 
-The parent script is 'main.R'. Here, all subscripts are loaded and called.
+If you want run subscripts only (e.g. to calculate prediction bands from your own data using one of the three methods), make sure to organize your data in long data format with five columns named:
 
-In 'main.R' a couple of folder directories and function parameters have to be specified:
+1. device (character, has to be named "ONE" and "TWO")
+2. subjectID (integer, 1 to number of subjects)
+3. strideID (integer, 1 to number strides, should be balanced between measurement systems)
+4. value (numeric, actual measurement data)
+5. frame (integer, e.g. 0 to 100, curves should have the same length)
 
-+ **1. Working directories**
-Two different paths have to be specified:
+### Main script
 
-- dir.script: Path to directory in which R scripts are stored.
-- dir.data <- Path to directory in which the example data sets are stored.
+In 'main.R', all subscripts are loaded and called. To run the script, a number of folder directories and function parameters have to be pre-specified:
 
-+ **2. Data set**
-Two different paths have to be specified:
+**1. Working directories**
 
-+ **3. Function parameters:**
+- dir.script: Path to directory in which the R scripts are stored.
+- dir.data : Path to directory in which the data set is stored.
+
+**2. Data set**
+
+Make sure that a data set with the required (long) format is assigned to a variable named 'data'.
+
+**3. Function parameters:**
 
 - n.boot: The number of bootstrap iterations (default = 400)
-- n.rep: The number of repeated calculations in the uncertainty estimation (default = 100)
 
+- (n.rep: The number of repeated calculations in the uncertainty estimation (default = 100))
 
-#### Data sets
+In 'main.R', it is possible to choose between four predefined data sets ("smooth_realistic", "non_gaussian", "shift", "imu_MC"). Of cause, you may also your own data. Just make sure that a data set with the required (long) format is assigned to a variable named 'data'.
 
-Data sets are generated in 'simulate_data.R' and stored in .../R/examples. Data sets are selected/loaded in 'examples.R'. 
+#### Example data sets
 
-Contains 4 data sets (3 synthetic and 1 real-world) given as both .txt (ASCII) or .rds (binary) files:
+Data sets are generated in 'simulate_data.R' and stored in .../R/examples.
+
+The provided data consists of four (3 synthetic and 1 real-world) data sets given as both .txt (ASCII) and .rds (binary) files:
 
 - 'smooth_realistic': Simulated curves with Gaussian error model
 
-- 'non_gaussian': Simulated curves with non-Gaussian errors and heteroskedasticity
+- 'non_gaussian'    : Simulated curves with non-Gaussian errors and heteroskedasticity
 
-- 'shift.rds': Simulated curves curves with Gaussian error model and phase shift in x-axis direction
+- 'shift.rds'       : Simulated curves curves with Gaussian error model and phase shift in x-axis direction
 
-- 'imu_mc': Real-world hip joint angle curves
-
-Each file contains long data format with 6 columns: row numer, "device", "subjectID", "strideID", "value", "frame".
+- 'imu_mc'          : Real-world hip joint angle curves
 
 
+### Functions
 
-#### Functions
-
-In main.R, three major functions are called:
+In 'main.R', the following functions are called:
 
 - plot_loa(): Returns a plot of (differently colored) prediction bands vs. the original difference curves.
+
 - coverage_loocv(): Leave-one (curve) out method to estimate the coverage probability
+
 - estimate_uncertainty_loa(): Estimates the uncertainty in different methods across 'n.rep' repeated calculations
+
+Within these functions, other functions are nested.
+
+If you aim to calculate prediction bands in one of the methods from the paper (POINT, ROISLIEN, BOOT), use one of the following three scripts: 
+
+- floa_point.R(): Pointwise continuous Limits of Agreement according to Bland & Altman (1999) (POINT)
+
+- floa_roislien.R(): Functional limits of agreement according to Roislien et al. (2012) (ROISLIEN)
+
+- floa_boot.R(): Implementation of the method described in Lenhoff et al. (1999) (BOOT)
+  - Requires other function arguments besides 'data':
+    + k.coef: Number of bootstrap iterations
+    + n.boot: Number of bootstrap iterations
+    + band: Type of interval (prediction or confidence)
+    + cp.begin: Initial value quantile
+    + alpha: Significance level
+    + iid: If iid==TRUE, only one curve per subject is drawn, otherwise repated measurement (several curves per subject) are allowed
+
+Other nested functions are:
+
+- pick_subwise_curves(): Select a single random stride from every subject in data
+
+- points_within_limits.R(): Calculate coverage (points of a single curve within the band limits)
+
+- coverage_curves.R(): Calculates the proportion of bands that contain a specified proportion of curve points
+
 
 <!---
 ### Flowchart
