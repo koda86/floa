@@ -1,8 +1,6 @@
 # floa - **f**unctional **l**imits **o**f **a**greement
 
-This repository provides code to calculate continuous prediction intervals (prediction bands) using several methods.
-
-The repository accompanies this publication: 
+This repository provides code to calculate continuous prediction intervals (prediction bands) using several methods. The repository accompanies the folliówing publication: 
 
 DOI /* to be added */
 
