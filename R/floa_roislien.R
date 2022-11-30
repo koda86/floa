@@ -7,7 +7,7 @@ floa_roislien <- function(data) {
   # ****************************************************************************
 
   # Pick only one curve per subject to satisfy iid assumption
-  diff.curves <- pick_subwise_curves(data)
+  diff.curves <- pick_curves(data, iid = TRUE)
 
   # Calculate Limits of Agreement
   func.mean <- apply(diff.curves, 1, mean)

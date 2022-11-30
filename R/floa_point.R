@@ -16,12 +16,9 @@ floa_point <- function(data) {
   total.sd <- vector(mode = "list", length = n.frames)
 
   for (frame.idx in 0:100){
-
     data.by.frame <- subset(data, frame == frame.idx)
 
-
-    # Get variance from ANOVA (see Bland & Altman, 2007) ---------------------
-
+    # Get variance from ANOVA (see Bland & Altman, 2007) -----------------------
     # Prepare data for ANOVA
     data.by.frame.wide <- reshape2::dcast(data = data.by.frame, subjectID + strideID ~ device, value.var = "value")
     data.by.frame.wide$device.diff <- data.by.frame.wide$TWO - data.by.frame.wide$ONE
@@ -35,7 +32,6 @@ floa_point <- function(data) {
     sigma.squared.within <- S[[1]]$`Mean Sq`[2]
     sigma.squared.between <- (S[[1]]$`Mean Sq`[1] - S[[1]]$`Mean Sq`[2]) / n.curves.per.subject
     total.sd[[frame.idx + 1]] <- sqrt(sigma.squared.between + sigma.squared.within)
-
     mean.diff[[frame.idx + 1]] <- mean(data.by.frame.wide$device.diff)
   }
 
@@ -44,17 +40,16 @@ floa_point <- function(data) {
 
 
   # Calculate mean, upper and lower limits of agreement to get the same
-  # structure as returned by the other methods -----------------------------
+  # structure as returned by the other methods ---------------------------------
   z0.975 <- qnorm(0.975, mean = 0, sd = 1)
 
-  floa.point.loa <- rbind(floa.point$mean.diff + z0.975 * floa.point$total.sd,
+  floa.point.loa <- rbind(floa.point$mean.diff + z0.975*floa.point$total.sd,
                           floa.point$mean.diff,
-                          floa.point$mean.diff - z0.975 * floa.point$total.sd
+                          floa.point$mean.diff - z0.975*floa.point$total.sd
                           )
 
 
-  # PRECISION OF ESTIMATED LIMITS OF AGREEMENT -----------------------------
-
+  # PRECISION OF ESTIMATED LIMITS OF AGREEMENT ---------------------------------
   # Confidence intervals for the 95% limits of agreement (Bland & Altman, 1999)
   n.curves <- length(unique(data$strideID))
   # Formula from Francq et al. (2020)
@@ -63,8 +58,7 @@ floa_point <- function(data) {
   # t-score of the 95th quantile of the Student t distribution with df = (n - 1)
   t <- qt(.975, df = n.curves - 1)
 
-  # Upper and lower uncertainty limits -------------------------------------
-
+  # Upper and lower uncertainty limits -----------------------------------------
   upper.ci.upper <- floa.point$mean.diff + z0.975*floa.point$total.sd + t*standard.error.d2s
   upper.ci.lower <- floa.point$mean.diff + z0.975*floa.point$total.sd - t*standard.error.d2s
   lower.ci.upper <- floa.point$mean.diff - z0.975*floa.point$total.sd + t*standard.error.d2s

@@ -1,10 +1,6 @@
 ################################################################################
 # Simulate data
 ################################################################################
-
-# Inspired by ...
-# https://ademos.people.uic.edu/Chapter23.html
-# https://stats.stackexchange.com/questions/330199/simulating-drift-in-the-data
 #
 # Simulated data sets:
 #
