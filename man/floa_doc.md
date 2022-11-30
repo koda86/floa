@@ -22,7 +22,7 @@ or
 
 If you aim to reproduce the results of the paper, please open the parent script 'main.R' and read the instructions in the section **Main script** below.
 
-If you want run subscripts only (e.g. to calculate prediction bands from your own data using one of the three methods), make sure to organize your data in long data format with five columns named:
+If you want run subscripts only (e.g., to calculate prediction bands from your own data using one of the three methods), make sure to organize your data in long data format with five columns named:
 
 1. device (character, has to be named "ONE" and "TWO")
 2. subjectID (integer, 1 to number of subjects)
@@ -45,11 +45,11 @@ Make sure that a data set with the required (long) format is assigned to a varia
 
 **3. Function parameters:**
 
-- n.boot: The number of bootstrap iterations (default = 400)
+- n.boot: The number of bootstrap iterations (default = 1000)
 
-- (n.rep: The number of repeated calculations in the uncertainty estimation (default = 100))
+- (n.rep: The number of repeated calculations in the uncertainty estimation (default = 300))
 
-In 'main.R', it is possible to choose between four predefined data sets ("smooth_realistic", "non_gaussian", "shift", "imu_MC"). Of cause, you may also your own data. Just make sure that a data set with the required (long) format is assigned to a variable named 'data'.
+In 'main.R', it is possible to choose between four predefined data sets ("smooth_realistic", "non_gaussian", "shift", "imu_MC"). Of course, you may also use your own data. Just make sure to assign a data set with the required (long) format to a variable named 'data'.
 
 #### Example data sets
 
@@ -59,7 +59,7 @@ The provided data consists of four (3 synthetic and 1 real-world) data sets give
 
 - 'smooth_realistic': Simulated curves with Gaussian error model
 
-- 'non_gaussian'    : Simulated curves with non-Gaussian errors and heteroskedasticity
+- 'non_gaussian'    : Simulated curves with non-Gaussian errors
 
 - 'shift.rds'       : Simulated curves curves with Gaussian error model and phase shift in x-axis direction
 
@@ -68,30 +68,33 @@ The provided data consists of four (3 synthetic and 1 real-world) data sets give
 
 ### Functions
 
-In 'main.R', the following functions are called:
+'main.R' contains the following (major) functions:
+
+- floa.point(), floa.roislien(), floa.boot.rep(), floa.boot.idd(): Calculate prediction bands in each method
 
 - plot_loa(): Returns a plot of (differently colored) prediction bands vs. the original difference curves.
 
 - coverage_loocv(): Leave-one (curve) out method to estimate the coverage probability
 
-- estimate_uncertainty_loa(): Estimates the uncertainty in different methods across 'n.rep' repeated calculations
+- estimate_uncertainty_kfold_rep(): Uncertainty estimation using repeated k-Fold cross validation (k subjects)
 
-Within these functions, other functions are nested.
+Within these functions, other functions are nested (see the list in 'main.R').
 
-If you aim to calculate prediction bands in one of the methods from the paper (POINT, ROISLIEN, BOOT), use one of the following three scripts: 
 
-- floa_point.R(): Pointwise continuous Limits of Agreement according to Bland & Altman (1999) (POINT)
+If you aim to 'only' calculate prediction bands using one of the methods from the paper (POINT, ROISLIEN, BOOTrep, BOOTiid), please use one of the following three scripts: 
 
-- floa_roislien.R(): Functional limits of agreement according to Roislien et al. (2012) (ROISLIEN)
+- floa_point.R: Pointwise continuous Limits of Agreement according to Bland & Altman (1999) (POINT)
 
-- floa_boot.R(): Implementation of the method described in Lenhoff et al. (1999) (BOOT)
+- floa_roislien.R: Functional limits of Agreement according to Roislien et al. (2012) (ROISLIEN)
+
+- floa_boot.R(): Implementation of the functional method described in Olshen et al. (1989) and Lenhoff et al. (1999) (BOOTrep, BOOTiid)
   - Requires other function arguments besides 'data':
     + k.coef: Number of bootstrap iterations
     + n.boot: Number of bootstrap iterations
     + band: Type of interval (prediction or confidence)
     + cp.begin: Initial value quantile
     + alpha: Significance level
-    + iid: If iid==TRUE, only one curve per subject is drawn, otherwise repated measurement (several curves per subject) are allowed
+    + iid: If iid==TRUE, only one curve per subject is drawn (BOOTiid), otherwise several curves per subject are allowed (BOOTrep)
 
 Other nested functions are:
 
