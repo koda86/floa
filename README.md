@@ -17,7 +17,7 @@ Koska, D., Oriwol, D., Maiwald, C. (2023) Comparison of statistical models for c
 Please report software bugs or other problems by searching existing issues or creating a new issue [here](https://github.com/koda86/floa/issues).
 
 ### Contributing
-If you find issues and want to fix them yourself, please do, and submit a pull request so it can be reviewed and merged.
+If you find issues or bugs feel free to send me an E-Mail (daniel.koska@hsw.tu-chemnitz.de). If you want to fix them yourself, please do, and submit a pull request so it can be reviewed and merged.
 
 ### Licence
 BSD-2-Clause License
