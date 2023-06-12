@@ -7,7 +7,7 @@ Koska, D., Oriwol, D., Maiwald, C. (2023) Comparison of statistical models for c
 For a detailled description please see the documentation (floa_doc.md) in floa/man.
 
 ## Availability as R package
-The functions in this repository are now available as a readily installable R package under https://github.com/koda86/FunBootBand. Calculation methods are basically unchanged, but are the scripts have been combined into a single function (`band()`) in the package. See the 'FunBootBand' repository for more details and instructions.
+The functions in this repository are now available as a readily installable R package under https://github.com/koda86/FunBootBand. Calculation methods are basically unchanged, but the scripts have been combined into a single function (`band()`) in the package. See the 'FunBootBand' repository for more details and instructions.
 
 ### Error note
 In the first release of `floa`, the calculation of confidence bands (as opposed) to prediction bands was not correct. This has been fixed in the new [FunBootBand](https://github.com/koda86/FunBootBand) package. The code in this, repo, however, will not be changed.
